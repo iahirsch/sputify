@@ -10,16 +10,14 @@
 
 <body>
     <h1>Spütify</h1>
-    <button id="token"><span class="material-icons">lock</span> Get token</button>
-    <button id="artists"><span class="material-icons">music_note</span> Get top artists</button>
-    <button id="currentlyPlaying"><span class="material-icons">play_circle_filled</span> Get currently playing</button>
-    <button id="allPlaylists"><span class="material-icons">playlist_play</span> Get all playlists</button>
+    <div style="display: flex; gap: 10px;">
+        <button id="token"><span class="material-icons">lock</span> Get token</button>
+        <button id="togglePlay"><span class="material-icons">play_arrow</span>Toggle Play</button>
+    </div>
+
+    <h2>Wrapped Playlists</h2>
     <button id="wrappedPlaylists"><span class="material-icons">playlist_play</span> Get wrapped playlists</button>
-    <button id="playPause"><span class="material-icons">play_arrow</span> Play/Pause</button>
-    <button id="addSongToQueueAndSkip"><span class="material-icons">queue_music</span> Add song to queue and
-        skip</button>
-    <button id="togglePlay"><span class="material-icons">play_arrow</span>Toggle Play</button>
-    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <div id="playlistContainer" style="display: flex; gap: 10px;"></div>
 
     <h2>Top Tracks</h2>
     <div style="display: flex; gap: 10px;">
@@ -28,62 +26,11 @@
         <button id="topTracksLongTerm"><span class="material-icons">trending_up</span> long</button>
     </div>
 </body>
+
 <script src="callback.js" type="module"></script>
-
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
 <script>
-    window.onSpotifyWebPlaybackSDKReady = () => {
-        const token = localStorage.getItem('access_token');
-        const player = new Spotify.Player({
-            name: 'Web Playback SDK Quick Start Player',
-            getOAuthToken: cb => { cb(token); },
-            volume: 0.5
-        });
-
-        // Ready
-        player.addListener('ready', ({ device_id }) => {
-            console.log('Ready with Device ID', device_id);
-            transferPlayback(device_id);
-        });
-
-        // Not Ready
-        player.addListener('not_ready', ({ device_id }) => {
-            console.log('Device ID has gone offline', device_id);
-        });
-
-        player.addListener('initialization_error', ({ message }) => {
-            console.error(message);
-        });
-
-        player.addListener('authentication_error', ({ message }) => {
-            console.error(message);
-        });
-
-        player.addListener('account_error', ({ message }) => {
-            console.error(message);
-        });
-
-        document.getElementById('togglePlay').onclick = function () {
-            player.togglePlay();
-        };
-
-
-        player.connect();
-    }
-
-    function transferPlayback(device_id) {
-        console.log(device_id);
-        fetch('https://api.spotify.com/v1/me/player', {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                "device_ids": [device_id],
-                "play": true // Setze auf true, um die Wiedergabe sofort zu starten
-            })
-        });
-    }
+    
 
 </script>
 
