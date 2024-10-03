@@ -117,7 +117,7 @@ const playPauseMusic = async () => {
         const action = isPlaying ? 'pause' : 'play';
 
         // Make the request to play or pause
-        const actionResponse = await fetch(`${url}/${action}`, {
+        const actionResponse = await fetch(`${url}/${action}/?device_id=${device_id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`
