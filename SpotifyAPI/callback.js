@@ -51,7 +51,7 @@ const getWrappedPlaylists = async () => {
         };
         const response = await fetch(url, payload);
         if (!response.ok) {
-            console.warn(`Playlist with ID ${id} does not exist.`);
+            console.warn(`Playlist with ID ${id} not found.`);
             return null;
         }
         return response.json();
@@ -200,7 +200,7 @@ const addSongToQueueAndSkip = async () => {
 document.querySelector('#topTracksShortTerm').addEventListener('click', () => getTopTracks('short_term'));
 document.querySelector('#topTracksMediumTerm').addEventListener('click', () => getTopTracks('medium_term'));
 document.querySelector('#topTracksLongTerm').addEventListener('click', () => getTopTracks('long_term'));
-document.querySelector('#token').addEventListener('click', () => getToken(code));
+//document.querySelector('#token').addEventListener('click', () => getToken(code));
 //document.querySelector('#artists').addEventListener('click', () => getTopArtists());
 //document.querySelector('#currentlyPlaying').addEventListener('click', () => getCurrentlyPlaying());
 document.querySelector('#wrappedPlaylists').addEventListener('click', () => getWrappedPlaylists());
@@ -208,6 +208,7 @@ document.querySelector('#wrappedPlaylists').addEventListener('click', () => getW
 //document.querySelector('#addSongToQueueAndSkip').addEventListener('click', () => addSongToQueueAndSkip());
 
 window.onSpotifyWebPlaybackSDKReady = () => {
+    getToken(code);
     const token = localStorage.getItem('access_token');
     const player = new Spotify.Player({
         name: 'Spütify',
