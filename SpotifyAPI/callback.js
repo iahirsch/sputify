@@ -31,21 +31,25 @@ const getToken = async code => {
     console.log(response.access_token);
 }
 
-// Get the wrapped playlists for the years 2019-2023
+// Get the wrapped playlists for the years 2016-2023
 const getWrappedPlaylists = async () => {
     const token = localStorage.getItem('access_token');
-    let plId = searchPlaylist(2020);
-    console.log(plId);
 
     const playlistIds = [
         { id: '37i9dQZF1Fa1IIVtEpGUcU', year: 2023 },
         { id: '37i9dQZF1F0sijgNaJdgit', year: 2022 },
         { id: '37i9dQZF1EUMDoJuT8yJsl', year: 2021 },
-        { id: '37i9dQZF1EM8zP5iEUpvtS', year: 2020 },
-        { id: '37i9dQZF1EtavyuTuNdfaO', year: 2019 }
+        { id: await searchPlaylist(2020), year: 2020 },
+        { id: await searchPlaylist(2019), year: 2019 },
+        { id: await searchPlaylist(2018), year: 2018 },
+        { id: await searchPlaylist(2017), year: 2017 },
+        { id: await searchPlaylist(2016), year: 2016 }
     ];
 
     const getPlaylist = async (id) => {
+        if (!id) {
+            return null;
+        }
         const url = `https://api.spotify.com/v1/playlists/${id}`;
         const payload = {
             headers: {
@@ -65,9 +69,11 @@ const getWrappedPlaylists = async () => {
 
     const playlistContainer = document.getElementById('playlistContainer');
     playlists.forEach((playlist, index) => {
-        if (playlist) {
+        const existingButton = document.querySelector(`button[data-year="${playlistIds[index].year}"]`);
+        if (playlist && playlist.tracks.items.length > 0 && !existingButton) {
             const button = document.createElement('button');
             button.textContent = playlistIds[index].year;
+            button.setAttribute('data-year', playlistIds[index].year);
             button.addEventListener('click', () => {
                 const device_id = localStorage.getItem('device_id');
                 const songUri = playlist.tracks.items[0].track.uri;
@@ -86,9 +92,26 @@ const searchPlaylist = async (year) => {
             'Authorization': `Bearer ${token}`
         }
     };
+
     const response = await fetch(url, payload);
-    return response.json();
-}
+    const data = await response.json();
+
+    const playlist = data.playlists.items[0];
+
+    if (playlist) {
+        const isWrapped = playlist.name.toLowerCase().includes(year) && !playlist.name.toLowerCase().includes('radio');
+        const isSpotifyOwned = playlist.owner.id === 'spotify';
+
+        if (isWrapped && isSpotifyOwned) {
+            console.log(`Wrapped playlist ID for ${year}: ${playlist.id}`);
+            return playlist.id;
+        } else {
+            console.warn(`Not the Wrapped ${year} playlist: ${playlist.name}`);
+        }
+    } else {
+        console.warn(`No playlist found for ${year}:`);
+    }
+};
 
 const getTopTracks = async (timeRange) => {
     const token = localStorage.getItem('access_token');
