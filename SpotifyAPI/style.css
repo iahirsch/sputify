@@ -1,5 +1,5 @@
 button {
-    background-color: #1DB954;
+    background-color: #1DB954cc;
     color: #121212;
     border: none;
     border-radius: 50px;
@@ -16,15 +16,24 @@ button {
 }
 
 h1 {
-    color: white;
-    font-size: 48px;
-    margin: 40px 20px 30px 30px;
+    color: #ffffffcc;
+    font-size: 100px;
+    font-weight: 800;
+    font-style: italic;
+    margin: 40px 20px 10px 50px;
 }
 
 h2 {
-    color: white;
+    color: #ffffffaa;
     font-size: 28px;
-    margin: 40px 20px 10px 30px;
+    font-weight: 400;
+    margin: 40px 20px 10px 50px;
+}
+
+h3 {
+    color: #ffffffaa;
+    font-size: 28px;font-weight: 400;
+    margin: 40px 20px 10px 20px;
 }
 
 button:hover {
@@ -37,5 +46,43 @@ button:active {
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #121212;
+    
+    margin: 20px;
+}
+
+html {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to bottom, #0d5225, #121212 15%);
+}
+
+#authorizeSpotify {
+    margin: 50px;
+}
+
+#wrappedPlaylists {
+    margin-top: 30px;
+}
+
+#userInfoContainer {
+    display: flex;
+    align-items: flex-end;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+#userImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+#premiumStar {
+    color: #1DB954cc;
+    margin-left: 5px;
+    cursor: default;
+}
+#premiumStar:hover {
+    color: #1ed760;
 }

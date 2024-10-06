@@ -31,6 +31,43 @@ const getToken = async code => {
     console.log(response.access_token);
 }
 
+const getUserInfo = async () => {
+    const token = localStorage.getItem('access_token');
+    const url = "https://api.spotify.com/v1/me";
+    const payload = {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }
+    const body = await fetch(url, payload);
+    const response = await body.json();
+    console.log(response);
+
+    const userInfoContainer = document.getElementById('userInfoContainer');
+
+    if (!document.querySelector('#userInfoContainer img')) {
+        const userImage = document.createElement('img');
+        userImage.id = 'userImage';
+        userImage.src = response.images[0]?.url || 'default-image-url.jpg';
+        userImage.alt = 'User Profile Picture';
+        userInfoContainer.appendChild(userImage);
+    }
+
+    if (!document.querySelector('#userInfoContainer h3')) {
+        const userName = document.createElement('h3');
+        userName.textContent = response.display_name;
+        if (response.product === "premium") {
+            const premiumIcon = document.createElement('span');
+            premiumIcon.className = 'material-icons';
+            premiumIcon.textContent = 'star';
+            premiumIcon.id = 'premiumStar';
+            premiumIcon.title = 'Premium User';
+            userName.appendChild(premiumIcon);
+        }
+        userInfoContainer.appendChild(userName);
+    }
+}
+
 // Get the wrapped playlists for the years 2016-2023
 const getWrappedPlaylists = async () => {
     const token = localStorage.getItem('access_token');
@@ -244,6 +281,7 @@ document.querySelector('#topTracksLongTerm').addEventListener('click', () => get
 document.querySelector('#wrappedPlaylists').addEventListener('click', () => getWrappedPlaylists());
 //document.querySelector('#playPause').addEventListener('click', () => playPauseMusic());
 //document.querySelector('#addSongToQueueAndSkip').addEventListener('click', () => addSongToQueueAndSkip());
+document.querySelector('#userInfo').addEventListener('click', () => getUserInfo());
 
 window.onSpotifyWebPlaybackSDKReady = () => {
     getToken(code);
