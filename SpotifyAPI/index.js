@@ -21,14 +21,13 @@ const base64encode = (input) => {
         .replace(/\//g, '_');
 }
 
-
 const hashed = await sha256(codeVerifier)
 const codeChallenge = base64encode(hashed);
 
 
 async function authorize() {
-    const clientId = "003e413536ef443289571ec1bd987207"; // add your clientId here from the spotify dashboard
-    const redirectUri = 'http://localhost:3000/SpotifyAPI/callback.html'; // must be in the list of redirect uris in the spotify dashboard
+    const clientId = "003e413536ef443289571ec1bd987207";
+    const redirectUri = 'http://localhost:3000/SpotifyAPI/callback.html';
 
     const scope = 'streaming user-read-private user-read-email user-top-read user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
     const authUrl = new URL("https://accounts.spotify.com/authorize")
