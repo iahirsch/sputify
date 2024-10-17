@@ -30,7 +30,7 @@ function createBubble(color, noiseOffset, gradientId) {
         gradientId,
         visible: true,
         path: null,
-        speed: 1
+        bpm: 120
     };
 }
 
@@ -106,6 +106,8 @@ function createControls() {
             <input type="number" id="bubble${index + 1}-detail" min="10" max="200" value="${bubble.detail}">
             <label for="bubble${index + 1}-noise">Noise Scale:</label>
             <input type="range" id="bubble${index + 1}-noise" min="0" max="0.5" step="0.05" value="${bubble.noiseScale}">
+            <label for="bubble${index + 1}-speed">Speed in BPM:</label>
+            <input type="number" id="bubble${index + 1}-speed" min="50" max="200" step="1" value="${bubble.bpm}">
         `;
         controlsContainer.appendChild(bubbleControl);
 
@@ -132,6 +134,10 @@ function attachControlListeners(bubble, index) {
     document.getElementById(`bubble${index + 1}-visible`).addEventListener("change", (e) => {
         bubble.visible = e.target.checked;
     });
+    
+    document.getElementById(`bubble${index + 1}-speed`).addEventListener("change", (e) => {
+        bubble.bpm = parseInt(e.target.value, 10);
+    });
 }
 
 // Update bubble gradient dynamically
@@ -153,13 +159,25 @@ function hexToRgb(hex) {
     return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
 }
 
+
+function calculateSpeedFromBPM(bpm) {
+    // Approximate speed based on BPM
+    const minSpeed = 0.5;
+    const maxSpeed = 5;
+    const minBPM = 50;
+    const maxBPM = 200;
+
+    const speed = minSpeed + (bpm - minBPM) * (maxSpeed - minSpeed) / (maxBPM - minBPM);
+    return Math.max(minSpeed, Math.min(maxSpeed, speed));
+}
+
 // Define the animation loop
 function animate() {
     bubbles.forEach((bubble) => {
         if (bubble.visible) {
             const dynamicPath = generateBubblePath(bubble.x, bubble.y, bubble.radiusBase, bubble.detail, bubble.noiseScale, bubble.noiseOffset);
             bubble.path.attr("d", dynamicPath);
-            bubble.noiseOffset += bubble.speed * 0.01; // Apply speed to noise offset change
+            bubble.noiseOffset += calculateSpeedFromBPM(bubble.bpm) * 0.01; // Apply speed to noise offset change
         } else {
             bubble.path.attr("d", ""); // Hide if not visible
         }
