@@ -46,14 +46,13 @@ button:active {
 
 body {
     font-family: 'Roboto', sans-serif;
-    
     margin: 20px;
 }
 
 html {
     height: 100%;
     width: 100%;
-    background: linear-gradient(to bottom, #0d5225, #121212 15%);
+    background-color: #121212;
 }
 
 #authorizeSpotify {
@@ -85,4 +84,9 @@ html {
 }
 #premiumStar:hover {
     color: #1ed760;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
 }

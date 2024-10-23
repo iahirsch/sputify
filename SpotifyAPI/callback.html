@@ -12,7 +12,7 @@
 <body>
     <h1>Spütify</h1>
     <div id="userInfoContainer"></div>
-    <div style="display: flex; gap: 10px;">
+    <div class="button-row">
         <button id="togglePlay"><span class="material-icons">play_arrow</span>Toggle Play</button>
         <button id="userInfo"><span class="material-icons">account_circle</span> Get User Info</button>
     </div>
@@ -22,19 +22,23 @@
     <div id="playlistContainer" style="display: flex; gap: 10px;"></div>
 
     <h2>Top Tracks</h2>
-    <div style="display: flex; gap: 10px;">
+    <div class="button-row">
         <button id="topTracksShortTerm"><span class="material-icons">trending_up</span> short</button>
         <button id="topTracksMediumTerm"><span class="material-icons">trending_up</span> medium</button>
         <button id="topTracksLongTerm"><span class="material-icons">trending_up</span> long</button>
     </div>
+
+    <h2>Bubble</h2>
+    <div id="bubble"></div>
+    <div id="track-info"></div>
 </body>
 
 <script src="callback.js" type="module"></script>
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
-<script>
-    
 
-</script>
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+<script src="bubble.js" type="module"></script>
 
 </html>
 

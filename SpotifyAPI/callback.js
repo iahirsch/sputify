@@ -1,3 +1,5 @@
+import { updateBubbleParameters } from './bubble.js';
+
 const urlParams = new URLSearchParams(window.location.search);
 console.log(urlParams)
 let code = urlParams.get('code');
@@ -244,8 +246,8 @@ const makePlaylistButtons = (playlists) => {
             button.setAttribute('data-year', p.year);
             button.addEventListener('click', () => {
                 const device_id = localStorage.getItem('device_id');
-                const songUri = p.playlist.tracks.items[0].track.uri;
-                playInBrowser(device_id, songUri);
+                const songUris = p.playlist.tracks.items.slice(0, 5).map(item => item.track.uri);
+                playInBrowser(device_id, songUris);
             });
             playlistContainer.appendChild(button);
         }
@@ -267,11 +269,11 @@ const getTopTracks = async (timeRange) => {
 
     // Play the top song
     const device_id = localStorage.getItem('device_id');
-    const songUri = response.items[0].uri;
-    playInBrowser(device_id, songUri);
+    const songUris = response.items.slice(0, 5).map(item => item.uri);
+    playInBrowser(device_id, songUris);
 };
 
-//not needed
+/* not needed
 const getTopArtists = async () => {
     const token = localStorage.getItem('access_token');
     const url = "https://api.spotify.com/v1/me/top/artists";
@@ -284,7 +286,8 @@ const getTopArtists = async () => {
     const response = await body.json();
     console.log(response);
 }
-//not needed
+*/
+/* not needed
 const getCurrentlyPlaying = async () => {
     const token = localStorage.getItem('access_token');
     const url = "https://api.spotify.com/v1/me/player/currently-playing";
@@ -297,7 +300,8 @@ const getCurrentlyPlaying = async () => {
     const response = await body.json();
     console.log(response);
 }
-//not needed
+*/
+/* not needed
 const playPauseMusic = async () => {
     const token = localStorage.getItem('access_token');
     const url = "https://api.spotify.com/v1/me/player";
@@ -338,7 +342,8 @@ const playPauseMusic = async () => {
         console.error('Error in playPauseMusic:', error);
     }
 };
-//not needed
+*/
+/* not needed
 const addSongToQueueAndSkip = async () => {
     const token = localStorage.getItem('access_token');
     const songUri = "spotify:track:351KkakA2YtGEXqSEIIasy";
@@ -374,6 +379,7 @@ const addSongToQueueAndSkip = async () => {
         console.error('Error in addSongToQueueAndSkip:', error);
     }
 };
+*/
 
 handleAuthorization();
 
@@ -402,7 +408,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         playerReady = true;
         localStorage.setItem('device_id', device_id);
         console.log('Ready with Device ID', device_id);
-        //playInBrowser(device_id, songUri);
+        //playInBrowser(device_id, [songUri]);
         //transferPlayback(device_id);
     });
 
@@ -431,6 +437,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     player.connect();
 }
 
+/* not needed
 function transferPlayback(device_id) {
     const token = localStorage.getItem('access_token');
     fetch('https://api.spotify.com/v1/me/player', {
@@ -445,8 +452,9 @@ function transferPlayback(device_id) {
         })
     });
 }
+*/
 
-function playInBrowser(device_id, songUri) {
+function playInBrowser(device_id, songUris) {
     checkAndRefreshToken();
     const token = localStorage.getItem('access_token');
     if (playerReady) {
@@ -457,11 +465,32 @@ function playInBrowser(device_id, songUri) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                "uris": [songUri],
+                "uris": songUris,
                 play: true
             })
         });
+        updateVisualizer(songUris[0].split(':')[2]);
     } else {
         console.warn('Player not ready. Cannot play music.');
     }
+}
+
+function updateVisualizer(songUri) {
+    console.log('Updating visualizer for song:', songUri);
+    const token = localStorage.getItem('access_token');
+    const url = `https://api.spotify.com/v1/audio-features/${songUri}`;
+    const payload = {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    };
+    fetch(url, payload)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Audio Features:', data);
+            updateBubbleParameters(data.energy, data.valence, data.tempo);
+        })
+        .catch(error => {
+            console.error('Error fetching audio features:', error);
+        });
 }
