@@ -1,71 +1,93 @@
 <template>
   <div class="container text-center">
-    <h4><strong>Print a Portrait Layout with Rounded Corners</strong></h4>
-    <button @click.prevent="printThis">Download Image</button>
+    <h4><strong>Download a High-Quality Image</strong></h4>
+    <button @click.prevent="downloadCanvas">Download Image</button>
 
-    <div ref="printcontent" class="portrait-container">
-      <div class="portrait-content">
-        <h2>Portrait Mode Example</h2>
-        <p>This is an example of a portrait layout that will be downloaded as an image.</p>
-
-        <div class="graphics-section">
-          <svg width="120" height="120" class="bubble">
-            <circle cx="60" cy="60" r="50" stroke="#ff337e" stroke-width="4" fill="#ff337e33" />
-          </svg>
-          <svg width="100" height="100" class="bubble">
-            <circle cx="50" cy="50" r="40" stroke="#201db9" stroke-width="4" fill="#201db933" />
-          </svg>
-        </div>
-
-        <div class="content">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi.</p>
-          <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
-          <p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-          <p>Donec ac odio tempor orci dapibus ultrices in iaculis nunc sed augue lacus.</p>
-        </div>
-      </div>
+    <!-- Smaller Display of the High-Resolution Canvas -->
+    <div class="portrait-container">
+      <canvas ref="portraitCanvas" width="1600" height="2400" style="width: 400px; height: 600px;"></canvas>
     </div>
   </div>
 </template>
 
 <script>
-import domtoimage from 'dom-to-image-more';
-
 export default {
   name: 'PrintComponent',
-  methods: {
-    async printThis() {
-      console.log("Generating print preview...");
-      const el = this.$refs.printcontent;
-
-      const options = {
-        width: 800, // Portrait width
-        height: 1200, // Portrait height
-        bgcolor: '#1e1e1e', // Dark background color
-        style: {
-          margin: '0 auto',
-        },
-      };
-
-      try {
-        // Get the PNG image base64-encoded data URL and display it
-        const dataUrl = await domtoimage.toPng(el, options);
-        const img = new Image();
-        img.src = dataUrl;
-        document.body.appendChild(img);
-
-        // Download the image using a link
-        const link = document.createElement("a");
-        link.setAttribute("download", "portrait.png");
-        link.setAttribute("href", dataUrl);
-        link.click();
-
-        console.log("Image downloaded.");
-      } catch (error) {
-        console.error("Failed to generate image", error);
-      }
-    },
+  mounted() {
+    // Draw the initial content on the canvas
+    this.drawOnCanvas();
   },
+  methods: {
+    drawOnCanvas() {
+      const canvas = this.$refs.portraitCanvas;
+      const ctx = canvas.getContext("2d");
+
+      // Set scale factor for high resolution
+      const scaleFactor = 2;
+      ctx.scale(scaleFactor, scaleFactor);
+
+      // Background
+      ctx.fillStyle = "#2e2e2e"; // Dark background
+      ctx.fillRect(0, 0, canvas.width / scaleFactor, canvas.height / scaleFactor);
+
+      // Header Text
+      ctx.fillStyle = "#f1f1f1"; // Light text
+      ctx.font = "36px Arial";
+      ctx.fillText("Portrait Mode Example", 50, 80);
+
+      // Sample Paragraph Text
+      ctx.font = "20px Arial";
+      ctx.fillStyle = "#cccccc";
+      const text = "This is an example of a portrait layout that will be downloaded as an image. It demonstrates how to dynamically generate content.";
+      this.wrapText(ctx, text, 50, 150, 700, 30);
+
+      // Graphics (Bubbles)
+      ctx.fillStyle = "#1db95433";
+      ctx.strokeStyle = "#1db954";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(200, 800, 100, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#ff573333";
+      ctx.strokeStyle = "#ff5733";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(600, 900, 80, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+    },
+
+    // Helper function to wrap text within a certain width
+    wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      
+      for(let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        
+        if (testWidth > maxWidth && i > 0) {
+          ctx.fillText(line, x, y);
+          line = words[i] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    },
+
+    downloadCanvas() {
+      const canvas = this.$refs.portraitCanvas;
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = "portrait-layout.png";
+      link.click();
+    }
+  }
 };
 </script>
 
@@ -97,50 +119,13 @@ button:hover {
 }
 
 .portrait-container {
-  width: 800px; /* Match the download width */
-  height: 1200px; /* Match the download height */
-background: linear-gradient(135deg, #201db9, #ff337e);
+  background-color: #2e2e2e;
   padding: 20px;
   border-radius: 15px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  position: relative;
   overflow: hidden;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
-}
-
-.portrait-content {
-  color: #ffffff;
-  text-align: center;
-}
-
-.portrait-content h2 {
-  margin-top: 0;
-  color: #f1f1f1;
-}
-
-.portrait-content p {
-  color: #cccccc;
-  margin: 10px 0;
-}
-
-.graphics-section {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  padding: 20px 0;
-}
-
-.bubble {
-  opacity: 0.7;
-}
-
-.content {
-  padding: 0 20px;
-  text-align: left;
-  font-size: 1.1em;
-  line-height: 1.5;
 }
 </style>
