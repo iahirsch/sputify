@@ -124,14 +124,14 @@ export default {
                 const blob = await (await fetch(dataUrl)).blob();
                 const file = new File([blob], `portrait-layout-${canvasNumber}.png`, { type: blob.type });
 
-                if (navigator.share) {
+                if (navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
                         title: 'Check out this image!',
                         text: `Here's the image I generated: Image ${canvasNumber}`,
                     });
                 } else {
-                    alert("Sharing is not supported on your device.");
+                    alert("Sharing this file is not supported on your device.");
                 }
             } catch (error) {
                 console.error("Sharing failed:", error);
