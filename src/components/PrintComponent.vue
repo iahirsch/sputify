@@ -47,17 +47,7 @@ export default {
 
         // Handle loading state
         image.onload = () => {
-            const ctx = this.$refs.portraitCanvas3.getContext("2d");
-            if (ctx) { // Check if canvas context is valid
-                this.setCanvasStyle(ctx);
-
-                ctx.fillStyle = "#4169e1";
-                ctx.fillText("Local Image - Image 3", 50, 80);
-
-                ctx.drawImage(image, 200, 500, 400, 400);
-            } else {
-                console.error("Error: Unable to get canvas context.");
-            }
+            this.drawOnCanvas3(this.$refs.portraitCanvas3, image);
         };
 
         // Handle loading errors
@@ -70,11 +60,11 @@ export default {
             const ctx = canvas.getContext("2d");
             this.setCanvasStyle(ctx);
 
-            ctx.fillStyle = "#ff8c00";
+            ctx.fillStyle = "#ff6347";
             ctx.fillText("Unique Content - Image 1", 50, 80);
 
             ctx.beginPath();
-            ctx.arc(300, 600, 100, 0, 2 * Math.PI);
+            ctx.arc(300, 600, 100, 0, 2 * Math.PI); // x, y, radius, startAngle, endAngle
             ctx.fillStyle = "#ff4500";
             ctx.fill();
             ctx.stroke();
@@ -84,11 +74,11 @@ export default {
             const ctx = canvas.getContext("2d");
             this.setCanvasStyle(ctx);
 
-            ctx.fillStyle = "#00ff7f";
+            ctx.fillStyle = "#11bb5f";
             ctx.fillText("Different Design - Image 2", 50, 80);
 
             ctx.beginPath();
-            ctx.rect(200, 500, 400, 200);
+            ctx.rect(100, 500, 400, 200); // left, top, width, height
             ctx.fillStyle = "#00fa9a";
             ctx.fill();
             ctx.stroke();
@@ -96,12 +86,16 @@ export default {
 
         drawOnCanvas3(canvas, image) {
             const ctx = canvas.getContext("2d");
-            this.setCanvasStyle(ctx);
+            if (ctx) {
+                this.setCanvasStyle(ctx);
 
-            ctx.fillStyle = "#4169e1";
-            ctx.fillText("Local Image - Image 3", 50, 80);
+                ctx.fillStyle = "#4169e1";
+                ctx.fillText("Local Image - Image 3", 50, 80);
 
-            ctx.drawImage(image, 200, 500, 400, 400);
+                ctx.drawImage(image, 0, 200, 600, 500); // left, top, width, height
+            } else {
+                console.error("Error: Unable to get canvas context.");
+            }
         },
 
         setCanvasStyle(ctx) {
@@ -203,7 +197,7 @@ button:hover {
 .portrait {
     display: flex;
     gap: 10px;
-    padding: 20px;
+    padding: 10px;
     background-color: #2e2e2e;
     border-radius: 15px;
     justify-content: center;
