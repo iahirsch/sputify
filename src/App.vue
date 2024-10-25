@@ -1,20 +1,15 @@
 <script setup>
 import PrintComponent from './components/PrintComponent.vue';
+import ScrollExample from './components/ScrollExample.vue';
+import Test from './components/ScrollExample.vue';
 </script>
 
 <template>
-  <PrintComponent />
+  <ScrollExample/>
+
+
 </template>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #121212;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  height: 100vh;
-  margin: 0;
-  color: #ffffff;
-}
+
 </style>
