@@ -6,7 +6,7 @@ import SmoothScroll from './components/SmoothScroll.vue';
 
 <template>
   
-  <SmoothScroll />
+  <router-view></router-view>
 
 </template>
 
