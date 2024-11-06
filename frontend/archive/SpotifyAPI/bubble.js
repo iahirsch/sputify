@@ -22,14 +22,14 @@ function createBubble(color, noiseOffset, gradientId) {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
         radiusBase: 200,
-        noiseScale: 0.2,
-        detail: 128,
+        noiseScale: 0.15,
+        detail: 120,
         color,
         noiseOffset,
         gradientId,
         visible: true,
         path: null,
-        bpm: 120
+        bpm: 80
     };
 }
 
@@ -106,7 +106,7 @@ function attachControlListeners(bubble, index) {
     document.getElementById(`bubble${index + 1}-visible`).addEventListener("change", (e) => {
         bubble.visible = e.target.checked;
     });
-    
+
     document.getElementById(`bubble${index + 1}-speed`).addEventListener("change", (e) => {
         bubble.bpm = parseInt(e.target.value, 10);
     });

@@ -1,13 +1,15 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import BubbleVisualizer from './Bubble.vue';
+import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
 
-
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 const main = ref();
+const audioAnalysisData = ref(generateRandomData());
+let updateInterval;
 let smoother;
 let ctx;
 
@@ -15,7 +17,17 @@ const scrollTo = () => {
   smoother.scrollTo('body', true, '0px, 0px');
 };
 
+function generateRandomData() {
+  return Array.from({ length: 10 }, () => ({ value: Math.random() }));
+}
+
+function updateData() {
+  audioAnalysisData.value = generateRandomData();
+}
+
 onMounted(() => {
+  updateInterval = setInterval(updateData, 1000);
+
   ctx = gsap.context(() => {
     // Create the smooth scrolling effect
     smoother = ScrollSmoother.create({
@@ -33,11 +45,11 @@ onMounted(() => {
       pin: true,
       markers: true,            // Optional for debugging
     });
-
-
-
-
   }, main.value);
+});
+
+onBeforeUnmount(() => {
+  clearInterval(updateInterval);
 });
 
 onUnmounted(() => {
@@ -58,7 +70,7 @@ onUnmounted(() => {
       </div>
       <!-- Bubble image section (Box B) -->
       <div class="box box-b gradient-black">
-        <img src="../assets/bubble.png" alt="bubble" class="bubble" />
+        <BubbleVisualizer :data="audioAnalysisData" />
       </div>
 
       <div class="box box-c gradient-black" data-speed="1.5">Box C</div>
@@ -75,12 +87,10 @@ body,
 html {
   margin: 0;
   background-color: black;
-
 }
 
 h1 {
   font: 5REM 'Frankie', sans-serif;
-
 }
 
 #smooth-wrapper {
@@ -105,7 +115,6 @@ h1 {
   background: black;
   color: pink;
 }
-
 
 .line {
   height: 50px;
