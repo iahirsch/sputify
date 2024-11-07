@@ -34,9 +34,9 @@ onMounted(() => {
       markers: true,            // Optional for debugging
     });
 
-    
 
-    
+
+
   }, main.value);
 });
 
@@ -58,9 +58,9 @@ onUnmounted(() => {
       </div>
       <!-- Bubble image section (Box B) -->
       <div class="box box-b gradient-black">
-        <img src="C:/Spütify/sputify/frontend/src/assets/bubble.png" alt="bubble" class="bubble" />
+        <img src="../assets/bubble.png" alt="bubble" class="bubble" />
       </div>
-      
+
       <div class="box box-c gradient-black" data-speed="1.5">Box C</div>
       <div class="line"></div>
       <footer class="footer gradient-black">
