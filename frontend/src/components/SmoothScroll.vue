@@ -28,11 +28,15 @@ onMounted(() => {
     ScrollTrigger.create({
       trigger: bubbleBox,
       start: 'top top',         // Pin bubble when it reaches the top of the viewport
-      endTrigger: '.box-c',    // Unpin when footer comes into view
+      endTrigger: 'footer',    // Unpin when footer comes into view
       end: 'bottom bottom',        // Ends when the footer reaches the center of the viewport
       pin: true,
       markers: true,            // Optional for debugging
     });
+
+    
+
+    
   }, main.value);
 });
 
@@ -53,10 +57,10 @@ onUnmounted(() => {
         </div>
       </div>
       <!-- Bubble image section (Box B) -->
-      <div class="box box-b gradient-green">
+      <div class="box box-b gradient-black">
         <img src="C:/Spütify/sputify/frontend/src/assets/bubble.png" alt="bubble" class="bubble" />
       </div>
-      <!-- Additional content boxes (Box C and footer) -->
+      
       <div class="box box-c gradient-black" data-speed="1.5">Box C</div>
       <div class="line"></div>
       <footer class="footer gradient-black">
