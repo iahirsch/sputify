@@ -20,9 +20,10 @@ export default {
             width: 600,
             height: 600,
             radius: 150,
-            steps: 8, // Number of steps between each data point
-            showVerticalLines: true, // Flag to show or hide vertical lines
-            showCurve: false // Flag to show or hide the curve
+            steps: 1, // Number of steps between each data point
+            buckets: 3, // Number of buckets to mirror the data
+            showVerticalLines: false, // Flag to show or hide vertical lines
+            showCurve: true // Flag to show or hide the curve
         };
     },
     methods: {
@@ -74,18 +75,15 @@ export default {
                 .attr('stroke', 'black')
                 .attr('stroke-width', 2);
         },
-
         createVisualizer() {
             const svg = this.createSvg();
 
             // Create mirrored data with interpolation
             const interpolatedData = this.interpolateData(this.data, this.steps);
-            const mirroredData = [
-                ...interpolatedData,
-                ...interpolatedData.slice().reverse(),
-                ...interpolatedData,
-                ...interpolatedData.slice().reverse()
-            ];
+            let mirroredData = [];
+            for (let i = 0; i < this.buckets; i++) {
+                mirroredData = mirroredData.concat(i % 2 === 0 ? interpolatedData : interpolatedData.slice().reverse());
+            }
 
             const angleScale = d3.scaleLinear()
                 .domain([0, mirroredData.length])
@@ -119,12 +117,10 @@ export default {
 
             // Create mirrored data with interpolation
             const interpolatedData = this.interpolateData(this.data, this.steps);
-            const mirroredData = [
-                ...interpolatedData,
-                ...interpolatedData.slice().reverse(),
-                ...interpolatedData,
-                ...interpolatedData.slice().reverse()
-            ];
+            let mirroredData = [];
+            for (let i = 0; i < this.buckets; i++) {
+                mirroredData = mirroredData.concat(i % 2 === 0 ? interpolatedData : interpolatedData.slice().reverse());
+            }
 
             const angleScale = d3.scaleLinear()
                 .domain([0, mirroredData.length])
