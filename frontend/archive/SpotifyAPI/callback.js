@@ -6,6 +6,12 @@ let code = urlParams.get('code');
 const clientId = "003e413536ef443289571ec1bd987207";
 
 let playerReady = false;
+let beats = null;
+let sections = null;
+let valence = null;
+let currentBeatIndex = 0;
+let currentSectionIndex = 0;
+let isVisualizing = false;
 
 const handleAuthorization = async () => {
     // Check if access_token and refresh_token are already stored
@@ -90,7 +96,7 @@ const getRefreshToken = async () => {
 
         if (response.ok) {
             localStorage.setItem('access_token', data.access_token);
-            console.log("New Access Token:", data.access_token);
+            //console.log("New Access Token:", data.access_token);
 
             if (data.refresh_token) {
                 localStorage.setItem('refresh_token', data.refresh_token);
@@ -265,7 +271,6 @@ const getTopTracks = async (timeRange) => {
     };
     const body = await fetch(url, payload);
     const response = await body.json();
-    console.log(response);
 
     // Play the top song
     const device_id = localStorage.getItem('device_id');
@@ -431,6 +436,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
     document.getElementById('togglePlay').onclick = function () {
+        isVisualizing = !isVisualizing;
         player.togglePlay();
     };
 
@@ -469,6 +475,10 @@ function playInBrowser(device_id, songUris) {
                 play: true
             })
         });
+        isVisualizing = false;
+        currentBeatIndex = 0;
+        currentSectionIndex = 0;
+        console.log(isVisualizing);
         updateVisualizer(songUris[0].split(':')[2]);
     } else {
         console.warn('Player not ready. Cannot play music.');
@@ -476,7 +486,8 @@ function playInBrowser(device_id, songUris) {
 }
 
 function updateVisualizer(songUri) {
-    console.log('Updating visualizer for song:', songUri);
+    console.log("reset", currentBeatIndex, currentSectionIndex);
+    //console.log('Updating visualizer for song:', songUri);
     const token = localStorage.getItem('access_token');
     const url = `https://api.spotify.com/v1/audio-features/${songUri}`;
     const payload = {
@@ -488,9 +499,89 @@ function updateVisualizer(songUri) {
         .then(response => response.json())
         .then(data => {
             console.log('Audio Features:', data);
-            updateBubbleParameters(data.energy, data.valence, data.tempo);
+            //updateBubbleParameters(data.energy, data.valence, data.tempo);
+            fetchAudioAnalysis(songUri);
         })
         .catch(error => {
             console.error('Error fetching audio features:', error);
         });
+}
+
+function fetchAudioAnalysis(songUri) {
+    const token = localStorage.getItem('access_token');
+    const url = `https://api.spotify.com/v1/audio-analysis/${songUri}`;
+    const payload = {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    };
+    fetch(url, payload)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Audio Analysis:', data);
+            beats = data.beats;
+            sections = data.sections;
+            valence = data.track.valence;
+            console.log(beats, sections, valence);
+            startVisualizer();
+        })
+        .catch(error => {
+            console.error('Error fetching audio analysis:', error);
+        });
+}
+
+function startVisualizer() {
+    isVisualizing = true;
+    requestAnimationFrame(updateVisualization);
+}
+
+const mainCircle = d3.select("svg").append("circle")
+    .attr("cx", 400)
+    .attr("cy", 400)
+    .attr("r", 80)
+    .style("fill", "white")
+    .style("opacity", 0.8);
+
+const moodColorScale = d3.scaleLinear()
+    .domain([0, 1])   // Valence range
+    .range(["#1e3a8a", "#f59e0b"]); // Blue to orange
+
+function updateVisualization(timestamp) {
+    if (!isVisualizing) return;
+
+    const currentTime = timestamp / 1000;
+
+    if (currentBeatIndex < beats.length && currentTime >= beats[currentBeatIndex].start) {
+        console.log(currentBeatIndex, beats.length, "current Time:", currentTime);
+        const { duration, confidence } = beats[currentBeatIndex];
+        pulseCircle(duration, confidence);
+        currentBeatIndex++;
+    }
+    if (currentSectionIndex < sections.length && currentTime >= sections[currentSectionIndex].start) {
+        console.log("section");
+        const sectionMood = sections[currentSectionIndex].valence || valence;
+        updateBackgroundColor(sectionMood);
+        currentSectionIndex++;
+    }
+    requestAnimationFrame(updateVisualization);
+}
+
+function pulseCircle(duration, confidence) {
+    const maxRadius = 10;         // Max radius for a strong pulse
+    const baseRadius = 80;         // Original radius of the circle
+    const pulseIntensity = confidence * maxRadius;
+
+    mainCircle
+        .transition()
+        .duration(duration * 600)
+        .attr("r", baseRadius - pulseIntensity)
+        .style("opacity", 0.5 + (confidence / 2)) // Higher confidence makes it more opaque
+        .transition()
+        .duration(duration * 400)   // Contract over the other half of the beat
+        .attr("r", baseRadius)
+        .style("opacity", 0.8);
+}
+
+function updateBackgroundColor(valence) {
+    d3.select("body").style("background-color", moodColorScale(valence));
 }
