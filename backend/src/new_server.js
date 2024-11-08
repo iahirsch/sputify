@@ -34,7 +34,7 @@ app.get('/api/spotify/authorize', function (req, res) {
     res.cookie(stateKey, state);
 
     // your application requests authorization
-    const scope = 'user-read-private user-read-email';
+    const scope = 'streaming user-read-private user-read-email user-top-read user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({url: 'https://accounts.spotify.com/authorize?' +
         querystring.stringify({
@@ -61,10 +61,7 @@ app.get('/api/spotify/callback', async function (req, res) {
         console.log('state mismatch');
         console.log('state: ' + state);
         console.log('storedState: ' + storedState);
-        res.redirect('/#' +
-            querystring.stringify({
-                error: 'state_mismatch'
-            }));
+  
     } else {
         console.log('state match');
         res.clearCookie(stateKey);
@@ -88,40 +85,7 @@ app.get('/api/spotify/callback', async function (req, res) {
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(data));
         console.log(data);
-        /*
-        request.post(authOptions, function (error, response, body) {
-            if (!error && response.statusCode === 200) {
-
-                var access_token = body.access_token,
-                    refresh_token = body.refresh_token;
-
-                var options = {
-                    url: 'https://api.spotify.com/v1/me',
-                    headers: { 'Authorization': 'Bearer ' + access_token },
-                    json: true
-                };
-
-                // use the access token to access the Spotify Web API
-                request.get(options, function (error, response, body) {
-                    console.log(body);
-                });
-
-                // we can also pass the token to the browser to make requests from there
-                res.redirect('/#' +
-                    querystring.stringify({
-                        access_token: access_token,
-                        refresh_token: refresh_token
-                    }));
-            } else {
-                res.redirect('/#' +
-                    querystring.stringify({
-                        error: 'invalid_token'
-                    }));
-            }
-                    
-        });
-        */
-    }
+     }
 });
 
 app.get('/refresh_token', function (req, res) {

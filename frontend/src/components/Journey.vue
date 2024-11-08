@@ -127,7 +127,7 @@ export default {
             }
         },
         async getUserInfo() {
-            this.checkAndRefreshToken();
+   //         this.checkAndRefreshToken();
             let token = localStorage.getItem('access_token');
             let url = "https://api.spotify.com/v1/me";
             const payload = {
@@ -311,6 +311,18 @@ export default {
         let access_token = await access_token_response.json()
         console.log(access_token)
         localStorage.setItem('access_token', access_token.access_token);
+
+        let url = "https://api.spotify.com/v1/me";
+        console.log(access_token.access_token)
+        const payload = {
+                headers: {
+                    'Authorization': `Bearer ${access_token.access_token}`
+                }
+            }
+
+        let response = await fetch(url, payload);
+        let profile = await response.json();
+        console.log(profile)
 
         const script = document.createElement('script');
         script.src = "https://sdk.scdn.co/spotify-player.js";
