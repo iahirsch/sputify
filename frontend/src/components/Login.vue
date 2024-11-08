@@ -25,8 +25,6 @@ export default {
             }
         },
         async authorize() {
-            // let result = await fetch('http://localhost:3000/api/spotify/authorize')
-            //console.log(result)
             let response = await fetch('http://localhost:3000/api/spotify/authorize', {credentials: 'include'})
             let data = await response.json()
             console.log(data)
