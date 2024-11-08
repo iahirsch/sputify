@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const crypto = require('crypto');
+const cookieParser = require('cookie-parser')
+var querystring = require('querystring');
 
 dotenv.config();
 
@@ -14,152 +16,126 @@ const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8080/callback';
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(({credentials: true, origin: 'http://localhost:5173'})));
+app.use(cookieParser());
 
-// Utility function to encode base64 for client credentials
-const encodeClientCredentials = () => {
-    const buffer = Buffer.from(`${clientId}:${clientSecret}`);
-    return buffer.toString('base64');
-};
-
-// Generate random string for state
 const generateRandomString = (length) => {
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    return Array.from(crypto.randomBytes(length))
-        .map((val) => possible[val % possible.length])
-        .join('');
-};
+    return crypto
+        .randomBytes(60)
+        .toString('hex')
+        .slice(0, length);
+}
 
-app.get('/', (req, res) => {
-    res.send('Hello from the Backend!');
+var stateKey = 'spotify_auth_state';
+
+app.get('/api/spotify/authorize', function (req, res) {
+    console.log('authorizing with spotify...');
+    var state = generateRandomString(16);
+    res.cookie(stateKey, state);
+
+    // your application requests authorization
+    const scope = 'streaming user-read-private user-read-email user-top-read user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({url: 'https://accounts.spotify.com/authorize?' +
+        querystring.stringify({
+            response_type: 'code',
+            client_id: clientId,
+            scope: scope,
+            redirect_uri: redirectUri,
+            state: state
+        })}));
 });
 
-// Endpoint to handle authorization URL generation
-app.get('/api/spotify/authorize', (req, res) => {
-    const scope = 'streaming user-read-private user-read-email user-top-read user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
-    const state = generateRandomString(16);
-    const authUrl = new URL("https://accounts.spotify.com/authorize");
+app.get('/api/spotify/callback', async function (req, res) {
+    console.log('callback from spotify...');
+ 
+    // your application requests refresh and access tokens
+    // after checking the state parameter
 
-    const params = {
-        response_type: 'code',
-        client_id: clientId,
-        scope,
-        redirect_uri: redirectUri,
-        state
+    var code = req.query.code || null;
+    var state = req.query.state || null;
+    var storedState = req.cookies ? req.cookies[stateKey] : null;
+ 
+    if (state === null || state !== storedState) {
+        console.log('state mismatch');
+        console.log('state: ' + state);
+        console.log('storedState: ' + storedState);
+        // TODO error handling
+  
+    } else {
+        console.log('state match');
+        res.clearCookie(stateKey);
+
+        const payload = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Authorization: 'Basic ' + (new Buffer.from(clientId + ':' + clientSecret).toString('base64'))
+            },
+            body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                code,
+                redirect_uri: redirectUri,
+            }),
+        }
+
+        let access_token_response = await fetch('https://accounts.spotify.com/api/token', payload);
+        let data = await access_token_response.json();
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(data));
+
+     }
+});
+
+app.get('/api/spotify/refresh_token', async function (req, res) {
+    const refresh_token = req.query.refresh_token;
+    const payload = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: 'Basic ' + (new Buffer.from(clientId + ':' + clientSecret).toString('base64'))
+        },
+        body: new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: refresh_token
+        }),
+    }
+
+    let access_token_response = await fetch('https://accounts.spotify.com/api/token', payload);
+    let data = await access_token_response.json();
+
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(data));
+
+/*
+    var refresh_token = req.query.refresh_token;
+    var authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + (new Buffer.from(clientId + ':' + clientSecret).toString('base64'))
+        },
+        form: {
+            grant_type: 'refresh_token',
+            refresh_token: refresh_token
+        },
+        json: true
     };
 
-    authUrl.search = new URLSearchParams(params).toString();
-    res.json({ authUrl: authUrl.toString() });
-});
-
-// Endpoint to exchange authorization code for tokens
-app.post('/api/spotify/exchange-token', async (req, res) => {
-    const { code, codeVerifier } = req.body;
-
-    const tokenPayload = new URLSearchParams({
-        client_id: clientId,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: redirectUri,
-        code_verifier: codeVerifier
+    request.post(authOptions, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            var access_token = body.access_token,
+                refresh_token = body.refresh_token;
+            res.send({
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            });
+        }
     });
-
-    try {
-        const response = await axios.post('https://accounts.spotify.com/api/token', tokenPayload, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${encodeClientCredentials()}`
-            }
-        });
-
-        res.json(response.data);
-    } catch (error) {
-        console.error('Error exchanging tokens:', error.response?.data || error.message);
-        res.status(500).send('Internal Server Error');
-    }
+    */
 });
 
-// Endpoint to refresh access token using refresh token
-app.post('/api/spotify/refresh-token', async (req, res) => {
-    const { refreshToken } = req.body;
-
-    const refreshPayload = new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-        client_id: clientId
-    });
-
-    try {
-        const response = await axios.post('https://accounts.spotify.com/api/token', refreshPayload, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${encodeClientCredentials()}`
-            }
-        });
-
-        res.json(response.data);
-    } catch (error) {
-        console.error('Error refreshing token:', error.response?.data || error.message);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// Endpoint to fetch user information
-app.get('/api/spotify/user-info', async (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return res.status(401).send('Missing authorization token');
-    }
-
-    try {
-        const response = await axios.get('https://api.spotify.com/v1/me', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        console.error('Error fetching user info:', error.response?.data || error.message);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// Endpoint to fetch wrapped playlists
-app.get('/api/spotify/wrapped-playlists', async (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return res.status(401).send('Missing authorization token');
-    }
-
-    try {
-        const wrappedPlaylists = [
-            { id: '37i9dQZF1Fa1IIVtEpGUcU', year: 2023 },
-            { id: '37i9dQZF1F0sijgNaJdgit', year: 2022 },
-            { id: '37i9dQZF1EUMDoJuT8yJsl', year: 2021 },
-            // Add more playlist IDs as needed
-        ];
-
-        const playlists = await Promise.all(
-            wrappedPlaylists.map(async ({ id, year }) => {
-                try {
-                    const response = await axios.get(`https://api.spotify.com/v1/playlists/${id}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
-                    return { id, year, playlist: response.data };
-                } catch {
-                    return { id, year, playlist: null };
-                }
-            })
-        );
-
-        res.json({ playlists });
-    } catch (error) {
-        console.error('Error fetching wrapped playlists:', error.response?.data || error.message);
-        res.status(500).send('Internal Server Error');
-    }
-});
 
 // Start the server
 app.listen(port, () => {
