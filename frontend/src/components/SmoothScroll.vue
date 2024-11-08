@@ -60,6 +60,9 @@ onUnmounted(() => {
       <div class="box box-b gradient-black">
         <img src="../assets/bubble.png" alt="bubble" class="bubble" />
       </div>
+      <div class="box box-b gradient-black">
+        <h1>Music</h1>
+      </div>
 
       <div class="box box-c gradient-black" data-speed="1.5">Box C</div>
       <div class="line"></div>
@@ -128,10 +131,22 @@ h1 {
 }
 
 .material-symbols-outlined {
+  animation: arrow-bounce 1s infinite;
   font-size: 3rem;
-  /* Adjust icon size as needed */
-  margin-top: 1rem;
-  /* Add some space between heading and icon */
+  padding-top: 2rem;
+  height: 15vh;
+}
+
+@keyframes arrow-bounce {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .footer {
