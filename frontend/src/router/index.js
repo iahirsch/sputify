@@ -4,7 +4,8 @@ import Journey from '@/components/Journey.vue';
 
 const routes = [
     { path: '/', component: Login },
-    { path: '/journey', component: Journey }
+    { path: '/journey', component: Journey },
+    { path: '/callback', component: Journey }
 ];
 
 const router = createRouter({
