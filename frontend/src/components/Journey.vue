@@ -300,7 +300,18 @@ export default {
             }
         }
     },
-    mounted() {
+    async mounted() {
+        const state = this.$route.query.state;
+        const code = this.$route.query.code;
+        console.log(state)
+
+        let access_token_response = await fetch('http://localhost:3000/api/spotify/callback' +"?code=" + code + "&state=" + state,
+        {credentials: 'include'}
+        )
+        let access_token = await access_token_response.json()
+        console.log(access_token)
+        localStorage.setItem('access_token', access_token.access_token);
+
         const script = document.createElement('script');
         script.src = "https://sdk.scdn.co/spotify-player.js";
         script.async = true;
@@ -351,5 +362,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
