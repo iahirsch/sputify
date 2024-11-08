@@ -42,83 +42,19 @@ export default {
         };
     },
     methods: {
-        async handleAuthorization() {
-            const accessToken = localStorage.getItem('access_token');
-            const refreshToken = localStorage.getItem('refresh_token');
-            const code = new URLSearchParams(window.location.search).get('code');
-
-            if (!accessToken && code) {
-                await this.getToken(code);
-                window.history.replaceState({}, document.title, "/journey");
-            } else if (!accessToken && refreshToken) {
-                await this.getRefreshToken();
-            } else if (accessToken) {
-                console.log("Tokens already available. No need to exchange authorization code.");
-            } else {
-                console.error("No authorization code or tokens found.");
-            }
-        },
         async getToken(code) {
-            const codeVerifier = localStorage.getItem('code_verifier');
-            const url = "https://accounts.spotify.com/api/token";
-            const payload = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    client_id: this.clientId,
-                    grant_type: 'authorization_code',
-                    code,
-                    redirect_uri: 'http://localhost:5173/journey',
-                    code_verifier: codeVerifier,
-                })
-            };
-
-            try {
-                const response = await fetch(url, payload);
-                const data = await response.json();
-
-                if (response.ok) {
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('refresh_token', data.refresh_token);
-                    console.log("Access Token:", data.access_token);
-                    console.log("Refresh Token:", data.refresh_token);
-                } else {
-                    console.error("(getToken) Error fetching tokens:", data);
-                }
-            } catch (error) {
-                console.error("Network error while fetching token:", error);
-            }
+            console.log("getToken not implemented");
         },
         async getRefreshToken() {
-            const refreshToken = localStorage.getItem('refresh_token');
-            const url = "https://accounts.spotify.com/api/token";
-            const payload = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    grant_type: 'refresh_token',
-                    refresh_token: refreshToken,
-                    client_id: this.clientId
-                })
-            };
+            const refresh_token = localStorage.getItem('refresh_token');
+            let refresh_token_response = await fetch('http://localhost:3000/api/spotify/refresh_token' + "?refresh_token=" +refresh_token,
+                { credentials: 'include' }
+            )
+            let access_token = await refresh_token_response.json()
+            console.log(access_token)
+            localStorage.setItem('access_token', access_token.access_token);
+            localStorage.setItem('refresh_token', access_token.refresh_token);
 
-            try {
-                const response = await fetch(url, payload);
-                const data = await response.json();
-
-                if (response.ok) {
-                    localStorage.setItem('access_token', data.access_token);
-                    console.log("New Access Token:", data.access_token);
-
-                    if (data.refresh_token) {
-                        localStorage.setItem('refresh_token', data.refresh_token);
-                    }
-                } else {
-                    console.error("(getRefreshToken) Error fetching token:", data);
-                }
-            } catch (error) {
-                console.error("Network error while refreshing token:", error);
-            }
         },
         async checkAndRefreshToken() {
             const now = new Date().getTime();
@@ -127,7 +63,7 @@ export default {
             }
         },
         async getUserInfo() {
-   //         this.checkAndRefreshToken();
+            this.checkAndRefreshToken();
             let token = localStorage.getItem('access_token');
             let url = "https://api.spotify.com/v1/me";
             const payload = {
@@ -305,20 +241,21 @@ export default {
         const code = this.$route.query.code;
         console.log(state)
 
-        let access_token_response = await fetch('http://localhost:3000/api/spotify/callback' +"?code=" + code + "&state=" + state,
-        {credentials: 'include'}
+        let access_token_response = await fetch('http://localhost:3000/api/spotify/callback' + "?code=" + code + "&state=" + state,
+            { credentials: 'include' }
         )
         let access_token = await access_token_response.json()
         console.log(access_token)
         localStorage.setItem('access_token', access_token.access_token);
+        localStorage.setItem('refresh_token', access_token.refresh_token);
 
         let url = "https://api.spotify.com/v1/me";
         console.log(access_token.access_token)
         const payload = {
-                headers: {
-                    'Authorization': `Bearer ${access_token.access_token}`
-                }
+            headers: {
+                'Authorization': `Bearer ${access_token.access_token}`
             }
+        }
 
         let response = await fetch(url, payload);
         let profile = await response.json();
