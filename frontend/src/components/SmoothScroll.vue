@@ -1,9 +1,64 @@
+<template>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <div id="smooth-wrapper" ref="main">
+    <div id="smooth-content">
+      <!-- Intro section (Box A) -->
+      <div class="box box-a gradient-black" data-speed="0.5">
+        <div class="content">
+          <h1>Birdos Music Journey</h1>
+          <span class="material-symbols-outlined">keyboard_double_arrow_down</span>
+        </div>
+      </div>
+      <div class="box box-b gradient-black">
+        <div class="content-leftside">
+          <div class="step">
+            <p>Artist</p>
+          </div>
+          <div class="step">
+            <p>Album</p>
+          </div>
+          <div class="step">
+            <p>Song</p>
+          </div>
+        </div>
+
+        <div class="bubble" data-speed="0.5">
+          <BubbleVisualizer :data="audioAnalysisData" />
+        </div>
+
+        <div class="content-rightside">
+          <div class="step">
+            <p>Artist</p>
+          </div>
+          <div class="step">
+            <p>Album</p>
+          </div>
+          <div class="step">
+            <p>Song</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="box box-c gradient-black">test</div>
+      <div class="line"></div>
+      <footer class="footergradient-black">
+        <PrintComponent />
+        <button @click="scrollTo" class="totop">
+          <span class="material-symbols-rounded">keyboard_double_arrow_up</span>
+          <p>Back to Top</p>
+        </button>
+      </footer>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import BubbleVisualizer from './Bubble.vue';
 import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
+import PrintComponent from './PrintComponent.vue';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
@@ -76,60 +131,9 @@ window.onload = function () {
 
 </script>
 
-<template>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-  <div id="smooth-wrapper" ref="main">
-    <div id="smooth-content">
-      <!-- Intro section (Box A) -->
-      <div class="box box-a gradient-black" data-speed="0.5">
-        <div class="content">
-          <h1>Birdos Music Journey</h1>
-          <span class="material-symbols-outlined">keyboard_double_arrow_down</span>
-        </div>
-      </div>
-      <div class="box box-b gradient-black">
-        <div class="content-leftside">
-          <div class="step">
-            <p>Artist</p>
-          </div>
-          <div class="step">
-            <p>Album</p>
-          </div>
-          <div class="step">
-            <p>Song</p>
-          </div>
-        </div>
-
-        <div class="bubble" data-speed="0.5">
-          <BubbleVisualizer :data="audioAnalysisData" />
-        </div>
-
-        <div class="content-rightside">
-          <div class="step">
-            <p>Artist</p>
-          </div>
-          <div class="step">
-            <p>Album</p>
-          </div>
-          <div class="step">
-            <p>Song</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="box box-c gradient-black">test</div>
-      <div class="line"></div>
-      <footer class="footergradient-black">
-        <button @click="scrollTo">Scroll to the Top</button>
-      </footer>
-    </div>
-  </div>
-
-
-</template>
-
-<style>
-body {
+<style scoped>
+body, html {
+  margin: 0;
   background-color: black;
 }
 
@@ -188,8 +192,6 @@ div.step {
   background: black;
 }
 
-
-
 .content {
   display: flex;
   /* Allow stacking elements vertically */
@@ -199,17 +201,33 @@ div.step {
   /* Center elements horizontally */
 }
 
-.material-symbols-outlined {
-  font-size: 3rem;
-  /* Adjust icon size as needed */
-  margin-top: 1rem;
-  /* Add some space between heading and icon */
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded';
+  font-size: 36px;
 }
 
 footer {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 120vh;
+}
+
+p {
+  margin: 0;
+}
+
+.totop {
+  margin-top: 50px;
+  background-color: transparent;
+  color: #ffffff55;
+  border: none;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.totop:hover {
+  color: #fff;
 }
 </style>
