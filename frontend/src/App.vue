@@ -9,3 +9,10 @@ import SmoothScroll from './components/SmoothScroll.vue';
   <SmoothScroll />
 
 </template>
+
+<style>
+  html, body {
+    margin: 0;
+    background-color: black;
+  }
+</style>
