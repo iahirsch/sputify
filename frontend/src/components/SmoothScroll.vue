@@ -1,22 +1,47 @@
 <template>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <div id="smooth-wrapper" ref="main">
     <div id="smooth-content">
       <!-- Intro section (Box A) -->
       <div class="box box-a gradient-black" data-speed="0.5">
         <div class="content">
           <h1>Birdos Music Journey</h1>
-          <span class="material-symbols-rounded">keyboard_double_arrow_down</span>
+          <span class="material-symbols-outlined">keyboard_double_arrow_down</span>
         </div>
       </div>
-      <!-- Bubble image section (Box B) -->
       <div class="box box-b gradient-black">
-        <BubbleVisualizer :data="audioAnalysisData" />
+        <div class="content-leftside">
+          <div class="step">
+            <p>Artist</p>
+          </div>
+          <div class="step">
+            <p>Album</p>
+          </div>
+          <div class="step">
+            <p>Song</p>
+          </div>
+        </div>
+
+        <div class="bubble" data-speed="0.5">
+          <BubbleVisualizer :data="audioAnalysisData" />
+        </div>
+
+        <div class="content-rightside">
+          <div class="step">
+            <p>Artist</p>
+          </div>
+          <div class="step">
+            <p>Album</p>
+          </div>
+          <div class="step">
+            <p>Song</p>
+          </div>
+        </div>
       </div>
 
-      <div class="box box-c gradient-black" data-speed="1.5">Box C</div>
+      <div class="box box-c gradient-black">test</div>
       <div class="line"></div>
-      <footer class="footer gradient-black">
+      <footer class="footergradient-black">
         <PrintComponent />
         <button @click="scrollTo" class="totop">
           <span class="material-symbols-rounded">keyboard_double_arrow_up</span>
@@ -36,12 +61,12 @@ import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
 import PrintComponent from './PrintComponent.vue';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
-
 const main = ref();
 const audioAnalysisData = ref(generateRandomData());
 let updateInterval;
 let smoother;
 let ctx;
+let panel_tl;
 
 const scrollTo = () => {
   smoother.scrollTo('body', true, '0px, 0px');
@@ -61,20 +86,21 @@ onMounted(() => {
   ctx = gsap.context(() => {
     // Create the smooth scrolling effect
     smoother = ScrollSmoother.create({
-      smooth: 2,
+      smooth: 1,
       effects: true,
     });
 
     // Make .box-b (bubble image section) sticky when scrolling
-    const bubbleBox = document.querySelector('.box-b');
+    const bubbleBox = document.querySelector('.bubble');
     ScrollTrigger.create({
       trigger: bubbleBox,
-      start: 'top top',         // Pin bubble when it reaches the top of the viewport
-      endTrigger: 'footer',    // Unpin when footer comes into view
-      end: 'bottom bottom',        // Ends when the footer reaches the center of the viewport
+      start: '.box-a',         // Pin bubble when it reaches the top of the viewport
+      endTrigger: 'box-c',
+      end: 'center top',
       pin: true,
-      markers: true,            // Optional for debugging
+      markers: false,
     });
+
   }, main.value);
 });
 
@@ -85,17 +111,37 @@ onBeforeUnmount(() => {
 onUnmounted(() => {
   ctx.revert();
 });
+
+window.onload = function () {
+  gsap.utils.toArray(".step").forEach(function (panel) {
+    panel_tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: panel,
+        start: "top 90%",
+        end: "bottom 10%",
+        scrub: true,
+        markers: true,
+        toggleActions: "resume pause reverse pause"
+      }
+    });
+    panel_tl.from(panel, { opacity: 0, duration: 0.5 });
+    panel_tl.to(panel, { opacity: 0, duration: 0.5 });
+  });
+};
+
 </script>
 
 <style scoped>
-body,
-html {
+body, html {
   margin: 0;
   background-color: black;
 }
 
-h1 {
-  font: 5REM 'Frankie', sans-serif;
+div.step {
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 1em;
+  margin: 10vh 1em 15vh auto;
+  color: white;
 }
 
 #smooth-wrapper {
@@ -116,20 +162,34 @@ h1 {
   justify-content: center;
 }
 
+.box-b {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.content-leftside,
+.content-rightside {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Space between the .step elements */
+}
+
+.bubble {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .gradient-black {
   background: black;
   color: pink;
+
 }
 
 .line {
   height: 50px;
   background: black;
-}
-
-.bubble {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .content {
@@ -146,12 +206,12 @@ h1 {
   font-size: 36px;
 }
 
-.footer {
-  height: 100vh;
+footer {
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 120vh;
 }
 
 p {
