@@ -1,9 +1,39 @@
+<template>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+  <div id="smooth-wrapper" ref="main">
+    <div id="smooth-content">
+      <!-- Intro section (Box A) -->
+      <div class="box box-a gradient-black" data-speed="0.5">
+        <div class="content">
+          <h1>Birdos Music Journey</h1>
+          <span class="material-symbols-rounded">keyboard_double_arrow_down</span>
+        </div>
+      </div>
+      <!-- Bubble image section (Box B) -->
+      <div class="box box-b gradient-black">
+        <BubbleVisualizer :data="audioAnalysisData" />
+      </div>
+
+      <div class="box box-c gradient-black" data-speed="1.5">Box C</div>
+      <div class="line"></div>
+      <footer class="footer gradient-black">
+        <PrintComponent />
+        <button @click="scrollTo" class="totop">
+          <span class="material-symbols-rounded">keyboard_double_arrow_up</span>
+          <p>Back to Top</p>
+        </button>
+      </footer>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import BubbleVisualizer from './Bubble.vue';
 import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
+import PrintComponent from './PrintComponent.vue';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -57,32 +87,7 @@ onUnmounted(() => {
 });
 </script>
 
-<template>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-  <div id="smooth-wrapper" ref="main">
-    <div id="smooth-content">
-      <!-- Intro section (Box A) -->
-      <div class="box box-a gradient-black" data-speed="0.5">
-        <div class="content">
-          <h1>Birdos Music Journey</h1>
-          <span class="material-symbols-outlined">keyboard_double_arrow_down</span>
-        </div>
-      </div>
-      <!-- Bubble image section (Box B) -->
-      <div class="box box-b gradient-black">
-        <BubbleVisualizer :data="audioAnalysisData" />
-      </div>
-
-      <div class="box box-c gradient-black" data-speed="1.5">Box C</div>
-      <div class="line"></div>
-      <footer class="footer gradient-black">
-        <button @click="scrollTo">Scroll to the Top</button>
-      </footer>
-    </div>
-  </div>
-</template>
-
-<style>
+<style scoped>
 body,
 html {
   margin: 0;
@@ -136,11 +141,9 @@ h1 {
   /* Center elements horizontally */
 }
 
-.material-symbols-outlined {
-  font-size: 3rem;
-  /* Adjust icon size as needed */
-  margin-top: 1rem;
-  /* Add some space between heading and icon */
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded';
+  font-size: 36px;
 }
 
 .footer {
@@ -148,5 +151,23 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+}
+
+p {
+  margin: 0;
+}
+
+.totop {
+  margin-top: 50px;
+  background-color: transparent;
+  color: #ffffff55;
+  border: none;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.totop:hover {
+  color: #fff;
 }
 </style>
