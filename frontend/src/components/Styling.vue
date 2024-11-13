@@ -1,44 +1,65 @@
 <template>
- <h1>Spütify</h1>  
- <h2>this is a text which is totally cool</h2> 
- <h3>jashdjhsahdklasdjasl</h3>
-
- <img src="../assets/image1.png">
+    <div>
+        <h1>Spütify</h1> 
+        <div class="my-element">This text uses 'Familjen Grotesk'</div> 
+        <h2>this is a text which is totally cool</h2> 
+        <h3>jashdjhsahdklasdjasl</h3>
+    
+        <img src="../assets/image1.png">
+    </div>
 </template>
 
 <style>
-:root{
-    --heading-year: 4rem;
-    --heading-section: 2rem;
-    --body-text: 1.6rem;
-    --font-family: 'Franie', sans-serif;
-    --font-body: 'Geostar', sans-serif;
-    --grayScale: 100%;
-    --borderRadius: 50%;
-    --color: blue;
+:root {
+/* fonts */ 
+  --font-heading: 'Franie', sans-serif;
+  --font-body: 'Familjen Grotesk', sans-serif;
+
+/* heading sizes DESKTOP*/ 
+  --heading-year-d: 200px;
+  --heading-section-d: 40px;
+
+/* heading sizes MOBILE*/ 
+  --heading-year-m: 60px;
+  --heading-section-m: 20px;
+
+/* text sizes DESKTOP*/ 
+  --body-text-d: 20px;
+
+/* text sizes MOBILE*/ 
+  --body-text-m: 12px;
+
+/* desktop images*/ 
+  --grayScale: 100%;
+  --opacity: 90%;
+
+/* additional for mobile images*/
+  --borderRadius: 50%;
 }
 
-h1{
-    font-size: var(--heading-year);
-    font-family: var(--font-family);
-    color: var(--color);
+/* FONT IMPORT - Familjen Grotesk */
+@import url('https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&display=swap');
+
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-size: var(--heading-year-d);
 }
 
-h2{
-    font-size: var(--heading-section);
-    font-family: var(--font-family);
-    color: var(--color);
+body, p, li {
+  font-family: var(--font-body);
+  font-size: var(--body-text-d);
 }
 
-img{
-    border-radius: var(--borderRadius);
-    opacity: 50%;
+img {
+  filter: var(--grayScale);
+  opacity: var(--opacity);
+  border-radius: var(--borderRadius);
 }
 
-body{
-    font-size: var(--body-text);
-    font-family: var(--font-body);
-    color: var(--color);
-    background-color: var(--grayScale);
+.my-element {
+  font-family: var(--font-body);
 }
+
+
 </style>
