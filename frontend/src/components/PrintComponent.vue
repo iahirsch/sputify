@@ -236,6 +236,6 @@ canvas {
 
 .material-symbols-rounded {
     font-family: 'Material Symbols Rounded';
-    font-size: 36px;
+    font-size: 3rem;
 }
 </style>

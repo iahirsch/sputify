@@ -1,13 +1,12 @@
 <template>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+
   <div id="smooth-wrapper" ref="main">
+
     <div id="smooth-content">
-      <!-- Intro section (Box A) -->
-      <div class="box box-a gradient-black" data-speed="0.5">
-        <div class="content">
-          <h1>Birdos Music Journey</h1>
-          <span class="material-symbols-outlined">keyboard_double_arrow_down</span>
-        </div>
+      <div class="box box-a gradient-black" data-speed="0.5">       
+          <WelcomeComponent />
+        
       </div>
       <div class="box box-b gradient-black">
         <div class="content-leftside">
@@ -59,6 +58,7 @@ import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
 import PrintComponent from './PrintComponent.vue';
+import WelcomeComponent from './WelcomeComponent.vue';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
@@ -183,7 +183,7 @@ div.step {
 }
 .gradient-black {
   background: black;
-  color: pink;
+  color: white;
 
 }
 
@@ -203,7 +203,7 @@ div.step {
 
 .material-symbols-rounded {
   font-family: 'Material Symbols Rounded';
-  font-size: 36px;
+  font-size: 3rem;
 }
 
 footer {

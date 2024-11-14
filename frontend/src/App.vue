@@ -5,7 +5,7 @@ import SmoothScroll from './components/SmoothScroll.vue';
 </script>
 
 <template>
-
+  
   <SmoothScroll />
 
 </template>
