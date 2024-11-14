@@ -1,12 +1,13 @@
 <template>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
-    
-    <div class="container">
+    <div class="content">
+        <div class="container">
         <h1 ref="topH1" class="username">Birdo's</h1>
         <h2>_</h2>
         <h1 ref="bottomH1">Music Journey</h1>
     </div>
     <span class="material-symbols-rounded arrow">keyboard_double_arrow_down</span>
+    </div>
 </template>
 
 <script setup>
@@ -51,6 +52,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
 h2 {
     opacity: 0;
 }
@@ -75,16 +77,28 @@ h5 {
     color: white;
 }
 
+.conten{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 150vh;
+}
+
 .material-symbols-rounded {
-    margin-top: 5vh;
+    margin-top: 2vh;
     font-family: 'Material Symbols Rounded';
     font-size: 3rem;
-    opacity: 0.5;
+    opacity: 0.3;
 }
 
 
 .arrow {
     animation: arrow-bounce 2s infinite;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 @keyframes arrow-bounce {

@@ -6,7 +6,6 @@
     <div id="smooth-content">
       <div class="box box-a gradient-black" data-speed="0.5">       
           <WelcomeComponent />
-        
       </div>
       <div class="box box-b gradient-black">
         <div class="content-leftside">
