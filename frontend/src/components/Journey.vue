@@ -6,7 +6,7 @@
             <button id="togglePlay" @click="togglePlay">
                 <span class="material-icons">play_arrow</span>Toggle Play
             </button>
-            <button id="userInfo" @click="getUserInfo">
+            <button id="userInfo" @click="fetchUserInfo">
                 <span class="material-icons">account_circle</span> Get User Info
             </button>
         </div>
@@ -19,19 +19,26 @@
 
         <h2>Top Tracks</h2>
         <div class="button-row">
-            <button id="topTracksShortTerm" @click="getTopTracks('short_term')">
+            <button id="topTracksShortTerm" @click="fetchTopTracks('short_term')">
                 <span class="material-icons">trending_up</span> short
             </button>
-            <button id="topTracksMediumTerm" @click="getTopTracks('medium_term')">
+            <button id="topTracksMediumTerm" @click="fetchTopTracks('medium_term')">
                 <span class="material-icons">trending_up</span> medium
             </button>
-            <button id="topTracksLongTerm" @click="getTopTracks('long_term')">
+            <button id="topTracksLongTerm" @click="fetchTopTracks('long_term')">
                 <span class="material-icons">trending_up</span> long
             </button>
         </div>
     </div>
 </template>
 <script>
+
+import { getUserInfo } from '../api/user.js';
+import { getPlaylist } from '../api/getPlaylist.js';
+import { getTopTracks } from '../api/getTopTracks.js';
+import { searchPlaylist } from '../api/searchPlaylist.js';
+import { playback } from '../api/playback.js';
+
 export default {
     name: 'SpotifyComponent',
     data() {
@@ -42,105 +49,20 @@ export default {
         };
     },
     methods: {
-        async getToken(code) {
-            console.log("getToken not implemented");
-        },
-        async getRefreshToken() {
-            const refresh_token = localStorage.getItem('refresh_token');
-            let refresh_token_response = await fetch('http://localhost:3000/api/spotify/refresh_token' + "?refresh_token=" +refresh_token,
-                { credentials: 'include' }
-            )
-            let access_token = await refresh_token_response.json()
-            console.log(access_token)
-            localStorage.setItem('access_token', access_token.access_token);
-            localStorage.setItem('refresh_token', access_token.refresh_token);
-
-        },
-        async checkAndRefreshToken() {
-            const now = new Date().getTime();
-            if (now > this.tokenExpirationTime) {
-                await this.getRefreshToken();
-            }
-        },
-        async getUserInfo() {
-            this.checkAndRefreshToken();
-            let token = localStorage.getItem('access_token');
-            let url = "https://api.spotify.com/v1/me";
-            const payload = {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-
-            let response = await fetch(url, payload);
-
-            if (response.status === 401) {
-                console.log("Access Token expired. Refreshing token...");
-                await getRefreshToken();
-                token = localStorage.getItem('access_token');
-
-                payload.headers['Authorization'] = `Bearer ${token}`;
-                response = await fetch(url, payload);
-            }
-            const body = await fetch(url, payload);
-            response = await body.json();
-            console.log(response);
-
-            const userInfoContainer = document.getElementById('userInfoContainer');
-
-            if (!document.querySelector('#userInfoContainer img')) {
-                const userImage = document.createElement('img');
-                userImage.id = 'userImage';
-                userImage.src = response.images[0]?.url || 'default-image-url.jpg';
-                userImage.alt = 'User Profile Picture';
-                userInfoContainer.appendChild(userImage);
-            }
-
-            if (!document.querySelector('#userInfoContainer h3')) {
-                const userName = document.createElement('h3');
-                userName.textContent = response.display_name;
-                if (response.product === "premium") {
-                    const premiumIcon = document.createElement('span');
-                    premiumIcon.className = 'material-icons';
-                    premiumIcon.textContent = 'star';
-                    premiumIcon.id = 'premiumStar';
-                    premiumIcon.title = 'Premium User';
-                    userName.appendChild(premiumIcon);
-                }
-                userInfoContainer.appendChild(userName);
-            }
+        async fetchUserInfo() {
+            await getUserInfo();
         },
         async getWrappedPlaylists() {
-            this.checkAndRefreshToken();
-            const token = localStorage.getItem('access_token');
-
             let wrappedPlaylists = [
                 { id: '37i9dQZF1Fa1IIVtEpGUcU', year: 2023 },
                 { id: '37i9dQZF1F0sijgNaJdgit', year: 2022 },
                 { id: '37i9dQZF1EUMDoJuT8yJsl', year: 2021 },
-                { id: await this.searchPlaylist(2020), year: 2020 },
-                { id: await this.searchPlaylist(2019), year: 2019 },
-                { id: await this.searchPlaylist(2018), year: 2018 },
-                { id: await this.searchPlaylist(2017), year: 2017 },
-                { id: await this.searchPlaylist(2016), year: 2016 }
+                { id: await searchPlaylist(2020), year: 2020 },
+                { id: await searchPlaylist(2019), year: 2019 },
+                { id: await searchPlaylist(2018), year: 2018 },
+                { id: await searchPlaylist(2017), year: 2017 },
+                { id: await searchPlaylist(2016), year: 2016 }
             ];
-
-            const getPlaylist = async (id) => {
-                if (id) {
-                    const url = `https://api.spotify.com/v1/playlists/${id}`;
-                    const payload = {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    };
-                    const response = await fetch(url, payload);
-                    if (!response.ok) {
-                        console.warn(`Playlist with ID ${id} not found.`);
-                        return null;
-                    }
-                    return response.json();
-                }
-            };
 
             wrappedPlaylists = await Promise.all(wrappedPlaylists.map(async ({ id, year }) => {
                 const playlist = await getPlaylist(id);
@@ -150,39 +72,10 @@ export default {
                 return { id, year, playlist };
             }));
             console.log(wrappedPlaylists);
-
             this.makePlaylistButtons(wrappedPlaylists);
         },
-        async searchPlaylist(year) {
-            const token = localStorage.getItem('access_token');
-            const url = `https://api.spotify.com/v1/search?q=wrapped%25${year}&type=playlist&limit=1`;
-            const payload = {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            };
 
-            const response = await fetch(url, payload);
-            const data = await response.json();
-
-            const playlist = data.playlists.items[0];
-
-            if (playlist) {
-                const isWrapped = playlist.name.toLowerCase().includes(year) && !playlist.name.toLowerCase().includes('radio');
-                const isSpotifyOwned = playlist.owner.id === 'spotify';
-
-                if (isWrapped && isSpotifyOwned) {
-                    console.log(`Wrapped playlist ID for ${year}: ${playlist.id}`);
-                    return playlist.id;
-                } else {
-                    console.warn(`Not the Wrapped ${year} playlist: ${playlist.name}`);
-                }
-            } else {
-                console.warn(`No playlist found for ${year}`);
-            }
-        },
         makePlaylistButtons(playlists) {
-            this.checkAndRefreshToken();
             const playlistContainer = document.getElementById('playlistContainer');
             playlists.forEach((p) => {
                 if (p.id && p.playlist && p.playlist.tracks.items.length > 0 && !document.querySelector(`button[data-year="${p.year}"]`)) {
@@ -192,74 +85,113 @@ export default {
                     button.addEventListener('click', () => {
                         const device_id = localStorage.getItem('device_id');
                         const songUris = p.playlist.tracks.items.slice(0, 5).map(item => item.track.uri);
-                        this.playInBrowser(device_id, songUris);
+                        playback(device_id, songUris, this.playerReady);
                     });
                     playlistContainer.appendChild(button);
                 }
             });
         },
-        async getTopTracks(timeRange) {
-            this.checkAndRefreshToken();
-            const token = localStorage.getItem('access_token');
-            const url = `https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}`;
-            const payload = {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            };
-            const body = await fetch(url, payload);
-            const response = await body.json();
+
+        async fetchTopTracks(timeRange) {
+            const response = await getTopTracks(timeRange);
             console.log(response);
 
             // Play the top song
             const device_id = localStorage.getItem('device_id');
             const songUris = response.items.slice(0, 5).map(item => item.uri);
-            this.playInBrowser(device_id, songUris);
+            playback(device_id, songUris, this.playerReady);
         },
-        playInBrowser(device_id, songUris) {
-            this.checkAndRefreshToken();
-            const token = localStorage.getItem('access_token');
-            if (this.playerReady) {
-                fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        "uris": songUris,
-                        play: true
-                    })
-                });
-            } else {
-                console.warn('Player not ready. Cannot play music.');
-            }
-        }
+
+        //TODO: RefreshToken
+
+        // async getRefreshToken() {
+        //     const refresh_token = localStorage.getItem('refresh_token');
+        //     let refresh_token_response = await fetch('http://localhost:3000/api/spotify/refresh_token' + "?refresh_token=" + refresh_token,
+        //         { credentials: 'include' }
+        //     )
+        //     let access_token = await refresh_token_response.json()
+        //     console.log(access_token)
+        //     localStorage.setItem('access_token', access_token.access_token);
+        //     localStorage.setItem('refresh_token', access_token.refresh_token);
+
+        // },
+        // async checkAndRefreshToken() {
+        //     const now = new Date().getTime();
+        //     if (now > this.tokenExpirationTime) {
+        //         await this.getRefreshToken();
+        //     }
+        // },
+        //     this.checkAndRefreshToken();
+        //     let token = localStorage.getItem('access_token');
+        //     let url = "https://api.spotify.com/v1/me";
+        //     const payload = {
+        //         headers: {
+        //             'Authorization': `Bearer ${token}`
+        //         }
+        //     }
+
+        //     let response = await fetch(url, payload);
+
+        //     if (response.status === 401) {
+        //         console.log("Access Token expired. Refreshing token...");
+        //         await getRefreshToken();
+        //         token = localStorage.getItem('access_token');
+
+        //         payload.headers['Authorization'] = `Bearer ${token}`;
+        //         response = await fetch(url, payload);
+        //     }
+        //     const body = await fetch(url, payload);
+        //     response = await body.json();
+        //     console.log(response);
+
+        //     const userInfoContainer = document.getElementById('userInfoContainer');
+
+        //     if (!document.querySelector('#userInfoContainer img')) {
+        //         const userImage = document.createElement('img');
+        //         userImage.id = 'userImage';
+        //         userImage.src = response.images[0]?.url || 'default-image-url.jpg';
+        //         userImage.alt = 'User Profile Picture';
+        //         userInfoContainer.appendChild(userImage);
+        //     }
+
+        //     if (!document.querySelector('#userInfoContainer h3')) {
+        //         const userName = document.createElement('h3');
+        //         userName.textContent = response.display_name;
+        //         if (response.product === "premium") {
+        //             const premiumIcon = document.createElement('span');
+        //             premiumIcon.className = 'material-icons';
+        //             premiumIcon.textContent = 'star';
+        //             premiumIcon.id = 'premiumStar';
+        //             premiumIcon.title = 'Premium User';
+        //             userName.appendChild(premiumIcon);
+        //         }
+        //         userInfoContainer.appendChild(userName);
+        //     }
+        // },
+
     },
+
     async mounted() {
         const state = this.$route.query.state;
         const code = this.$route.query.code;
+        let currentTime = Math.floor(new Date().getTime() / 1000);
         console.log(state)
 
-        let access_token_response = await fetch('http://localhost:3000/api/spotify/callback' + "?code=" + code + "&state=" + state,
-            { credentials: 'include' }
-        )
-        let access_token = await access_token_response.json()
-        console.log(access_token)
-        localStorage.setItem('access_token', access_token.access_token);
-        localStorage.setItem('refresh_token', access_token.refresh_token);
+        console.log(isNaN(localStorage.getItem('tokenExpirationTime')), currentTime, localStorage.getItem('tokenExpirationTime'));
 
-        let url = "https://api.spotify.com/v1/me";
-        console.log(access_token.access_token)
-        const payload = {
-            headers: {
-                'Authorization': `Bearer ${access_token.access_token}`
-            }
+        if (!localStorage.getItem('tokenExpirationTime') || currentTime > localStorage.getItem('tokenExpirationTime')) {
+            let access_token_response = await fetch('http://localhost:3000/api/spotify/callback' + "?code=" + code + "&state=" + state,
+                { credentials: 'include' }
+            )
+            let access_token = await access_token_response.json()
+            console.log(access_token)
+            localStorage.setItem('tokenExpirationTime', currentTime + access_token.expires_in);
+            localStorage.setItem('access_token', access_token.access_token);
+            localStorage.setItem('refresh_token', access_token.refresh_token);
         }
-
-        let response = await fetch(url, payload);
-        let profile = await response.json();
-        console.log(profile)
+        else {
+            console.log("Token still valid: Access Token: ", localStorage.getItem('access_token'), "\n Refresh Token: ", localStorage.getItem('refresh_token'));
+        }
 
         const script = document.createElement('script');
         script.src = "https://sdk.scdn.co/spotify-player.js";
@@ -268,7 +200,7 @@ export default {
 
         window.onSpotifyWebPlaybackSDKReady = () => {
             console.log('Spotify Web Playback SDK is ready');
-            this.checkAndRefreshToken();
+            //this.checkAndRefreshToken();
             const token = localStorage.getItem('access_token');
             const player = new Spotify.Player({
                 name: 'Spütify',

@@ -16,7 +16,7 @@ const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8080/callback';
 
 app.use(bodyParser.json());
-app.use(cors(({credentials: true, origin: 'http://localhost:5173'})));
+app.use(cors(({ credentials: true, origin: 'http://localhost:5173' })));
 app.use(cookieParser());
 
 const generateRandomString = (length) => {
@@ -36,35 +36,36 @@ app.get('/api/spotify/authorize', function (req, res) {
     // your application requests authorization
     const scope = 'streaming user-read-private user-read-email user-top-read user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({url: 'https://accounts.spotify.com/authorize?' +
-        querystring.stringify({
-            response_type: 'code',
-            client_id: clientId,
-            scope: scope,
-            redirect_uri: redirectUri,
-            state: state
-        })}));
+    res.end(JSON.stringify({
+        url: 'https://accounts.spotify.com/authorize?' +
+            querystring.stringify({
+                response_type: 'code',
+                client_id: clientId,
+                scope: scope,
+                redirect_uri: redirectUri,
+                state: state
+            })
+    }));
 });
 
 app.get('/api/spotify/callback', async function (req, res) {
     console.log('callback from spotify...');
- 
+
     // your application requests refresh and access tokens
     // after checking the state parameter
 
     var code = req.query.code || null;
     var state = req.query.state || null;
     var storedState = req.cookies ? req.cookies[stateKey] : null;
- 
+
     if (state === null || state !== storedState) {
         console.log('state mismatch');
         console.log('state: ' + state);
         console.log('storedState: ' + storedState);
-        // TODO error handling
-  
+        res.status(400).json({ error: 'state_mismatch' });
     } else {
         console.log('state match');
-        res.clearCookie(stateKey);
+        //res.clearCookie(stateKey);
 
         const payload = {
             method: 'POST',
@@ -85,7 +86,7 @@ app.get('/api/spotify/callback', async function (req, res) {
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(data));
 
-     }
+    }
 });
 
 app.get('/api/spotify/refresh_token', async function (req, res) {
@@ -108,32 +109,32 @@ app.get('/api/spotify/refresh_token', async function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(data));
 
-/*
-    var refresh_token = req.query.refresh_token;
-    var authOptions = {
-        url: 'https://accounts.spotify.com/api/token',
-        headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + (new Buffer.from(clientId + ':' + clientSecret).toString('base64'))
-        },
-        form: {
-            grant_type: 'refresh_token',
-            refresh_token: refresh_token
-        },
-        json: true
-    };
-
-    request.post(authOptions, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var access_token = body.access_token,
-                refresh_token = body.refresh_token;
-            res.send({
-                'access_token': access_token,
-                'refresh_token': refresh_token
-            });
-        }
-    });
-    */
+    /*
+        var refresh_token = req.query.refresh_token;
+        var authOptions = {
+            url: 'https://accounts.spotify.com/api/token',
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + (new Buffer.from(clientId + ':' + clientSecret).toString('base64'))
+            },
+            form: {
+                grant_type: 'refresh_token',
+                refresh_token: refresh_token
+            },
+            json: true
+        };
+    
+        request.post(authOptions, function (error, response, body) {
+            if (!error && response.statusCode === 200) {
+                var access_token = body.access_token,
+                    refresh_token = body.refresh_token;
+                res.send({
+                    'access_token': access_token,
+                    'refresh_token': refresh_token
+                });
+            }
+        });
+        */
 });
 
 
