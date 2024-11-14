@@ -8,32 +8,17 @@
         <WelcomeComponent />
       </div>
       <div class="box box-b gradient-black">
-        <div class="content-leftside">
-          <div class="step">
-            <p>Artist</p>
+        <h1 class="year-title">2023</h1>
+        <div class="year">
+          <div class="content-leftside">
+            <p>hello</p>
           </div>
-          <div class="step">
-            <p>Album</p>
-          </div>
-          <div class="step">
-            <p>Song</p>
+          <div class="content-rightside">
+            <p>hello</p>
           </div>
         </div>
-
         <div class="bubble" data-speed="0.5">
           <BubbleVisualizer :data="audioAnalysisData" />
-        </div>
-
-        <div class="content-rightside">
-          <div class="step">
-            <p>Artist</p>
-          </div>
-          <div class="step">
-            <p>Album</p>
-          </div>
-          <div class="step">
-            <p>Song</p>
-          </div>
         </div>
       </div>
 
@@ -168,27 +153,45 @@ div.step {
 
 .box-b {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.box-c {
+  z-index: 3;
+}
+
+.year {
+  display: flex;
   justify-content: space-between;
+  width: 100vw;
+  position: absolute;
+}
+
+.year-title {
+  position: absolute;
+  left: 5vw;
 }
 
 .content-leftside,
 .content-rightside {
+  width: 25vw;
+  background-color: red;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  /* Space between the .step elements */
 }
 
 .bubble {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .gradient-black {
-  background: black;
+  background: none;
   color: white;
 
 }
