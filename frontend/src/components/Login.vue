@@ -1,12 +1,13 @@
 <template>
     <div>
-        <h1>Server Test</h1>
+        <h1>Login</h1>
         <p>{{ message }}</p>
-        <button @click="fetchMessage">Test Server</button>
+        <button @click="authorize">Authorize with Spotify</button>
     </div>
 </template>
 
 <script>
+
 export default {
     data() {
         return {
@@ -22,6 +23,13 @@ export default {
             } catch (error) {
                 this.message = 'Error fetching message from server';
             }
+        },
+        async authorize() {
+            let response = await fetch('http://localhost:3000/api/spotify/authorize', {credentials: 'include'})
+            let data = await response.json()
+            console.log(data)
+            console.log(response)
+            window.location.href = data.url;
         }
     }
 };

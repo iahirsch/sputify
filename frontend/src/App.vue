@@ -1,12 +1,9 @@
 <script setup>
-import PrintComponent from './components/PrintComponent.vue';
-import ServerTest from './components/ServerTest.vue';
-import SmoothScroll from './components/SmoothScroll.vue';
 </script>
 
 <template>
   
-  <SmoothScroll />
+  <router-view></router-view>
 
 </template>
 
