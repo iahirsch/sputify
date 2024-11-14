@@ -1,15 +1,17 @@
 <script setup>
+import Login from './components/Login.vue';
 </script>
 
 <template>
-  
-  <router-view></router-view>
+
+  <Login />
 
 </template>
 
 <style>
-  html, body {
-    margin: 0;
-    background-color: black;
-  }
+html,
+body {
+  margin: 0;
+  background-color: black;
+}
 </style>
