@@ -1,6 +1,6 @@
 <template>
     <div class="bubble-container">
-        <svg ref="svgRef" width="700" height="700" class="rotating-svg"></svg>
+        <svg ref="svgRef" class="bubble-svg"></svg>
     </div>
 </template>
 
@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 import { onMounted, onBeforeUnmount, ref, watch, nextTick } from 'vue';
 
 export default {
-    name: 'Bubble',
+  name: 'Bubble',
     props: {
         audioAnalysisSections: {
             type: Array,
@@ -182,174 +182,184 @@ export default {
             } // nmixx - o.o
         } // nmixx - o.o
     },
-    setup(props) {
+  setup(props) {
+    let detail = 20;
+    const radius = 100;
+    const svgRef = ref(null);
+    let currentSection = 0;
+    let toZero = false;
+    const data = ref(generateData());
+    let updateTimeouts = [];
+    let updateInterval;
 
-        let detail = 20;
+    function generateData() {
+      let smoothness = -props.audioAnalysisSections[currentSection].loudness / 6;
+      let data;
+      if (toZero) {
+        data = Array.from({ length: detail }, () => ({ value: 0 }));
+      } else {
+        data = Array.from({ length: detail }, () => ({ value: Math.random() + smoothness }));
+      }
+      toZero = !toZero;
+      return data;
+    }
 
-        const width = 700;
-        const height = 700;
-        const radius = 150;
-        const svgRef = ref(null);
-        let currentSection = 0;
-        let toZero = false;
-        const data = ref(generateData());
-        let updateTimeouts = [];
-        let updateInterval;
+    function updateData() {
+      data.value = generateData();
+    }
 
-        function generateData() {
-            let smoothness = -props.audioAnalysisSections[currentSection].loudness / 6; // higher = smoother (min 0)
-            let data;
-            if (toZero) {
-                data = Array.from({ length: detail }, () => ({ value: 0 }));
-            } else {
-                data = Array.from({ length: detail }, () => ({ value: Math.random() + smoothness }));
-            }
-            toZero = !toZero;
-            return data;
+    function nextSection() {
+      clearInterval(updateInterval);
+      updateInterval = setInterval(updateData, 30000 / props.audioAnalysisSections[currentSection].tempo);
+      currentSection = (currentSection + 1) % props.audioAnalysisSections.length;
+    }
+
+    function interpolateData(data, steps = 1) {
+      const interpolatedData = [];
+      for (let i = 0; i < data.length; i++) {
+        const start = data[i];
+        const end = data[(i + 1) % data.length];
+        for (let j = 0; j < steps; j++) {
+          const t = j / steps;
+          interpolatedData.push({
+            value: start.value * (1 - t) + end.value * t,
+          });
         }
+      }
+      return interpolatedData;
+    }
 
-        function updateData() {
-            data.value = generateData();
-        }
+    function createSvg() {
+        const svg = d3.select(svgRef.value);
 
-        function nextSection() {
-            console.log('Next section');
-            clearInterval(updateInterval);
-            updateInterval = setInterval(updateData, 30000 / props.audioAnalysisSections[currentSection].tempo);
-            currentSection = (currentSection + 1) % props.audioAnalysisSections.length;
-        }
+      return svg;
+    }
 
-        function interpolateData(data, steps = 1) {
-            const interpolatedData = [];
-            for (let i = 0; i < data.length; i++) {
-                const start = data[i];
-                const end = data[(i + 1) % data.length];
-                for (let j = 0; j < steps; j++) {
-                    const t = j / steps;
-                    interpolatedData.push({
-                        value: start.value * (1 - t) + end.value * t
-                    });
-                }
-            }
-            return interpolatedData;
-        }
+    function createCurve(svg, interpolatedData, angleScale, radiusScale, radius, color) {
+      const lineGenerator = d3.lineRadial()
+        .angle((d, i) => angleScale(i))
+        .radius(d => radius + radiusScale(d.value))
+        .curve(d3.curveCardinalClosed);
 
-        function createSvg() {
-            const svg = d3.select(svgRef.value)
-                .attr('width', width)
-                .attr('height', height)
-                .append('g')
-                .attr('class', 'rotating-group')
-                .attr('transform', `translate(${width / 2}, ${height / 2})`);
+      const pathData = lineGenerator(interpolatedData);
 
-            return svg;
-        }
+      svg.selectAll("path").remove();
+      svg.append('path')
+        .attr('d', pathData)
+        .attr('fill', color)
+        .attr('stroke', 'none');
+    }
 
-        function createCurve(svg, interpolatedData, angleScale, radiusScale, radius, color) {
-            color = color || 'rgba(200, 0, 100, 0.7)';
-            const lineGenerator = d3.lineRadial()
-                .angle((d, i) => angleScale(i))
-                .radius(d => radius + radiusScale(d.value))
-                .curve(d3.curveCardinalClosed);
+      function createGradient(svg, color, id) {
+          const defs = svg.select("defs");
 
-            const pathData = lineGenerator(interpolatedData);
+          // Create a radial gradient with a light center and a darker outer ring
+          const gradient = defs.append("radialGradient")
+              .attr("id", id);
 
-            svg.selectAll("path").remove(); // Remove existing paths
-            svg.append('path')
-                .attr('d', pathData)
-                .attr('fill', color)
-                .attr('stroke', 'none');
-        }
+          gradient.append("stop")
+              .attr("offset", "40%")
+              .attr("stop-color", color.replace(/[\d.]+\)$/g, "0.1)")); // Light version
+          gradient.append("stop")
+              .attr("offset", "100%")
+              .attr("stop-color", color.replace(/[\d.]+\)$/g, "0.5)")); // Darker version
+      }
 
-        function createVisualizer() {
-            const svg = createSvg();
+      function createBubbles() {
+          const svg = createSvg();
+          svg.append("defs"); // Ensure defs element exists for gradients
 
-            const interpolatedData = interpolateData(data.value);
+          // Bubble configurations: color, size, and z-index order
+          const bubbleConfigs = [
+              { baseColor: "rgba(0, 50, 20, 1)", scale: 1.4, zIndex: 1 },
+              { baseColor: "rgba(0, 100, 50, 1)", scale: 1, zIndex: 2 },
+              { baseColor: "rgba(0, 200, 100, 1)", scale: 0.6, zIndex: 3 },
+          ];
 
-            const angleScale = d3.scaleLinear()
-                .domain([0, interpolatedData.length])
-                .range([0, 2 * Math.PI]);
+          bubbleConfigs.forEach((config, index) => {
+              const gradientId = `gradient-${index}`;
+              createGradient(svg, config.baseColor, gradientId);
 
-            const radiusScale = d3.scaleLinear()
-                .domain([0, d3.max(data.value, d => Math.abs(d.value)) || 1])
-                .range([0, radius]);
+              const bubbleGroup = svg.append("g")
+                  .attr("class", `bubble bubble-${index}`)
+                  .attr("transform", `translate(${window.innerWidth / 2}, ${window.innerHeight / 2}) scale(${config.scale})`)
+                  .style("z-index", config.zIndex);
 
-            createCurve(svg, interpolatedData, angleScale, radiusScale, radius);
-        }
+              // Generate interpolated data based on audio analysis
+              const interpolatedData = interpolateData(data.value);
+              const angleScale = d3.scaleLinear().domain([0, interpolatedData.length]).range([0, 2 * Math.PI]);
+              const radiusScale = d3.scaleLinear()
+                  .domain([0, d3.max(data.value, d => Math.abs(d.value)) || 1]);
 
-        function updateVisualizer() {
-            const svg = d3.select(svgRef.value).select('g');
+              createCurve(bubbleGroup, interpolatedData, angleScale, radiusScale, radius, `url(#${gradientId})`);
+          });
+      }
 
-            const interpolatedData = interpolateData(data.value, 1);
 
-            const angleScale = d3.scaleLinear()
-                .domain([0, interpolatedData.length])
-                .range([0, 2 * Math.PI]);
+    function updateVisualizer() {
+      const svg = d3.select(svgRef.value);
+      const interpolatedData = interpolateData(data.value, 1);
+      const angleScale = d3.scaleLinear().domain([0, interpolatedData.length]).range([0, 2 * Math.PI]);
+      const radiusScale = d3.scaleLinear()
+        .domain([0, d3.max(data.value, d => Math.abs(d.value))])
+        .range([0, radius]);
 
-            const radiusScale = d3.scaleLinear()
-                .domain([0, d3.max(data.value, d => Math.abs(d.value))])
-                .range([0, radius]);
+      svg.selectAll('.bubble').each(function(_, index) {
+        const bubbleGroup = d3.select(this);
+        const lineGenerator = d3.lineRadial()
+          .angle((d, i) => angleScale(i))
+          .radius(d => radius + radiusScale(d.value))
+          .curve(d3.curveCardinalClosed);
 
-            const lineGenerator = d3.lineRadial()
-                .angle((d, i) => angleScale(i))
-                .radius(d => radius + radiusScale(d.value))
-                .curve(d3.curveCardinalClosed); // Use a curve function for smoothness
+        const pathData = lineGenerator(interpolatedData);
 
-            const pathData = lineGenerator(interpolatedData);
+        bubbleGroup.select('path')
+          .transition()
+          .duration(30000 / props.audioAnalysisSections[currentSection].tempo)
+          .ease(d3.easeSin)
+          .attr('d', pathData);
+      });
+    }
 
-            svg.select('path')
-                .transition()
-                .duration(30000 / props.audioAnalysisSections[currentSection].tempo)
-                //.ease(d3.easeElastic) // easeElastic for a bouncy effect
-                //.ease(d3.easeLinear) // easeLinear for a linear transition
-                .ease(d3.easeSin) // easeSinOut for a smooth transition
-                .attr('d', pathData);
-        }
+    watch(data, () => updateVisualizer(), { deep: true });
 
-        // Watcher for reactive data updates
-        watch(data, () => updateVisualizer(), { deep: true });
-
-onBeforeUnmount(() => {
-    clearInterval(updateInterval);
-    updateTimeouts.forEach(timeout => {
+    onBeforeUnmount(() => {
+      clearInterval(updateInterval);
+      updateTimeouts.forEach(timeout => {
         clearTimeout(timeout);
+      });
     });
-});
 
-onMounted(() => {
-    nextTick(() => {
-        createVisualizer();
+    onMounted(() => {
+      nextTick(() => {
+        createBubbles();
         updateInterval = setInterval(updateData, 60000 / props.audioAnalysisSections[currentSection].tempo);
         props.audioAnalysisSections.forEach(section => {
-            updateTimeouts.push(setTimeout(nextSection, section.start * 1000));
+          updateTimeouts.push(setTimeout(nextSection, section.start * 1000));
         });
+      });
     });
-});
 
-return {
-    svgRef,
-    data
-};
-    }
+    return {
+      svgRef,
+      data,
+    };
+  },
 };
 </script>
 
 <style scoped>
 .bubble-container {
-    /* Additional styling if needed */
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
 }
-
-.rotating-svg {
-    animation: rotate 40s linear infinite;
+.bubble-svg {
+    width: 100%;
+    height: 100%;
 }
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+.bubble {
+    
 }
 </style>
