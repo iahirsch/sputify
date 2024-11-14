@@ -211,23 +211,29 @@ div.step {
   font-family: 'Material Symbols Rounded';
   font-size: 3rem;
 }
+
 .hover-icon {
   position: fixed;
-  left: 1rem; /* Position the icon on the left side */
+  left: 1rem;
+  /* Position the icon on the left side */
 }
 
 .hover-icon::after {
   content: "Here is some help!";
   position: absolute;
-  top: 100%; /* Position the tooltip below the icon */
-  left: 0; /* Align the tooltip with the left side of the icon */
-  width: fit-content; /* Adjust width based on content */
-  padding: 10px; /* Add padding for better readability */
+  top: 100%;
+  /* Position the tooltip below the icon */
+  left: 0;
+  /* Align the tooltip with the left side of the icon */
+  width: fit-content;
+  /* Adjust width based on content */
+  padding: 10px;
+  /* Add padding for better readability */
   color: white;
   background-color: rgba(255, 255, 255, 0.4);
   visibility: hidden;
   transition: opacity 0.3s ease;
-  font-size: 0.7rem;  
+  font-size: 0.7rem;
   opacity: 0;
   font-family: 'Franie', sans-serif;
 }

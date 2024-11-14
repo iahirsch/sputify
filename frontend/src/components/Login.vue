@@ -122,5 +122,6 @@ h1 {
 .button:hover {
     color: white;
     background-color: #4DD4AC;
+    cursor: pointer;
 }
 </style>
