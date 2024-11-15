@@ -1,7 +1,7 @@
 <template>
+    <SmoothScroll />
     <div>
-        <SmoothScroll />
-        <h1>Spütify</h1>
+        <!-- <h1>Spütify</h1>
         <div id="userInfoContainer"></div>
         <div class="button-row">
             <button id="togglePlay" @click="togglePlay">
@@ -10,9 +10,9 @@
             <button id="userInfo" @click="getUserInfo">
                 <span class="material-icons">account_circle</span> Get User Info
             </button>
-        </div>
+        </div> -->
 
-        <h2>Wrapped Playlists</h2>
+        <!-- <h2>Wrapped Playlists</h2>
         <button id="wrappedPlaylists" @click="getWrappedPlaylists">
             <span class="material-icons">playlist_play</span> Get wrapped playlists
         </button>
@@ -29,7 +29,7 @@
             <button id="topTracksLongTerm" @click="fetchTopTracks('long_term')">
                 <span class="material-icons">trending_up</span> long
             </button>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -223,9 +223,9 @@ onMounted(async () => {
             console.error(message);
         });
 
-        document.getElementById('togglePlay').onclick = function () {
-            player.togglePlay();
-        };
+        // document.getElementById('togglePlay').onclick = function () {
+        //     player.togglePlay();
+        // };
 
         player.connect();
     }

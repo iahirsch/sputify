@@ -184,7 +184,7 @@ div.step {
 }
 
 #smooth-wrapper {
-  overflow: hidden;
+  /* overflow: hidden; */
   position: relative;
   height: 140vh;
 }
@@ -298,15 +298,12 @@ h2 {
   font-size: 5rem;
 }
 
-.content-leftside {
-  padding-top: 200px;
-}
-
 .content-leftside,
 .content-rightside {
   width: 30vw;
   display: flex;
   flex-direction: column;
+  padding-top: 200px;
 }
 
 .bubble {
