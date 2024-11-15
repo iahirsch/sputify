@@ -42,7 +42,7 @@
           </div>
         </div>
         <div class="bubble" data-speed="0.5">
-          <BubbleVisualizer :data="audioAnalysisData" />
+          <BubbleComponent />
         </div>
       </div>
 
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import BubbleVisualizer from './Bubble.vue';
+import BubbleComponent from './BubbleComponent.vue';
 import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
