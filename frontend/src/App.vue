@@ -1,9 +1,11 @@
 <script setup>
+import Lenis from './components/Lenis.vue';
+
 </script>
 
 <template>
 
-  <router-view></router-view>
+  <Lenis/>
 
 </template>
 
