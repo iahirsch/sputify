@@ -13,47 +13,21 @@
         <div class="year">
           <div class="content-leftside">
             <h2>your top songs</h2>
-            <div class="song">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="song-name">Song 1<br><span class="song-artist">Artist 1</span></p>
+            <div v-if="topTracks.length > 0">
+              <div v-for="(track, index) in topTracks" :key="index" class="song"
+                @click="playback(getDeviceId(), [track.uri], true)">
+                <span class="material-symbols-rounded play-icon">play_arrow</span>
+                <p class="song-name">{{ track.name }}<br><span class="song-artist">{{ track.artists[0].name }}</span>
+                </p>
+              </div>
             </div>
-            <div class="song">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="song-name">Song 2<br><span class="song-artist">Artist 2</span></p>
-            </div>
-            <div class="song">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="song-name">Song 3<br><span class="song-artist">Artist 3</span></p>
-            </div>
-            <div class="song">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="song-name">Song 4<br><span class="song-artist">Artist 4</span></p>
-            </div>
-            <div class="song">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="song-name">Song 5<br><span class="song-artist">Artist 5</span></p>
+            <div v-else>
+              <p>Loading top tracks...</p>
             </div>
             <div style="height: 200px;"></div>
             <h2>your top artists</h2>
             <div class="artist">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="artist-name">Artist 1<br><span class="artist-song">Song 1</span></p>
-            </div>
-            <div class="artist">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="artist-name">Artist 2<br><span class="artist-song">Song 2</span></p>
-            </div>
-            <div class="artist">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="artist-name">Artist 3<br><span class="artist-song">Song 3</span></p>
-            </div>
-            <div class="artist">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="artist-name">Artist 4<br><span class="artist-song">Song 4</span></p>
-            </div>
-            <div class="artist">
-              <span class="material-symbols-rounded play-icon">play_arrow</span>
-              <p class="artist-name">Artist 5<br><span class="artist-song">Song 5</span></p>
+              <!-- Your top artists content -->
             </div>
           </div>
           <div class="content-rightside">
@@ -93,6 +67,8 @@ import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
 import PrintComponent from './PrintComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
+import { playback } from '../api/playback.js';
+import { getTopTracks } from '../api/getTopTracks.js';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
@@ -101,6 +77,11 @@ let updateInterval;
 let smoother;
 let ctx;
 let panel_tl;
+let topTracks = [];
+
+function getDeviceId() {
+  return localStorage.getItem('device_id');
+}
 
 const scrollTo = () => {
   smoother.scrollTo('body', true, '0px, 0px');
@@ -115,6 +96,14 @@ function updateData() {
 }
 
 onMounted(() => {
+
+  getTopTracks('short_term').then((response) => {
+    console.log("Top tracks:", response);
+    topTracks = response.items.slice(0, 5);
+  }).catch((error) => {
+    console.error("Error fetching top tracks:", error);
+  });
+
   updateInterval = setInterval(updateData, 1000);
 
   ctx = gsap.context(() => {
@@ -251,6 +240,9 @@ h2 {
 .song-name,
 .artist-name {
   font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .song-artist,
@@ -289,6 +281,7 @@ h2 {
   justify-content: space-between;
   width: 90vw;
   position: absolute;
+  z-index: 1;
 }
 
 .year-title {
@@ -304,6 +297,10 @@ h2 {
   display: flex;
   flex-direction: column;
   padding-top: 200px;
+}
+
+.content-rightside {
+  text-align: right;
 }
 
 .bubble {

@@ -24,7 +24,7 @@ export default {
             buckets: 2, // Number of buckets to mirror the data
             showVerticalLines: false, // Flag to show or hide vertical lines
             showCurve: true, // Flag to show or hide the curve
-            color: 'rgba(100, 130, 200, 0.7)' // Color for the curve
+            color: 'rgba(80, 200, 160, 0.6)' // Color for the curve
         };
     },
     methods: {
