@@ -2,11 +2,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
     <div class="content">
         <div class="container">
-        <h1 ref="topH1" class="username">Birdo's</h1>
-        <h2>_</h2>
-        <h1 ref="bottomH1">Music Journey</h1>
-    </div>
-    <span class="material-symbols-rounded arrow">keyboard_double_arrow_down</span>
+            <h1 ref="topH1" class="username">{{ userName }}'s</h1>
+            <h2>_</h2>
+            <h1 ref="bottomH1">Music Journey</h1>
+        </div>
+        <span class="material-symbols-rounded arrow">keyboard_double_arrow_down</span>
     </div>
 </template>
 
@@ -14,11 +14,20 @@
 import { onMounted, onBeforeUnmount, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
+import { getUserInfo } from '../api/user.js';
 
 gsap.registerPlugin(ScrollTrigger); // Only register ScrollTrigger (not ScrollSmoother)
 
 const topH1 = ref(null);
 const bottomH1 = ref(null);
+const userName = ref('');
+
+getUserInfo().then(response => {
+    userName.value = response.display_name;
+}).catch(error => {
+    console.error("Error fetching user info:", error);
+});
+console.log("User Name: ", userName);
 
 onMounted(() => {
     gsap.fromTo(topH1.value, {
@@ -52,7 +61,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-
 h2 {
     opacity: 0;
 }
@@ -63,7 +71,7 @@ h5 {
 
 .username {
     font-family: 'Franie', sans-serif;
-    background: -webkit-linear-gradient(180deg,  #4DD4AC 0%, #1DB954 100%);
+    background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -77,7 +85,7 @@ h5 {
     color: white;
 }
 
-.conten{
+.conten {
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -226,6 +226,95 @@ h2 {
   font-size: 2rem;
   color: rgba(255, 255, 255, 0.3);
 }
+
+.play-icon:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.song,
+.artist {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  background-color: rgba(255, 255, 255, 0);
+  border-radius: 20px;
+  padding: 0.5rem;
+}
+
+.song:hover,
+.artist:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.1);
+
+}
+
+.song-name,
+.artist-name {
+  font-size: 1rem;
+}
+
+.song-artist,
+.artist-song {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.genre-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.genre {
+  width: fit-content;
+  max-width: 20vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+  margin: 0.5rem;
+  padding: 1rem 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+}
+
+.current-genre {
+  border: white 2px solid;
+}
+
+.year {
+  display: flex;
+  justify-content: space-between;
+  width: 90vw;
+  position: absolute;
+}
+
+.year-title {
+  position: absolute;
+  left: 5vw;
+  top: 0;
+  font-size: 5rem;
+}
+
+.content-leftside {
+  padding-top: 200px;
+}
+
+.box-c {
+  z-index: 3;
+}
+
+h2 {
+  font-size: 2rem;
+  margin: 1rem;
+}
+
+.play-icon {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.3);
+}
 .play-icon:hover {
   color: rgba(255, 255, 255, 0.8);
 }
@@ -327,6 +416,7 @@ h2 {
   font-size: 3rem;
   cursor: pointer;
 }
+
 .hover-icon {
   position: fixed;
   right: 1rem;
@@ -343,7 +433,7 @@ h2 {
   background-color: rgba(255, 255, 255, 0.4);
   visibility: hidden;
   transition: opacity 0.3s ease;
-  font-size: 0.7rem;  
+  font-size: 0.7rem;
   opacity: 0;
   font-family: 'Franie', sans-serif;
 }
@@ -391,7 +481,4 @@ p {
   color: #fff;
 }
 
-.pin-spacer{
-  pointer-events: none;
-}
 </style>
