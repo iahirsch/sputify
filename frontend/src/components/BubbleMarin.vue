@@ -8,7 +8,7 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'BubbleComponent',
+    name: 'BubbleMarin',
     props: {
         data: {
             type: Array,
