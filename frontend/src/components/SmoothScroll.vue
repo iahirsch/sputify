@@ -1,5 +1,6 @@
 <template>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 
   <div id="smooth-wrapper" ref="main">
     <span class="material-symbols-rounded help hover-icon">help</span>
@@ -8,13 +9,62 @@
         <WelcomeComponent />
       </div>
       <div class="box box-b gradient-black">
-        <h1 class="year-title">2023</h1>
+        <h1 class="year-title">recently</h1>
         <div class="year">
           <div class="content-leftside">
-            <p>hello</p>
+            <h2>your top songs</h2>
+            <div class="song">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="song-name">Song 1<br><span class="song-artist">Artist 1</span></p>
+            </div>
+            <div class="song">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="song-name">Song 2<br><span class="song-artist">Artist 2</span></p>
+            </div>
+            <div class="song">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="song-name">Song 3<br><span class="song-artist">Artist 3</span></p>
+            </div>
+            <div class="song">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="song-name">Song 4<br><span class="song-artist">Artist 4</span></p>
+            </div>
+            <div class="song">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="song-name">Song 5<br><span class="song-artist">Artist 5</span></p>
+            </div>
+            <div style="height: 200px;"></div>
+            <h2>your top artists</h2>
+            <div class="artist">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="artist-name">Artist 1<br><span class="artist-song">Song 1</span></p>
+            </div>
+            <div class="artist">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="artist-name">Artist 2<br><span class="artist-song">Song 2</span></p>
+            </div>
+            <div class="artist">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="artist-name">Artist 3<br><span class="artist-song">Song 3</span></p>
+            </div>
+            <div class="artist">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="artist-name">Artist 4<br><span class="artist-song">Song 4</span></p>
+            </div>
+            <div class="artist">
+              <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <p class="artist-name">Artist 5<br><span class="artist-song">Song 5</span></p>
+            </div>
           </div>
           <div class="content-rightside">
-            <p>hello</p>
+            <h2>your top genres</h2>
+            <div class="genre-container">
+              <p class="genre">k-pop</p>
+              <p class="genre current-genre">r&b</p>
+              <p class="genre">pop</p>
+              <p class="genre">k-pop girl group</p>
+              <p class="genre">mandopop</p>
+            </div>
           </div>
         </div>
         <div class="bubble" data-speed="0.5">
@@ -79,7 +129,7 @@ onMounted(() => {
     ScrollTrigger.create({
       trigger: bubbleBox,
       start: '.box-a',         // Pin bubble when it reaches the top of the viewport
-      endTrigger: 'box-c',
+      endTrigger: '.box-c',
       end: 'center top',
       pin: true,
       markers: false,
@@ -116,6 +166,10 @@ window.onload = function () {
 </script>
 
 <style scoped>
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 body,
 html {
   margin: 0;
@@ -163,31 +217,103 @@ div.step {
   z-index: 3;
 }
 
+h2 {
+  font-size: 2rem;
+  margin: 1rem;
+}
+
+.play-icon {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.play-icon:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.song,
+.artist {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  background-color: rgba(255, 255, 255, 0);
+  border-radius: 20px;
+  padding: 0.5rem;
+}
+
+.song:hover,
+.artist:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.1);
+
+}
+
+.song-name,
+.artist-name {
+  font-size: 1rem;
+}
+
+.song-artist,
+.artist-song {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.genre-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.genre {
+  width: fit-content;
+  max-width: 20vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+  margin: 0.5rem;
+  padding: 1rem 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+}
+
+.current-genre {
+  border: white 2px solid;
+}
+
 .year {
   display: flex;
   justify-content: space-between;
-  width: 100vw;
+  width: 90vw;
   position: absolute;
 }
 
 .year-title {
   position: absolute;
   left: 5vw;
+  top: 0;
+  font-size: 5rem;
+}
+
+.content-leftside {
+  padding-top: 200px;
 }
 
 .content-leftside,
 .content-rightside {
-  width: 25vw;
-  background-color: red;
+  width: 30vw;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .bubble {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .gradient-black {
@@ -203,35 +329,28 @@ div.step {
 
 .content {
   display: flex;
-  /* Allow stacking elements vertically */
   flex-direction: column;
-  /* Stack elements on top of each other */
   align-items: center;
-  /* Center elements horizontally */
 }
 
 .material-symbols-rounded {
   font-family: 'Material Symbols Rounded';
   font-size: 3rem;
+  cursor: pointer;
 }
 
 .hover-icon {
   position: fixed;
-  left: 1rem;
-  /* Position the icon on the left side */
+  right: 1rem;
 }
 
 .hover-icon::after {
   content: "Here is some help!";
   position: absolute;
-  top: 100%;
-  /* Position the tooltip below the icon */
-  left: 0;
-  /* Align the tooltip with the left side of the icon */
+  top: 120%;
+  right: 0;
   width: fit-content;
-  /* Adjust width based on content */
   padding: 10px;
-  /* Add padding for better readability */
   color: white;
   background-color: rgba(255, 255, 255, 0.4);
   visibility: hidden;
@@ -282,5 +401,9 @@ p {
 
 .totop:hover {
   color: #fff;
+}
+
+.pin-spacer {
+  pointer-events: none;
 }
 </style>
