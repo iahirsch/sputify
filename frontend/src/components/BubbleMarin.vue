@@ -8,7 +8,7 @@
 import * as d3 from 'd3';
 
 export default {
-    name: 'BubbleComponent',
+    name: 'BubbleMarin',
     props: {
         data: {
             type: Array,
@@ -17,13 +17,14 @@ export default {
     },
     data() {
         return {
-            width: 600,
-            height: 600,
+            width: 700,
+            height: 700,
             radius: 150,
             steps: 1, // Number of steps between each data point
-            buckets: 3, // Number of buckets to mirror the data
+            buckets: 2, // Number of buckets to mirror the data
             showVerticalLines: false, // Flag to show or hide vertical lines
-            showCurve: true // Flag to show or hide the curve
+            showCurve: true, // Flag to show or hide the curve
+            color: 'rgba(80, 200, 160, 0.6)' // Color for the curve
         };
     },
     methods: {
@@ -58,7 +59,7 @@ export default {
                 .attr('y1', (d, i) => this.radius * Math.sin(angleScale(i) - Math.PI / 2))
                 .attr('x2', (d, i) => (this.radius + radiusScale(d.value)) * Math.cos(angleScale(i) - Math.PI / 2))
                 .attr('y2', (d, i) => (this.radius + radiusScale(d.value)) * Math.sin(angleScale(i) - Math.PI / 2))
-                .attr('stroke', 'black')
+                .attr('stroke', 'white')
                 .attr('stroke-width', 2);
         },
         createCurve(svg, mirroredData, angleScale, radiusScale) {
@@ -71,9 +72,7 @@ export default {
 
             svg.append('path')
                 .attr('d', pathData)
-                .attr('fill', 'rgba(0, 0, 255, 0.3)')
-                .attr('stroke', 'black')
-                .attr('stroke-width', 2);
+                .attr('fill', this.color)
         },
         createVisualizer() {
             const svg = this.createSvg();
@@ -103,9 +102,9 @@ export default {
                 .attr('r', this.radius)
                 .attr('cx', 0)
                 .attr('cy', 0)
-                .attr('stroke', 'black')
+                .attr('stroke', 'white')
                 .attr('stroke-width', 5)
-                .attr('fill', 'white');
+                .attr('fill', 'black');
 
             // Create vertical lines if the flag is set
             if (this.showVerticalLines) {
@@ -155,7 +154,7 @@ export default {
                     .duration(1000)
                     .ease(d3.easeLinear) // Use linear easing for smooth, constant speed transition
                     .attr('d', pathData)
-                    .attr('fill', 'rgba(0, 0, 255, 0.3)'); // Fill the area with a color (e.g., semi-transparent blue)
+                    .attr('fill', this.color)
             } else {
                 svg.select('path').remove();
             }
