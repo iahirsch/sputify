@@ -1,18 +1,17 @@
 <script setup>
-import PrintComponent from './components/PrintComponent.vue';
-import ServerTest from './components/ServerTest.vue';
-import SmoothScroll from './components/SmoothScroll.vue';
+import Login from './components/Login.vue';
 </script>
 
 <template>
 
-  <SmoothScroll />
+  <Login />
 
 </template>
 
 <style>
-  html, body {
-    margin: 0;
-    background-color: black;
-  }
+html,
+body {
+  margin: 0;
+  background-color: black;
+}
 </style>

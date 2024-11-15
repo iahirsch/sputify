@@ -26,7 +26,7 @@ coverage
 *.njsproj
 *.sln
 *.sw?
-backend/src/.env
 *.env
+backend/.env
 
 *.tsbuildinfo

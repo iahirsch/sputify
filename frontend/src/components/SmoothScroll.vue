@@ -1,13 +1,11 @@
 <template>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+
   <div id="smooth-wrapper" ref="main">
+    <span class="material-symbols-rounded help hover-icon">help</span>
     <div id="smooth-content">
-      <!-- Intro section (Box A) -->
       <div class="box box-a gradient-black" data-speed="0.5">
-        <div class="content">
-          <h1>Birdos Music Journey</h1>
-          <span class="material-symbols-outlined">keyboard_double_arrow_down</span>
-        </div>
+        <WelcomeComponent />
       </div>
       <div class="box box-b gradient-black">
         <div class="content-leftside">
@@ -39,7 +37,7 @@
         </div>
       </div>
 
-      <div class="box box-c gradient-black">test</div>
+      <div class="box box-c gradient-black"></div>
       <div class="line"></div>
       <footer class="footergradient-black">
         <PrintComponent />
@@ -59,6 +57,7 @@ import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
 import PrintComponent from './PrintComponent.vue';
+import WelcomeComponent from './WelcomeComponent.vue';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
@@ -120,7 +119,7 @@ window.onload = function () {
         start: "top 90%",
         end: "bottom 10%",
         scrub: true,
-        markers: true,
+        markers: false,
         toggleActions: "resume pause reverse pause"
       }
     });
@@ -132,7 +131,8 @@ window.onload = function () {
 </script>
 
 <style scoped>
-body, html {
+body,
+html {
   margin: 0;
   background-color: black;
 }
@@ -147,7 +147,7 @@ div.step {
 #smooth-wrapper {
   overflow: hidden;
   position: relative;
-  height: 100vh;
+  height: 140vh;
 }
 
 #smooth-content {
@@ -162,6 +162,10 @@ div.step {
   justify-content: center;
 }
 
+.box-a {
+  height: 150vh;
+}
+
 .box-b {
   display: flex;
   align-items: center;
@@ -172,7 +176,8 @@ div.step {
 .content-rightside {
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* Space between the .step elements */
+  gap: 1rem;
+  /* Space between the .step elements */
 }
 
 .bubble {
@@ -181,9 +186,10 @@ div.step {
   align-items: center;
   justify-content: center;
 }
+
 .gradient-black {
   background: black;
-  color: pink;
+  color: white;
 
 }
 
@@ -203,7 +209,45 @@ div.step {
 
 .material-symbols-rounded {
   font-family: 'Material Symbols Rounded';
-  font-size: 36px;
+  font-size: 3rem;
+}
+.hover-icon {
+  position: fixed;
+  left: 1rem; /* Position the icon on the left side */
+}
+
+.hover-icon::after {
+  content: "Here is some help!";
+  position: absolute;
+  top: 100%; /* Position the tooltip below the icon */
+  left: 0; /* Align the tooltip with the left side of the icon */
+  width: fit-content; /* Adjust width based on content */
+  padding: 10px; /* Add padding for better readability */
+  color: white;
+  background-color: rgba(255, 255, 255, 0.4);
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  font-size: 0.7rem;  
+  opacity: 0;
+  font-family: 'Franie', sans-serif;
+}
+
+.hover-icon:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+.help {
+  color: white;
+  margin-top: 2vh;
+  font-family: 'Material Symbols Rounded';
+  font-size: 2rem;
+  opacity: 0.4;
+  margin: 1rem;
+  right: 0;
+  z-index: 10;
+  /* Optional: Set a higher z-index if needed */
 }
 
 footer {
@@ -211,7 +255,7 @@ footer {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 120vh;
+  height: 150vh;
 }
 
 p {
