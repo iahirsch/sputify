@@ -180,7 +180,7 @@ export default {
         "duration_ms": 172936,
         "time_signature": 4
       } // nmixx - o.o
-    } // nmixx - o.o
+    }
   },
   setup(props) {
     let detail = 20;
@@ -253,27 +253,26 @@ export default {
     function createGradient(svg, color, id) {
       const defs = svg.select("defs");
 
-      // Create a radial gradient with a light center and a darker outer ring
       const gradient = defs.append("radialGradient")
         .attr("id", id);
 
       gradient.append("stop")
         .attr("offset", "40%")
-        .attr("stop-color", color.replace(/[\d.]+\)$/g, "0.1)")); // Light version
+        .attr("stop-color", color.replace(/[\d.]+\)$/g, "0.1)"));
       gradient.append("stop")
         .attr("offset", "100%")
-        .attr("stop-color", color.replace(/[\d.]+\)$/g, "0.5)")); // Darker version
+        .attr("stop-color", color.replace(/[\d.]+\)$/g, "0.5)"));
     }
 
     function createBubbles() {
       const svg = createSvg();
-      svg.append("defs"); // Ensure defs element exists for gradients
+      svg.append("defs");
 
-      // Bubble configurations: color, size, and z-index order
       const bubbleConfigs = [
-        { baseColor: "rgba(0, 50, 20, 1)", scale: 1.4, zIndex: 1 },
-        { baseColor: "rgba(0, 100, 50, 1)", scale: 1, zIndex: 2 },
-        { baseColor: "rgba(0, 200, 100, 1)", scale: 0.6, zIndex: 3 },
+        { baseColor: "rgb(0, 20, 10, 1)", scale: 2.5, zIndex: 0 },
+        { baseColor: "rgb(0, 50, 20, 1)", scale: 1.4, zIndex: 1 },
+        { baseColor: "rgb(0, 100, 50, 1)", scale: 1, zIndex: 2 },
+        { baseColor: "rgb(0, 200, 100, 1)", scale: 0.6, zIndex: 3 },
       ];
 
       bubbleConfigs.forEach((config, index) => {

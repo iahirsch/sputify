@@ -1,6 +1,4 @@
 <template>
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 
   <div id="smooth-wrapper" ref="main">
     <span class="material-symbols-rounded help hover-icon">help</span>
@@ -26,18 +24,27 @@
             </div>
             <div style="height: 200px;"></div>
             <h2>your top artists</h2>
-            <div class="artist">
-              <!-- Your top artists content -->
+            <div v-if="topArtists.length > 0">
+              <div v-for="(artist, index) in topArtists" :key="index" class="artist"
+                @click="playback(getDeviceId(), artist.tracks[0].uri, true)">
+                <span class="material-symbols-rounded play-icon">play_arrow</span>
+                <p class="artist-name">{{ artist.name }}<br><span class="artist-song">{{ artist.tracks[0].name
+                    }}</span>
+                </p>
+              </div>
+            </div>
+            <div v-else>
+              <p>Loading top artists...</p>
             </div>
           </div>
           <div class="content-rightside">
             <h2>your top genres</h2>
-            <div class="genre-container">
-              <p class="genre">k-pop</p>
-              <p class="genre current-genre">r&b</p>
-              <p class="genre">pop</p>
-              <p class="genre">k-pop girl group</p>
-              <p class="genre">mandopop</p>
+            <div v-if="topGenres.length > 0" class="genre-container">
+              <p v-for="(genre, index) in topGenres" :key="index" class="genre"
+                :class="{ 'current-genre': index === 2 }">{{ genre }}</p>
+            </div>
+            <div v-else>
+              <p>Loading top genres...</p>
             </div>
           </div>
         </div>
@@ -51,7 +58,7 @@
       <footer class="footergradient-black">
         <PrintComponent />
         <button @click="scrollTo" class="totop">
-          <span class="material-symbols-rounded">keyboard_double_arrow_up</span>
+          <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>
           <p>Back to Top</p>
         </button>
       </footer>
@@ -69,6 +76,7 @@ import PrintComponent from './PrintComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 import { playback } from '../api/playback.js';
 import { getTopTracks } from '../api/getTopTracks.js';
+import { getTopArtists } from '../api/getTopArtists.js';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
@@ -77,7 +85,61 @@ let updateInterval;
 let smoother;
 let ctx;
 let panel_tl;
-let topTracks = [];
+let topTracks = [
+  {
+    name: 'Song 1',
+    artists: [{ name: 'Artist 1' }],
+    uri: 'spotify:track:1'
+  },
+  {
+    name: 'Song 2',
+    artists: [{ name: 'Artist 2' }],
+    uri: 'spotify:track:2'
+  },
+  {
+    name: 'Song 3',
+    artists: [{ name: 'Artist 3' }],
+    uri: 'spotify:track:3'
+  },
+  {
+    name: 'Song 4',
+    artists: [{ name: 'Artist 4' }],
+    uri: 'spotify:track:4'
+  },
+  {
+    name: 'Song 5',
+    artists: [{ name: 'Artist 5' }],
+    uri: 'spotify:track:5'
+  }
+];
+let topArtists = [
+  {
+    name: 'Artist 1',
+    tracks: [{ name: 'Song 1', uri: 'spotify:track:1' }]
+  },
+  {
+    name: 'Artist 2',
+    tracks: [{ name: 'Song 2', uri: 'spotify:track:2' }]
+  },
+  {
+    name: 'Artist 3',
+    tracks: [{ name: 'Song 3', uri: 'spotify:track:3' }]
+  },
+  {
+    name: 'Artist 4',
+    tracks: [{ name: 'Song 4', uri: 'spotify:track:4' }]
+  },
+  {
+    name: 'Artist 5',
+    tracks: [{ name: 'Song 5', uri: 'spotify:track:5' }]
+  }
+];
+let topGenres = [
+  'pop',
+  'hip hop',
+  'mandopop',
+  'kpop girl group'
+];
 
 function getDeviceId() {
   return localStorage.getItem('device_id');
@@ -104,6 +166,13 @@ onMounted(() => {
     console.error("Error fetching top tracks:", error);
   });
 
+  getTopArtists('short_term').then((response) => {
+    console.log("Top artists:", response);
+    topArtists = response.items.slice(0, 5);
+  }).catch((error) => {
+    console.error("Error fetching top artists:", error);
+  });
+
   updateInterval = setInterval(updateData, 1000);
 
   ctx = gsap.context(() => {
@@ -117,7 +186,7 @@ onMounted(() => {
     const bubbleBox = document.querySelector('.bubble');
     ScrollTrigger.create({
       trigger: bubbleBox,
-      start: '.box-a',         // Pin bubble when it reaches the top of the viewport
+      start: '.box-a', // Pin bubble when it reaches the top of the viewport
       endTrigger: '.box-c',
       end: 'center top',
       pin: true,
@@ -155,10 +224,6 @@ window.onload = function () {
 </script>
 
 <style scoped>
-* {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 body,
 html {
   margin: 0;
@@ -200,6 +265,7 @@ div.step {
   justify-content: center;
   position: relative;
   z-index: 2;
+  padding-top: 20vh;
 }
 
 .box-c {
@@ -209,15 +275,6 @@ div.step {
 h2 {
   font-size: 2rem;
   margin: 1rem;
-}
-
-.play-icon {
-  font-size: 2rem;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.play-icon:hover {
-  color: rgba(255, 255, 255, 0.8);
 }
 
 .song,
@@ -234,12 +291,23 @@ h2 {
 .artist:hover {
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.1);
+  .play-icon {
+    color: rgba(255, 255, 255, 0.3);
+  }
+}
 
+.play-icon {
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0);
+}
+
+.play-icon:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .song-name,
 .artist-name {
-  font-size: 1rem;
+  font-size: 1.2rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -264,7 +332,7 @@ h2 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 1rem;
+  font-size: 1.2rem;
   margin: 0.5rem;
   padding: 1rem 2rem;
   color: rgba(255, 255, 255, 0.8);
@@ -274,6 +342,7 @@ h2 {
 
 .current-genre {
   border: white 2px solid;
+  color: white;
 }
 
 .year {
@@ -287,7 +356,7 @@ h2 {
 .year-title {
   position: absolute;
   left: 5vw;
-  top: 0;
+  top: 20vh;
   font-size: 5rem;
 }
 
@@ -327,12 +396,6 @@ h2 {
   align-items: center;
 }
 
-.material-symbols-rounded {
-  font-family: 'Material Symbols Rounded';
-  font-size: 3rem;
-  cursor: pointer;
-}
-
 .hover-icon {
   position: fixed;
   right: 1rem;
@@ -349,9 +412,9 @@ h2 {
   background-color: rgba(255, 255, 255, 0.4);
   visibility: hidden;
   transition: opacity 0.3s ease;
-  font-size: 0.7rem;
+  font-family: 'Familjen Grotesk', sans-serif;
+  font-size: 1rem;
   opacity: 0;
-  font-family: 'Franie', sans-serif;
 }
 
 .hover-icon:hover::after {
@@ -385,6 +448,7 @@ p {
 }
 
 .totop {
+  font-size: 1rem;
   margin-top: 50px;
   background-color: transparent;
   color: #ffffff55;
@@ -395,6 +459,10 @@ p {
 
 .totop:hover {
   color: #fff;
+}
+
+.totop-icon {
+  font-size: 3rem;
 }
 
 .pin-spacer {
