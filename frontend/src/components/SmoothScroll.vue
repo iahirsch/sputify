@@ -1,5 +1,7 @@
 <template>
-
+  <div class="bubble" data-speed="0.5">
+    <BubbleComponent />
+  </div>
   <div id="smooth-wrapper" ref="main">
     <span class="material-symbols-rounded help hover-icon">help</span>
     <div id="smooth-content">
@@ -7,9 +9,15 @@
         <WelcomeComponent />
       </div>
       <div class="box box-b gradient-black">
+<<<<<<< Updated upstream
         <div v-for="(year) in years" class="year">
             <h1 class="year-title">{{ year.title }}</h1>
             <div class="content-leftside">
+=======
+        <h1 class="year-title" id="title">recently</h1>
+        <div class="year">
+          <div class="content-leftside">
+>>>>>>> Stashed changes
             <h2>your top songs</h2>
             <div v-if="year.topTracks.length > 0">
               <div v-for="(track) in year.topTracks" class="song" @click="playTrack(track)">
@@ -50,10 +58,13 @@
             </div>
           </div>
         </div>
+<<<<<<< Updated upstream
         <div class="bubble" data-speed="0.5">
           <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis"
             :audio-features="currentTrack.audioFeatures" />
         </div>
+=======
+>>>>>>> Stashed changes
       </div>
 
       <div class="box box-c gradient-black"></div>
@@ -271,20 +282,26 @@ onMounted(() => {
       smooth: 1,
       effects: true,
     });
-
-    // Make .box-b (bubble image section) sticky when scrolling
-    const bubbleBox = document.querySelector('.bubble');
-    ScrollTrigger.create({
-      trigger: bubbleBox,
-      start: '.box-a', // Pin bubble when it reaches the top of the viewport
-      endTrigger: '.box-c',
-      end: 'center top',
-      pin: true,
-      markers: false,
-    });
-
   }, main.value);
-});
+
+
+  const bubble = document.querySelector('.bubble');
+  
+  gsap.to(bubble, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'center center',
+      end: 'top 20%',
+      scrub: true,
+      markers: true,    
+    },
+  });
+
+
+
+}, main.value);
+    
 
 onBeforeUnmount(() => {
   clearInterval(updateInterval);
@@ -317,7 +334,6 @@ window.onload = function () {
 body,
 html {
   margin: 0;
-  background-color: black;
 }
 
 div.step {
@@ -330,7 +346,7 @@ div.step {
 #smooth-wrapper {
   /* overflow: hidden; */
   position: relative;
-  height: 140vh;
+  height: 100vh;
 }
 
 #smooth-content {
@@ -338,7 +354,7 @@ div.step {
 }
 
 .box {
-  height: 125vh;
+  height: 120vh;
   transition: scale 0.3s;
   display: flex;
   align-items: center;
@@ -346,7 +362,7 @@ div.step {
 }
 
 .box-a {
-  height: 150vh;
+  margin-bottom: 2%;
 }
 
 .box-b {
@@ -358,10 +374,13 @@ div.step {
   position: relative;
   z-index: 2;
   padding-top: 20vh;
+  height: 120vh;
+
 }
 
 .box-c {
   z-index: 3;
+  height: 15vh;
 }
 
 h2 {
@@ -473,10 +492,12 @@ h2 {
 }
 
 .bubble {
+  position: sticky;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  opacity: 0;
 }
 
 .gradient-black {
@@ -487,7 +508,7 @@ h2 {
 
 .line {
   height: 50px;
-  background: black;
+  background: none;
 }
 
 .content {
