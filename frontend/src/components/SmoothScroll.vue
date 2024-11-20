@@ -67,16 +67,17 @@
 </template>
 
 <script setup>
-import BubbleComponent from './BubbleComponent.vue';
 import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
-import PrintComponent from './PrintComponent.vue';
-import WelcomeComponent from './WelcomeComponent.vue';
 import { playback } from '../api/playback.js';
 import { getTopTracks } from '../api/getTopTracks.js';
 import { getTopArtists } from '../api/getTopArtists.js';
+
+import BubbleComponent from './BubbleComponent.vue';
+import PrintComponent from './PrintComponent.vue';
+import WelcomeComponent from './WelcomeComponent.vue';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
@@ -250,6 +251,7 @@ h2 {
 .artist:hover {
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.1);
+
   .play-icon {
     color: rgba(255, 255, 255, 0.3);
   }

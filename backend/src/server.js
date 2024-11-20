@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const crypto = require('crypto');
-const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser')
 var querystring = require('querystring');
 
 dotenv.config();

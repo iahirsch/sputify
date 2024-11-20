@@ -1,41 +1,11 @@
 <template>
-    <SmoothScroll />
-    <div>
-        <!-- <h1>Spütify</h1>
-        <div id="userInfoContainer"></div>
-        <div class="button-row">
-            <button id="togglePlay" @click="togglePlay">
-                <span class="material-icons">play_arrow</span>Toggle Play
-            </button>
-            <button id="userInfo" @click="getUserInfo">
-                <span class="material-icons">account_circle</span> Get User Info
-            </button>
-        </div> -->
-
-        <!-- <h2>Wrapped Playlists</h2>
-        <button id="wrappedPlaylists" @click="getWrappedPlaylists">
-            <span class="material-icons">playlist_play</span> Get wrapped playlists
-        </button>
-        <div id="playlistContainer" style="display: flex; gap: 10px;"></div>
-
-        <h2>Top Tracks</h2>
-        <div class="button-row">
-            <button id="topTracksShortTerm" @click="fetchTopTracks('short_term')">
-                <span class="material-icons">trending_up</span> short
-            </button>
-            <button id="topTracksMediumTerm" @click="fetchTopTracks('medium_term')">
-                <span class="material-icons">trending_up</span> medium
-            </button>
-            <button id="topTracksLongTerm" @click="fetchTopTracks('long_term')">
-                <span class="material-icons">trending_up</span> long
-            </button>
-        </div> -->
-    </div>
+    <SmoothScroll v-if="accessToken"></SmoothScroll>
+    <LoadingPage v-else></LoadingPage>
 </template>
 
 <script setup>
 import SmoothScroll from './SmoothScroll.vue';
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router'
 
 import { getUserInfo } from '../api/user.js';
@@ -43,8 +13,11 @@ import { getPlaylist } from '../api/getPlaylist.js';
 import { getTopTracks } from '../api/getTopTracks.js';
 import { searchPlaylist } from '../api/searchPlaylist.js';
 import { playback } from '../api/playback.js';
+import LoadingPage from './LoadingPage.vue';
 
 let playerReady = false;
+const accessToken = ref(null);
+const route = useRoute();
 
 async function getWrappedPlaylists() {
     let wrappedPlaylists = [
@@ -164,8 +137,8 @@ async function fetchTopTracks(timeRange) {
 // }, 
 
 onMounted(async () => {
-    const state = useRoute().query.state;
-    const code = useRoute().query.code;
+    const state = route.query.state;
+    const code = route.query.code;
     let currentTime = Math.floor(new Date().getTime() / 1000);
 
     console.log(isNaN(localStorage.getItem('tokenExpirationTime')), currentTime, localStorage.getItem('tokenExpirationTime'));
@@ -179,8 +152,11 @@ onMounted(async () => {
         localStorage.setItem('tokenExpirationTime', currentTime + access_token.expires_in);
         localStorage.setItem('access_token', access_token.access_token);
         localStorage.setItem('refresh_token', access_token.refresh_token);
+        accessToken.value = access_token.access_token;
+        console.log(accessToken.value);
     }
     else {
+        accessToken.value = localStorage.getItem('access_token');
         console.log("Token still valid: Access Token: ", localStorage.getItem('access_token'), "\n Refresh Token: ", localStorage.getItem('refresh_token'));
     }
 

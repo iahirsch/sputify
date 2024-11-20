@@ -25,14 +25,17 @@ body {
   margin: 0;
   background-color: black;
   overflow-x: hidden;
+
   ::selection {
     background-color: rgba(0, 200, 100, 0.3);
   }
-  font-family: "Familjen Grotesk", sans-serif;
+
+  font-family: "Familjen Grotesk",
+  sans-serif;
   font-size: 1.5rem;
 }
 
-h1{
+h1 {
   font-family: "Franie", sans-serif;
 }
 
