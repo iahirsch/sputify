@@ -18,6 +18,10 @@ export default {
     audioFeatures: {
       type: Object,
       required: true
+    },
+    playing: {
+      type: Boolean,
+      required: true
     }
   },
   setup(props) {
@@ -27,9 +31,10 @@ export default {
     let currentSection = 0;
     let toZero = false;
     const data = ref(generateData());
-    //let updateTimeouts = [];
     let updateTimeout;
     let updateInterval;
+    let startTime;
+    let remainingTime;
 
     function generateData() {
       let smoothness = -props.audioAnalysisSections[currentSection].loudness / 6;
@@ -43,34 +48,31 @@ export default {
       return data;
     }
 
-    function updateData() {
-      data.value = generateData();
-    }
-
-    function nextSection() {
+    function clearAll() {
       clearInterval(updateInterval);
-      updateInterval = setInterval(updateData, 30000 / props.audioAnalysisSections[currentSection].tempo);
-      currentSection = (currentSection + 1) % props.audioAnalysisSections.length;
-      console.log("Next Section: ", currentSection);
-      updateTimeout = setTimeout(nextSection, props.audioAnalysisSections[currentSection].duration * 1000);
-    }
-
-    function clearAllIntervalsAndTimeouts() {
-      clearInterval(updateInterval);
-      //updateTimeouts.forEach(timeout => clearTimeout(timeout));
-      //updateTimeouts = [];
       clearTimeout(updateTimeout);
     }
 
-    function initializeVisualizer() {
-      clearAllIntervalsAndTimeouts();
-      currentSection = 0;
-      updateInterval = setInterval(updateData, 60000 / props.audioAnalysisSections[currentSection].tempo);
+    function nextSection() {
+      clearAll();
+      currentSection += 1;
+      if (currentSection < props.audioAnalysisSections.length) {
+        console.log("Next Section: ", currentSection);
+        remainingTime = props.audioAnalysisSections[currentSection].duration * 1000;
+        updateInterval = setInterval(updateVisualizer, 30000 / props.audioAnalysisSections[currentSection].tempo);
+        updateTimeout = setTimeout(nextSection, remainingTime);
+        startTime = Date.now();
+      }
+    }
 
-      updateTimeout = setTimeout(nextSection, props.audioAnalysisSections[currentSection].duration * 1000);
-      /* props.audioAnalysisSections.forEach(section => {
-        updateTimeouts.push(setTimeout(nextSection, section.start * 1000));
-      }); */
+    function initializeVisualizer() {
+      clearAll();
+      console.log("Initialize Visualizer");
+      currentSection = 0;
+      remainingTime = props.audioAnalysisSections[currentSection].duration * 1000;
+      updateInterval = setInterval(updateVisualizer, 30000 / props.audioAnalysisSections[currentSection].tempo);
+      updateTimeout = setTimeout(nextSection, remainingTime);
+      startTime = Date.now();
     }
 
     function interpolateData(data, steps = 1) {
@@ -90,7 +92,6 @@ export default {
 
     function createSvg() {
       const svg = d3.select(svgRef.value);
-
       return svg;
     }
 
@@ -128,10 +129,10 @@ export default {
       svg.append("defs");
 
       const bubbleConfigs = [
-        //{ baseColor: "rgb(0, 20, 10, 1)", scale: 2.5, zIndex: 0 },
-        { baseColor: "rgb(0, 50, 20, 1)", scale: 1.4, zIndex: 1 },
-        { baseColor: "rgb(0, 100, 50, 1)", scale: 1, zIndex: 2 },
-        { baseColor: "rgb(0, 200, 100, 1)", scale: 0.6, zIndex: 3 },
+        { baseColor: "rgba(0, 20, 10, 1)", scale: 3, zIndex: 0 },
+        { baseColor: "rgba(0, 50, 20, 1)", scale: 1.4, zIndex: 1 },
+        { baseColor: "rgba(0, 100, 50, 1)", scale: 1, zIndex: 2 },
+        { baseColor: "rgba(0, 200, 100, 1)", scale: 0.6, zIndex: 3 },
       ];
 
       bubbleConfigs.forEach((config, index) => {
@@ -153,8 +154,9 @@ export default {
       });
     }
 
-
     function updateVisualizer() {
+      data.value = generateData();
+
       const svg = d3.select(svgRef.value);
       const interpolatedData = interpolateData(data.value, 1);
       const angleScale = d3.scaleLinear().domain([0, interpolatedData.length]).range([0, 2 * Math.PI]);
@@ -179,24 +181,30 @@ export default {
       });
     }
 
-    watch(data, () => updateVisualizer(), { deep: true });
-
     watch(
       () => [props.audioAnalysisSections, props.audioFeatures],
-      () => {
-        initializeVisualizer();
-      },
+      () => {initializeVisualizer()},
       { deep: true, immediate: true }
     );
 
+    watch(() => props.playing, () => {
+      clearAll();
+      if (props.playing) {
+        updateInterval = setInterval(updateVisualizer, 30000 / props.audioAnalysisSections[currentSection].tempo);
+        updateTimeout = setTimeout(nextSection, remainingTime);
+        startTime = Date.now();
+      } else {
+        remainingTime -= (Date.now() - startTime);
+      }
+    });
+
     onBeforeUnmount(() => {
-      clearAllIntervalsAndTimeouts();
+      clearAll();
     });
 
     onMounted(() => {
       nextTick(() => {
         createBubbles();
-        initializeVisualizer();
       });
     });
 

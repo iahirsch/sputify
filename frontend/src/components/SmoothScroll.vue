@@ -1,7 +1,6 @@
 <template>
   <div class="bubble" data-speed="0.5">
-    <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis"
-      :audio-features="currentTrack.audioFeatures" />
+    <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis" :audio-features="currentTrack.audioFeatures" :playing="playing" />
   </div>
   <div id="smooth-wrapper" ref="main">
     <span class="material-symbols-rounded help hover-icon">help</span>
@@ -15,8 +14,11 @@
           <div class="content-leftside">
             <h2>your top songs</h2>
             <div v-if="year.topTracks.length > 0">
-              <div v-for="(track) in year.topTracks" class="song" @click="playTrack(track)">
-                <span class="material-symbols-rounded play-icon">play_arrow</span>
+              <div v-for="(track) in year.topTracks" class="song"
+                :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
+                <span class="material-symbols-rounded play-icon">
+                  {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
+                </span>
                 <p class="song-name">
                   {{ track.name }}<br>
                   <span class="song-artist">{{ track.artists[0].name }}</span>
@@ -26,12 +28,16 @@
             <div v-else>
               <p class="loading">Loading top tracks...</p>
             </div>
-            <div style="height: 200px;"></div>
+            <div style="height: 40vh;"></div>
             <h2>your top artists</h2>
             <div v-if="year.topArtists.length > 0">
               <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
+                :class="{ 'currently-playing': artist.tracks && artist.tracks[0] && artist.tracks[0].id === currentTrack.id }"
                 @click="playTrack(artist.tracks[0])">
-                <span class="material-symbols-rounded play-icon">play_arrow</span>
+                <span class="material-symbols-rounded play-icon">
+                  {{ artist.tracks && artist.tracks[0] && artist.tracks[0].id === currentTrack.id && playing ? 'pause' :
+                    'play_arrow' }}
+                </span>
                 <p class="artist-name">
                   {{ artist.name }}<br>
                   <span v-if="artist.tracks" class="artist-song">{{ artist.tracks[0].name }}</span>
@@ -46,7 +52,7 @@
             <h2>your top genres</h2>
             <div v-if="year.topGenres.length > 0" class="genre-container">
               <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
-                :class="{ 'current-genre': index === 2 }">{{ genre }}</p>
+                :class="{ 'current-genre': false }">{{ genre }}</p>
             </div>
             <div v-else>
               <p class="loading">Loading top genres...</p>
@@ -68,7 +74,10 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, onUnmounted, ref, watch } from 'vue';
+const props = defineProps({
+  playerReady: Boolean
+});
+import { onMounted, onBeforeUnmount, onUnmounted, ref, inject } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
@@ -76,6 +85,7 @@ import { playback } from '../api/playback.js';
 import { getTopTracks } from '../api/getTopTracks.js';
 import { getTopArtists } from '../api/getTopArtists.js';
 import { getArtistTopTracks } from '../api/getArtistTopTracks.js';
+import { getArtist } from '@/api/getArtist.js';
 import { getAudioAnalysis } from '@/api/getAudioAnalysis';
 import { getAudioFeatures } from '@/api/getAudioFeatures';
 import { getWrappedPlaylists } from '@/api/getWrappedPlaylists';
@@ -109,6 +119,7 @@ const currentTrack = ref({
   id: '',
   name: '',
   artist: '',
+  genres: [],
   image: '',
   uri: '',
   audioAnalysis: [
@@ -138,21 +149,35 @@ const currentTrack = ref({
     time_signature: 0
   }
 });
+const playing = ref(false);
 
 function playTrack(track) {
-  playback(getDeviceId(), [track.uri], true);
-  currentTrack.value.id = track.id;
-  currentTrack.value.name = track.name;
-  currentTrack.value.artist = track.artists[0].name;
-  currentTrack.value.image = track.album.images[0].url;
-  currentTrack.value.uri = track.uri;
-  getAudioAnalysis(track.id).then((response) => {
-    currentTrack.value.audioAnalysis = response;
-  });
-  getAudioFeatures(track.id).then((response) => {
-    currentTrack.value.audioFeatures = response;
-  });
-  console.log('Current track:', currentTrack);
+
+  if (track.id === currentTrack.value.id) {
+    if (playing.value) {
+      playback(getDeviceId(), null, props.playerReady, true);
+      playing.value = false;
+    } else {
+      playback(getDeviceId(), null, props.playerReady, false);
+      playing.value = true;
+    }
+  } else {
+    playback(getDeviceId(), [track.uri], props.playerReady, false);
+    currentTrack.value.id = track.id;
+    currentTrack.value.name = track.name;
+    currentTrack.value.artist = track.artists[0].name;
+    currentTrack.value.genres = getArtist(track.artists[0].id).genres;
+    currentTrack.value.image = track.album.images[0].url;
+    currentTrack.value.uri = track.uri;
+    getAudioAnalysis(track.id).then((response) => {
+      currentTrack.value.audioAnalysis = response;
+    });
+    getAudioFeatures(track.id).then((response) => {
+      currentTrack.value.audioFeatures = response;
+    });
+    playing.value = true;
+    console.log('Playing track:', currentTrack);
+  }
 }
 
 function getDeviceId() {
@@ -168,13 +193,11 @@ onMounted(() => {
   // now
   getTopTracks('short_term').then((response) => {
     years.value[0].topTracks = response.items.slice(0, 5);
-    console.log("Top tracks:", response);
   }).catch((error) => {
     console.error("Error fetching top tracks:", error);
   });
   getTopArtists('short_term').then((response) => {
     years.value[0].topArtists = response.items.slice(0, 5);
-
     // Get top genres from top artists
     const genreCount = {};
     response.items.forEach(artist => {
@@ -191,7 +214,6 @@ onMounted(() => {
     years.value[0].topGenres = Object.keys(genreCount)
       .sort((a, b) => genreCount[b] - genreCount[a])
       .slice(0, 5);
-
     // Get top tracks for each artist
     Promise.all(
       years.value[0].topArtists.map((artist) =>
@@ -216,7 +238,6 @@ onMounted(() => {
   });
   getTopArtists('medium_term').then((response) => {
     years.value[1].topArtists = response.items.slice(0, 5);
-
     // Get top genres from top artists
     const genreCount = {};
     response.items.forEach(artist => {
@@ -233,7 +254,6 @@ onMounted(() => {
     years.value[1].topGenres = Object.keys(genreCount)
       .sort((a, b) => genreCount[b] - genreCount[a])
       .slice(0, 5);
-
     // Get top tracks for each artist
     Promise.all(
       years.value[1].topArtists.map((artist) =>
@@ -244,7 +264,6 @@ onMounted(() => {
     ).catch((error) => {
       console.error("Error fetching artist top tracks:", error);
     });
-
   }).catch((error) => {
     console.error("Error fetching top artists:", error);
   });
@@ -253,10 +272,38 @@ onMounted(() => {
     console.log(wrappedPlaylists);
     wrappedPlaylists.forEach((playlist) => {
       if (playlist.year && playlist.playlist && playlist.playlist.tracks.items.length > 0) {
+        const artistCount = {};
+
+        // Count the number of times each artist appears in the playlist
+        playlist.playlist.tracks.items.forEach((item) => {
+          item.track.artists.forEach((artist) => {
+            if (artistCount[artist.name]) {
+              artistCount[artist.name]++;
+            } else {
+              artistCount[artist.name] = 1;
+            }
+          });
+        });
+        const topArtists = Object.keys(artistCount)
+          .sort((a, b) => artistCount[b] - artistCount[a])
+          .slice(0, 5)
+          .map((artistName) => {
+            const artist = playlist.playlist.tracks.items.find((item) =>
+              item.track.artists.some((artist) => artist.name === artistName)
+            ).track.artists.find((artist) => artist.name === artistName);
+            return {
+              ...artist,
+              tracks: playlist.playlist.tracks.items
+                .filter((item) => item.track.artists.some((a) => a.name === artistName))
+                .map((item) => item.track)
+                .slice(0, 5),
+            };
+          });
+
         years.value.push({
           title: playlist.year,
-          topTracks: playlist.playlist.tracks.items.map(item => item.track).slice(0, 5),
-          topArtists: [],
+          topTracks: playlist.playlist.tracks.items.map((item) => item.track).slice(0, 5),
+          topArtists: topArtists,
           topGenres: []
         });
       }
@@ -313,6 +360,16 @@ window.onload = function () {
     panel_tl.from(panel, { opacity: 0, duration: 0.5 });
     panel_tl.to(panel, { opacity: 0, duration: 0.5 });
   });
+
+  // works only with previous user interaction
+  /* ScrollTrigger.create({
+    trigger: ".box-b",
+    start: "top top",
+    onEnter: () => {
+      playTrack(years.value[0].topTracks[0]);
+    },
+    once: true
+  }); */
 };
 
 </script>
@@ -331,7 +388,6 @@ div.step {
 }
 
 #smooth-wrapper {
-  /* overflow: hidden; */
   position: relative;
   height: 100vh;
 }
@@ -377,6 +433,7 @@ h2 {
   background-color: rgba(255, 255, 255, 0);
   border-radius: 20px;
   padding: 0.5rem;
+  margin: 0.5rem;
 }
 
 .song:hover,
@@ -411,6 +468,14 @@ h2 {
 .artist-song {
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.5);
+}
+
+.currently-playing {
+  background-color: rgba(255, 255, 255, 0.1);
+
+  .play-icon {
+    color: rgba(255, 255, 255, 0.3);
+  }
 }
 
 .genre-container {
