@@ -115,7 +115,7 @@ const currentTrack = ref({
     {
       start: 0,
       duration: 100,
-      loudness: 0,
+      loudness: -100,
       tempo: 60,
       key: 0,
       mode: 0,
@@ -551,7 +551,7 @@ p {
 
 .totop {
   font-size: 1rem;
-  margin-top: 50px;
+  margin-top: 10vh;
   background-color: transparent;
   color: #ffffff55;
   border: none;

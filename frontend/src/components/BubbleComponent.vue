@@ -27,14 +27,12 @@ export default {
     let currentSection = 0;
     let toZero = false;
     const data = ref(generateData());
-    let updateTimeouts = [];
+    //let updateTimeouts = [];
+    let updateTimeout;
     let updateInterval;
 
     function generateData() {
-      let smoothness = 0;
-      if (props.audioAnalysisSections[currentSection]) {
-        smoothness = -props.audioAnalysisSections[currentSection].loudness / 6;
-      }
+      let smoothness = -props.audioAnalysisSections[currentSection].loudness / 6;
       let data;
       if (toZero) {
         data = Array.from({ length: detail }, () => ({ value: 0 }));
@@ -54,21 +52,25 @@ export default {
       updateInterval = setInterval(updateData, 30000 / props.audioAnalysisSections[currentSection].tempo);
       currentSection = (currentSection + 1) % props.audioAnalysisSections.length;
       console.log("Next Section: ", currentSection);
+      updateTimeout = setTimeout(nextSection, props.audioAnalysisSections[currentSection].duration * 1000);
     }
 
     function clearAllIntervalsAndTimeouts() {
       clearInterval(updateInterval);
-      updateTimeouts.forEach(timeout => clearTimeout(timeout));
-      updateTimeouts = [];
+      //updateTimeouts.forEach(timeout => clearTimeout(timeout));
+      //updateTimeouts = [];
+      clearTimeout(updateTimeout);
     }
 
     function initializeVisualizer() {
       clearAllIntervalsAndTimeouts();
-      updateInterval = setInterval(updateData, 60000 / props.audioAnalysisSections[currentSection]?.tempo || 1);
+      currentSection = 0;
+      updateInterval = setInterval(updateData, 60000 / props.audioAnalysisSections[currentSection].tempo);
 
-      props.audioAnalysisSections.forEach(section => {
+      updateTimeout = setTimeout(nextSection, props.audioAnalysisSections[currentSection].duration * 1000);
+      /* props.audioAnalysisSections.forEach(section => {
         updateTimeouts.push(setTimeout(nextSection, section.start * 1000));
-      });
+      }); */
     }
 
     function interpolateData(data, steps = 1) {
