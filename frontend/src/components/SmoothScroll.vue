@@ -7,15 +7,16 @@
         <WelcomeComponent />
       </div>
       <div class="box box-b gradient-black">
-        <h1 class="year-title">recently</h1>
-        <div class="year">
-          <div class="content-leftside">
+        <div v-for="(year) in years" class="year">
+            <h1 class="year-title">{{ year.title }}</h1>
+            <div class="content-leftside">
             <h2>your top songs</h2>
-            <div v-if="topTracks.length > 0">
-              <div v-for="(track, index) in topTracks" :key="index" class="song"
-                @click="playback(getDeviceId(), [track.uri], true)">
+            <div v-if="year.topTracks.length > 0">
+              <div v-for="(track) in year.topTracks" class="song" @click="playTrack(track)">
                 <span class="material-symbols-rounded play-icon">play_arrow</span>
-                <p class="song-name">{{ track.name }}<br><span class="song-artist">{{ track.artists[0].name }}</span>
+                <p class="song-name">
+                  {{ track.name }}<br>
+                  <span class="song-artist">{{ track.artists[0].name }}</span>
                 </p>
               </div>
             </div>
@@ -24,12 +25,13 @@
             </div>
             <div style="height: 200px;"></div>
             <h2>your top artists</h2>
-            <div v-if="topArtists.length > 0">
-              <div v-for="(artist, index) in topArtists" :key="index" class="artist"
-                @click="playback(getDeviceId(), artist.tracks[0].uri, true)">
+            <div v-if="year.topArtists.length > 0">
+              <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
+                @click="playTrack(artist.tracks[0])">
                 <span class="material-symbols-rounded play-icon">play_arrow</span>
-                <p class="artist-name">{{ artist.name }}<br><span class="artist-song">{{ artist.tracks[0].name
-                    }}</span>
+                <p class="artist-name">
+                  {{ artist.name }}<br>
+                  <span v-if="artist.tracks" class="artist-song">{{ artist.tracks[0].name }}</span>
                 </p>
               </div>
             </div>
@@ -39,8 +41,8 @@
           </div>
           <div class="content-rightside">
             <h2>your top genres</h2>
-            <div v-if="topGenres.length > 0" class="genre-container">
-              <p v-for="(genre, index) in topGenres" :key="index" class="genre"
+            <div v-if="year.topGenres.length > 0" class="genre-container">
+              <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
                 :class="{ 'current-genre': index === 2 }">{{ genre }}</p>
             </div>
             <div v-else>
@@ -49,7 +51,8 @@
           </div>
         </div>
         <div class="bubble" data-speed="0.5">
-          <BubbleComponent />
+          <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis"
+            :audio-features="currentTrack.audioFeatures" />
         </div>
       </div>
 
@@ -67,13 +70,17 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
+import { onMounted, onBeforeUnmount, onUnmounted, ref, watch } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
 import { playback } from '../api/playback.js';
 import { getTopTracks } from '../api/getTopTracks.js';
 import { getTopArtists } from '../api/getTopArtists.js';
+import { getArtistTopTracks } from '../api/getArtistTopTracks.js';
+import { getAudioAnalysis } from '@/api/getAudioAnalysis';
+import { getAudioFeatures } from '@/api/getAudioFeatures';
+import { getWrappedPlaylists } from '@/api/getWrappedPlaylists';
 
 import BubbleComponent from './BubbleComponent.vue';
 import PrintComponent from './PrintComponent.vue';
@@ -81,19 +88,74 @@ import WelcomeComponent from './WelcomeComponent.vue';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
-const audioAnalysisData = ref(generateRandomData());
 let updateInterval;
 let smoother;
 let ctx;
 let panel_tl;
-const topTracks = ref([]);
-const topArtists = ref([]);
-let topGenres = [
-  'pop',
-  'hip hop',
-  'mandopop',
-  'kpop girl group'
-];
+const years = ref([
+  {
+    title: 'now',
+    topTracks: [],
+    topArtists: [],
+    topGenres: []
+  },
+  {
+    title: 'recently',
+    topTracks: [],
+    topArtists: [],
+    topGenres: []
+  }
+]);
+
+const currentTrack = ref({
+  id: '',
+  name: '',
+  artist: '',
+  image: '',
+  uri: '',
+  audioAnalysis: [
+    {
+      start: 0,
+      duration: 100,
+      loudness: 0,
+      tempo: 60,
+      key: 0,
+      mode: 0,
+      time_signature: 0
+    }
+  ],
+  audioFeatures: {
+    danceability: 0,
+    energy: 0,
+    key: 0,
+    loudness: 0,
+    mode: 0,
+    speechiness: 0,
+    acousticness: 0,
+    instrumentalness: 0,
+    liveness: 0,
+    valence: 0,
+    tempo: 0,
+    duration_ms: 0,
+    time_signature: 0
+  }
+});
+
+function playTrack(track) {
+  playback(getDeviceId(), [track.uri], true);
+  currentTrack.id = track.id;
+  currentTrack.name = track.name;
+  currentTrack.artist = track.artists[0].name;
+  currentTrack.image = track.album.images[0].url;
+  currentTrack.uri = track.uri;
+  getAudioAnalysis(track.id).then((response) => {
+    currentTrack.audioAnalysis = response;
+  });
+  getAudioFeatures(track.id).then((response) => {
+    currentTrack.audioFeatures = response;
+  });
+  console.log('Current track:', currentTrack);
+}
 
 function getDeviceId() {
   return localStorage.getItem('device_id');
@@ -103,37 +165,105 @@ const scrollTo = () => {
   smoother.scrollTo('body', true, '0px, 0px');
 };
 
-function generateRandomData() {
-  return Array.from({ length: 10 }, () => ({ value: Math.random() }));
-}
-
-function updateData() {
-  audioAnalysisData.value = generateRandomData();
-}
-
 onMounted(() => {
 
+  // now
   getTopTracks('short_term').then((response) => {
-    topTracks.value = response.items.slice(0, 5);
-    console.log("Top tracks:", topTracks);
+    years.value[0].topTracks = response.items.slice(0, 5);
+    console.log("Top tracks:", response);
   }).catch((error) => {
     console.error("Error fetching top tracks:", error);
   });
-
   getTopArtists('short_term').then((response) => {
-    topArtists.value = response.items.slice(0, 5);
-    //TODO: Fetch top tracks for each artist
-    topArtists.value.forEach(artist => {
-      artist.tracks = [
-        { name: 'song name', uri: 'spotify:track:6y0igZArWVi6Iz0rj35c1Y' }
-      ]
+    years.value[0].topArtists = response.items.slice(0, 5);
+
+    // Get top genres from top artists
+    const genreCount = {};
+    response.items.forEach(artist => {
+      if (artist.genres) {
+        artist.genres.forEach(genre => {
+          if (genreCount[genre]) {
+            genreCount[genre]++;
+          } else {
+            genreCount[genre] = 1;
+          }
+        });
+      }
     });
-    console.log("Top artists:", topArtists);
+    years.value[0].topGenres = Object.keys(genreCount)
+      .sort((a, b) => genreCount[b] - genreCount[a])
+      .slice(0, 5);
+
+    // Get top tracks for each artist
+    Promise.all(
+      years.value[0].topArtists.map((artist) =>
+        getArtistTopTracks(artist.id).then((response) => {
+          artist.tracks = response.tracks.slice(0, 5);
+        })
+      )
+    ).catch((error) => {
+      console.error("Error fetching artist top tracks:", error);
+    });
+
   }).catch((error) => {
     console.error("Error fetching top artists:", error);
   });
 
-  updateInterval = setInterval(updateData, 1000);
+  // recently
+  getTopTracks('medium_term').then((response) => {
+    years.value[1].topTracks = response.items.slice(0, 5);
+    console.log("Top tracks:", response);
+  }).catch((error) => {
+    console.error("Error fetching top tracks:", error);
+  });
+  getTopArtists('medium_term').then((response) => {
+    years.value[1].topArtists = response.items.slice(0, 5);
+
+    // Get top genres from top artists
+    const genreCount = {};
+    response.items.forEach(artist => {
+      if (artist.genres) {
+        artist.genres.forEach(genre => {
+          if (genreCount[genre]) {
+            genreCount[genre]++;
+          } else {
+            genreCount[genre] = 1;
+          }
+        });
+      }
+    });
+    years.value[1].topGenres = Object.keys(genreCount)
+      .sort((a, b) => genreCount[b] - genreCount[a])
+      .slice(0, 5);
+
+    // Get top tracks for each artist
+    Promise.all(
+      years.value[1].topArtists.map((artist) =>
+        getArtistTopTracks(artist.id).then((response) => {
+          artist.tracks = response.tracks.slice(0, 5);
+        })
+      )
+    ).catch((error) => {
+      console.error("Error fetching artist top tracks:", error);
+    });
+
+  }).catch((error) => {
+    console.error("Error fetching top artists:", error);
+  });
+
+  getWrappedPlaylists().then((wrappedPlaylists) => {
+    console.log(wrappedPlaylists);
+    wrappedPlaylists.forEach((playlist) => {
+      if (playlist.year && playlist.playlist && playlist.playlist.tracks.items.length > 0) {
+        years.value.push({
+          title: playlist.year,
+          topTracks: playlist.playlist.tracks.items.map(item => item.track).slice(0, 5),
+          topArtists: [],
+          topGenres: []
+        });
+      }
+    });
+  });
 
   ctx = gsap.context(() => {
     // Create the smooth scrolling effect
@@ -221,8 +351,10 @@ div.step {
 
 .box-b {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+  gap: 50vh;
   position: relative;
   z-index: 2;
   padding-top: 20vh;
@@ -296,7 +428,7 @@ h2 {
   text-overflow: ellipsis;
   font-size: 1.2rem;
   margin: 0.5rem;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   color: rgba(255, 255, 255, 0.8);
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 50px;
@@ -315,14 +447,15 @@ h2 {
   display: flex;
   justify-content: space-between;
   width: 90vw;
-  position: absolute;
+  left: 5vw;
+  position: relative;
   z-index: 1;
 }
 
 .year-title {
   position: absolute;
-  left: 5vw;
-  top: 20vh;
+  left: 0;
+  top: 0;
   font-size: 5rem;
   color: rgba(255, 255, 255, 0.5);
 }
