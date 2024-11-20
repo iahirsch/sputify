@@ -20,7 +20,7 @@
               </div>
             </div>
             <div v-else>
-              <p>Loading top tracks...</p>
+              <p class="loading">Loading top tracks...</p>
             </div>
             <div style="height: 200px;"></div>
             <h2>your top artists</h2>
@@ -34,7 +34,7 @@
               </div>
             </div>
             <div v-else>
-              <p>Loading top artists...</p>
+              <p class="loading">Loading top artists...</p>
             </div>
           </div>
           <div class="content-rightside">
@@ -44,7 +44,7 @@
                 :class="{ 'current-genre': index === 2 }">{{ genre }}</p>
             </div>
             <div v-else>
-              <p>Loading top genres...</p>
+              <p class="loading">Loading top genres...</p>
             </div>
           </div>
         </div>
@@ -85,55 +85,8 @@ let updateInterval;
 let smoother;
 let ctx;
 let panel_tl;
-let topTracks = [
-  {
-    name: 'Song 1',
-    artists: [{ name: 'Artist 1' }],
-    uri: 'spotify:track:1'
-  },
-  {
-    name: 'Song 2',
-    artists: [{ name: 'Artist 2' }],
-    uri: 'spotify:track:2'
-  },
-  {
-    name: 'Song 3',
-    artists: [{ name: 'Artist 3' }],
-    uri: 'spotify:track:3'
-  },
-  {
-    name: 'Song 4',
-    artists: [{ name: 'Artist 4' }],
-    uri: 'spotify:track:4'
-  },
-  {
-    name: 'Song 5',
-    artists: [{ name: 'Artist 5' }],
-    uri: 'spotify:track:5'
-  }
-];
-let topArtists = [
-  {
-    name: 'Artist 1',
-    tracks: [{ name: 'Song 1', uri: 'spotify:track:1' }]
-  },
-  {
-    name: 'Artist 2',
-    tracks: [{ name: 'Song 2', uri: 'spotify:track:2' }]
-  },
-  {
-    name: 'Artist 3',
-    tracks: [{ name: 'Song 3', uri: 'spotify:track:3' }]
-  },
-  {
-    name: 'Artist 4',
-    tracks: [{ name: 'Song 4', uri: 'spotify:track:4' }]
-  },
-  {
-    name: 'Artist 5',
-    tracks: [{ name: 'Song 5', uri: 'spotify:track:5' }]
-  }
-];
+const topTracks = ref([]);
+const topArtists = ref([]);
 let topGenres = [
   'pop',
   'hip hop',
@@ -160,15 +113,21 @@ function updateData() {
 onMounted(() => {
 
   getTopTracks('short_term').then((response) => {
-    console.log("Top tracks:", response);
-    topTracks = response.items.slice(0, 5);
+    topTracks.value = response.items.slice(0, 5);
+    console.log("Top tracks:", topTracks);
   }).catch((error) => {
     console.error("Error fetching top tracks:", error);
   });
 
   getTopArtists('short_term').then((response) => {
-    console.log("Top artists:", response);
-    topArtists = response.items.slice(0, 5);
+    topArtists.value = response.items.slice(0, 5);
+    //TODO: Fetch top tracks for each artist
+    topArtists.value.forEach(artist => {
+      artist.tracks = [
+        { name: 'song name', uri: 'spotify:track:6y0igZArWVi6Iz0rj35c1Y' }
+      ]
+    });
+    console.log("Top artists:", topArtists);
   }).catch((error) => {
     console.error("Error fetching top artists:", error);
   });
@@ -299,6 +258,7 @@ h2 {
 .play-icon {
   font-size: 3rem;
   color: rgba(255, 255, 255, 0);
+  margin-right: 0.25rem;
 }
 
 .play-icon:hover {
@@ -345,6 +305,10 @@ h2 {
   color: white;
 }
 
+.loading {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .year {
   display: flex;
   justify-content: space-between;
@@ -358,6 +322,7 @@ h2 {
   left: 5vw;
   top: 20vh;
   font-size: 5rem;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .content-leftside,

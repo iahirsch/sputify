@@ -98,8 +98,7 @@ h1 {
     justify-content: center;
     align-items: center;
     border-radius: 5rem;
-    width: 20rem;
-    height: 4.5rem;
+    padding: 1.5rem 3rem;
     border: none;
     transition-duration: 0.4s;
     font-size: 1rem;

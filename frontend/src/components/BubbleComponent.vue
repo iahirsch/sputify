@@ -269,7 +269,7 @@ export default {
       svg.append("defs");
 
       const bubbleConfigs = [
-        { baseColor: "rgb(0, 20, 10, 1)", scale: 2.5, zIndex: 0 },
+        //{ baseColor: "rgb(0, 20, 10, 1)", scale: 2.5, zIndex: 0 },
         { baseColor: "rgb(0, 50, 20, 1)", scale: 1.4, zIndex: 1 },
         { baseColor: "rgb(0, 100, 50, 1)", scale: 1, zIndex: 2 },
         { baseColor: "rgb(0, 200, 100, 1)", scale: 0.6, zIndex: 3 },
