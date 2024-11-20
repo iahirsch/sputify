@@ -1,6 +1,7 @@
 <template>
   <div class="bubble" data-speed="0.5">
-    <BubbleComponent />
+    <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis"
+      :audio-features="currentTrack.audioFeatures" />
   </div>
   <div id="smooth-wrapper" ref="main">
     <span class="material-symbols-rounded help hover-icon">help</span>
@@ -9,15 +10,9 @@
         <WelcomeComponent />
       </div>
       <div class="box box-b gradient-black">
-<<<<<<< Updated upstream
         <div v-for="(year) in years" class="year">
-            <h1 class="year-title">{{ year.title }}</h1>
-            <div class="content-leftside">
-=======
-        <h1 class="year-title" id="title">recently</h1>
-        <div class="year">
+          <h1 class="year-title">{{ year.title }}</h1>
           <div class="content-leftside">
->>>>>>> Stashed changes
             <h2>your top songs</h2>
             <div v-if="year.topTracks.length > 0">
               <div v-for="(track) in year.topTracks" class="song" @click="playTrack(track)">
@@ -58,16 +53,8 @@
             </div>
           </div>
         </div>
-<<<<<<< Updated upstream
-        <div class="bubble" data-speed="0.5">
-          <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis"
-            :audio-features="currentTrack.audioFeatures" />
-        </div>
-=======
->>>>>>> Stashed changes
       </div>
 
-      <div class="box box-c gradient-black"></div>
       <div class="line"></div>
       <footer class="footergradient-black">
         <PrintComponent />
@@ -154,16 +141,16 @@ const currentTrack = ref({
 
 function playTrack(track) {
   playback(getDeviceId(), [track.uri], true);
-  currentTrack.id = track.id;
-  currentTrack.name = track.name;
-  currentTrack.artist = track.artists[0].name;
-  currentTrack.image = track.album.images[0].url;
-  currentTrack.uri = track.uri;
+  currentTrack.value.id = track.id;
+  currentTrack.value.name = track.name;
+  currentTrack.value.artist = track.artists[0].name;
+  currentTrack.value.image = track.album.images[0].url;
+  currentTrack.value.uri = track.uri;
   getAudioAnalysis(track.id).then((response) => {
-    currentTrack.audioAnalysis = response;
+    currentTrack.value.audioAnalysis = response;
   });
   getAudioFeatures(track.id).then((response) => {
-    currentTrack.audioFeatures = response;
+    currentTrack.value.audioFeatures = response;
   });
   console.log('Current track:', currentTrack);
 }
@@ -286,7 +273,7 @@ onMounted(() => {
 
 
   const bubble = document.querySelector('.bubble');
-  
+
   gsap.to(bubble, {
     opacity: 1,
     scrollTrigger: {
@@ -294,14 +281,14 @@ onMounted(() => {
       start: 'center center',
       end: 'top 20%',
       scrub: true,
-      markers: true,    
+      markers: false,
     },
   });
 
 
 
 }, main.value);
-    
+
 
 onBeforeUnmount(() => {
   clearInterval(updateInterval);
@@ -362,7 +349,7 @@ div.step {
 }
 
 .box-a {
-  margin-bottom: 2%;
+  height: 120vh;
 }
 
 .box-b {
@@ -370,17 +357,11 @@ div.step {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 50vh;
+  gap: 40vh;
   position: relative;
   z-index: 2;
   padding-top: 20vh;
-  height: 120vh;
-
-}
-
-.box-c {
-  z-index: 3;
-  height: 15vh;
+  height: auto;
 }
 
 h2 {
