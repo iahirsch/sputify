@@ -1,9 +1,12 @@
 <template>
   <div class="bubble" data-speed="0.5">
-    <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis" :audio-features="currentTrack.audioFeatures" :playing="playing" />
+    <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis" :audio-features="currentTrack.audioFeatures"
+      :playing="playing" />
   </div>
   <div id="smooth-wrapper" ref="main">
-    <span class="material-symbols-rounded help hover-icon">help</span>
+    <!-- TODO: clear spotify authentication on logout -->
+    <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
+    <span class="material-symbols-rounded help menu-button">help</span>
     <div id="smooth-content">
       <div class="box box-a gradient-black" data-speed="0.5">
         <WelcomeComponent />
@@ -90,9 +93,14 @@ import { getAudioAnalysis } from '@/api/getAudioAnalysis';
 import { getAudioFeatures } from '@/api/getAudioFeatures';
 import { getWrappedPlaylists } from '@/api/getWrappedPlaylists';
 
+import LoginPage from './LoginPage.vue';
 import BubbleComponent from './BubbleComponent.vue';
 import PrintComponent from './PrintComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
+
+const routes = {
+  '/login': LoginPage
+}
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
@@ -187,6 +195,10 @@ function getDeviceId() {
 const scrollTo = () => {
   smoother.scrollTo('body', true, '0px, 0px');
 };
+
+function logOut() {
+  window.location.href = '/';
+}
 
 onMounted(() => {
 
@@ -563,43 +575,65 @@ h2 {
   align-items: center;
 }
 
-.hover-icon {
+.menu-button {
+  color: white;
+  margin-top: 2vh;
+  margin: 1rem;
+  font-size: 2rem;
+  opacity: 0.5;
+  z-index: 10;
   position: fixed;
-  right: 1rem;
+  cursor: pointer;
 }
 
-.hover-icon::after {
-  content: "Here is some help!";
+.logout {
+  left: 1rem;
+  left: 0;
+}
+
+.help {
+  right: 1rem;
+  right: 0;
+}
+
+.menu-button:hover {
+  color: white;
+  opacity: 0.7;
+}
+
+.menu-button::after {
   position: absolute;
   top: 120%;
-  right: 0;
   width: fit-content;
-  padding: 10px;
+  padding: 15px;
   color: white;
   background-color: rgba(255, 255, 255, 0.4);
   visibility: hidden;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
   font-family: 'Familjen Grotesk', sans-serif;
-  font-size: 1rem;
+  font-size: 1.1rem;
   opacity: 0;
+  border-radius: 10px;
 }
 
-.hover-icon:hover::after {
+.menu-button:hover::after {
   visibility: visible;
   opacity: 1;
 }
 
-
-.help {
-  color: white;
-  margin-top: 2vh;
-  font-family: 'Material Symbols Rounded';
-  font-size: 2rem;
-  opacity: 0.4;
-  margin: 1rem;
+.help::after {
+  content: "Here is some help!";
   right: 0;
-  z-index: 10;
-  /* Optional: Set a higher z-index if needed */
+}
+
+.logout::after {
+  content: "Log out";
+  left: 0;
+}
+
+.logout:hover::after {
+  visibility: visible;
+  opacity: 1;
 }
 
 footer {
