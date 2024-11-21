@@ -93,14 +93,9 @@ import { getAudioAnalysis } from '@/api/getAudioAnalysis';
 import { getAudioFeatures } from '@/api/getAudioFeatures';
 import { getWrappedPlaylists } from '@/api/getWrappedPlaylists';
 
-import LoginPage from './LoginPage.vue';
 import BubbleComponent from './BubbleComponent.vue';
 import PrintComponent from './PrintComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
-
-const routes = {
-  '/login': LoginPage
-}
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const main = ref();
@@ -337,15 +332,12 @@ onMounted(() => {
     opacity: 1,
     scrollTrigger: {
       trigger: '.year-title',
-      start: 'center center',
+      start: 'top 70%',
       end: 'top 20%',
       scrub: true,
       markers: false,
     },
   });
-
-
-
 }, main.value);
 
 
@@ -589,6 +581,7 @@ h2 {
 .logout {
   left: 1rem;
   left: 0;
+  transform: rotate(180deg);
 }
 
 .help {

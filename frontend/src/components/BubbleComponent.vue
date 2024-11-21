@@ -116,12 +116,14 @@ export default {
       const gradient = defs.append("radialGradient")
         .attr("id", id);
 
+      const colorOpacity = parseFloat(color.match(/[\d.]+\)$/g)[0].slice(0, -1));
+
       gradient.append("stop")
         .attr("offset", "40%")
-        .attr("stop-color", color.replace(/[\d.]+\)$/g, "0.1)"));
+        .attr("stop-color", color.replace(/[\d.]+\)$/g, `${colorOpacity * 0.1})`));
       gradient.append("stop")
         .attr("offset", "100%")
-        .attr("stop-color", color.replace(/[\d.]+\)$/g, "0.5)"));
+        .attr("stop-color", color.replace(/[\d.]+\)$/g, `${colorOpacity})`));
     }
 
     function createBubbles() {
@@ -129,10 +131,10 @@ export default {
       svg.append("defs");
 
       const bubbleConfigs = [
-        { baseColor: "rgba(0, 20, 10, 1)", scale: 3, zIndex: 0 },
-        { baseColor: "rgba(0, 50, 20, 1)", scale: 1.4, zIndex: 1 },
-        { baseColor: "rgba(0, 100, 50, 1)", scale: 1, zIndex: 2 },
-        { baseColor: "rgba(0, 200, 100, 1)", scale: 0.6, zIndex: 3 },
+        { baseColor: getColor(0.12), scale: 3, zIndex: 0 },
+        { baseColor: getColor(0.3), scale: 1.4, zIndex: 1 },
+        { baseColor: getColor(0.6), scale: 1, zIndex: 2 },
+        { baseColor: getColor(0.8), scale: 0.6, zIndex: 3 },
       ];
 
       bubbleConfigs.forEach((config, index) => {
@@ -152,6 +154,32 @@ export default {
 
         createCurve(bubbleGroup, interpolatedData, angleScale, radiusScale, radius, `url(#${gradientId})`);
       });
+    }
+
+    function getColor(opacity) {
+      const { valence } = props.audioFeatures;
+      console.log("Valence: ", valence);
+      if (valence <= 0.1) {
+        return `rgba(50, 200, 120, ${opacity})`; // Green
+      } else if (valence <= 0.2) {
+        return `rgba(80, 100, 220, ${opacity})`; // Blue
+      } else if (valence <= 0.3) {
+        return `rgba(100, 100, 220, ${opacity})`; // Slightly lighter blue
+      } else if (valence <= 0.4) {
+        return `rgba(120, 100, 220, ${opacity})`; // Even lighter blue
+      } else if (valence <= 0.5) {
+        return `rgba(140, 100, 220, ${opacity})`; // Light blue
+      } else if (valence <= 0.6) {
+        return `rgba(160, 75, 200, ${opacity})`; // Transition to purple
+      } else if (valence <= 0.7) {
+        return `rgba(180, 50, 180, ${opacity})`; // Purple
+      } else if (valence <= 0.8) {
+        return `rgba(200, 50, 150, ${opacity})`; // Transition to red
+      } else if (valence <= 0.9) {
+        return `rgba(220, 50, 100, ${opacity})`; // Light red
+      } else {
+        return `rgba(200, 50, 50, ${opacity})`; // Red
+      }
     }
 
     function updateVisualizer() {
@@ -183,7 +211,7 @@ export default {
 
     watch(
       () => [props.audioAnalysisSections, props.audioFeatures],
-      () => {initializeVisualizer()},
+      () => { initializeVisualizer() },
       { deep: true, immediate: true }
     );
 
