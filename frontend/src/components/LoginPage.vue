@@ -3,22 +3,15 @@
     <head>
         <title>Spütify Login</title>
         <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
-
-        <!-- Google Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-            rel="stylesheet">
     </head>
 
     <body>
         <div class="container">
             <div>
-                <h1>SPÜTIFY</h1>
+                <h1>SPUTIFY</h1>
             </div>
             <div>
-                <p class="familjen-grotesk-100">Discover your music DNA.</p>
+                <p>Discover your music DNA.</p>
             </div>
             <div class="intro">
                 <p>Let your Spotify data speak for you and get unique visualizations of your favorite artists and songs.
@@ -68,7 +61,6 @@ body {
 }
 
 h1 {
-    font-family: "Kanit", sans-serif;
     font-weight: 700;
     font-style: normal;
     font-size: 4rem;
@@ -87,11 +79,6 @@ h1 {
     color: #ffffff;
     height: 100vh;
     width: 100vw;
-    font-family: "Familjen Grotesk", serif;
-}
-
-.familjen-grotesk-100 {
-    font-size: 1.5rem;
 }
 
 .intro {
@@ -107,21 +94,20 @@ h1 {
 }
 
 .button {
+    cursor: pointer;
     background-color: #1DB954;
     justify-content: center;
     align-items: center;
-    border-radius: 5em;
-    width: 22em;
-    height: 5em;
+    border-radius: 5rem;
+    padding: 1.5rem 3rem;
     border: none;
     transition-duration: 0.4s;
-    font-size: 0.8em;
+    font-size: 1rem;
     font-weight: 900;
 }
 
 .button:hover {
-    color: white;
     background-color: #4DD4AC;
-    cursor: pointer;
+    transform: scale(1.1);
 }
 </style>

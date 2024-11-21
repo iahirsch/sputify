@@ -1,5 +1,4 @@
 <template>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
     <div class="container text-center">
         <div class="canvas-container">
             <button @click.prevent="previousCanvas" class="arrow left-arrow">
@@ -22,7 +21,7 @@
 
         <div class="button-container">
             <!-- <button class="share-button" @click.prevent="downloadCanvas">Download Image</button> -->
-            <button class="share-button" @click.prevent="shareCanvas">Share Image</button>
+            <button class="share-button" @click.prevent="shareCanvas">SHARE</button>
         </div>
     </div>
 </template>
@@ -163,17 +162,23 @@ h4 {
 }
 
 .share-button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: black;
     cursor: pointer;
-    font-size: 16px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5rem;
+    padding: 1.5rem 3rem;
+    margin-top: 5vh;
+    border: none;
+    transition-duration: 0.4s;
+    font-size: 1rem;
+    font-weight: 900;
 }
 
 .share-button:hover {
-    background-color: #0056b3;
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .portrait-container {

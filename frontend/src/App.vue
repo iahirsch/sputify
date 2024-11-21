@@ -2,15 +2,46 @@
 </script>
 
 <template>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700"
+    rel="stylesheet">
+
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 
   <router-view></router-view>
 
 </template>
 
 <style>
-html,
+@font-face {
+  font-family: 'Franie';
+  src: url('assets/FranieFontFamily/FranieVariableTest-Black.otf') format('opentype');
+}
+
 body {
   margin: 0;
   background-color: black;
+  overflow-x: hidden;
+
+  ::selection {
+    background-color: rgba(0, 200, 100, 0.3);
+  }
+
+  font-family: "Familjen Grotesk",
+  sans-serif;
+  font-size: 1.5rem;
+}
+
+h1 {
+  font-family: "Franie", sans-serif;
+}
+
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded';
+  font-size: 3rem;
+  user-select: none;
 }
 </style>
