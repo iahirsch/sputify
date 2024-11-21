@@ -94,6 +94,7 @@ h1 {
 }
 
 .button {
+    cursor: pointer;
     background-color: #1DB954;
     justify-content: center;
     align-items: center;
@@ -107,7 +108,6 @@ h1 {
 
 .button:hover {
     background-color: #4DD4AC;
-    cursor: pointer;
     transform: scale(1.1);
 }
 </style>
