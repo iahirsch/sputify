@@ -11,9 +11,11 @@
             <div class="portrait-container">
                 <div v-for="(canvas, index) in canvases" :key="index"
                     :class="['portrait', { selected: selectedCanvas === index }]"
-                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 100 + 50}% + 50vw)) scale(${selectedCanvas === index ? 1 : 0.8})` }">
+                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 100 + 50}% + 50vw)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
+                    @click="selectCanvas(index)">
                     <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                 </div>
+
             </div>
         </div>
 
@@ -231,6 +233,10 @@ export default {
 
         nextCanvas() {
             this.selectedCanvas = (this.selectedCanvas + 1) % this.canvases.length;
+        },
+
+        selectCanvas(index) {
+            this.selectedCanvas = index;
         }
     }
 };

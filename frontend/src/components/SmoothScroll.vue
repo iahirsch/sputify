@@ -107,13 +107,13 @@ let panel_tl;
 const userName = ref('');
 const years = ref([
   {
-    title: 'now',
+    title: 'last 3 weeks',
     topTracks: [],
     topArtists: [],
     topGenres: []
   },
   {
-    title: 'recently',
+    title: 'last 6 months',
     topTracks: [],
     topArtists: [],
     topGenres: []
@@ -589,7 +589,6 @@ h2 {
 .logout {
   left: 1rem;
   left: 0;
-  transform: rotate(180deg);
 }
 
 .help {
@@ -623,7 +622,9 @@ h2 {
 }
 
 .help::after {
-  content: "Here is some help!";
+  width: 20vw;
+  text-wrap: wrap;
+  content: "Wie kann die Visualisierung des Musikgeschmacks in Form einer interaktiven Zeitreise das persönliche Musikerlebnis vertiefen? - Scrolle um es zu erfahren!";
   right: 0;
 }
 
