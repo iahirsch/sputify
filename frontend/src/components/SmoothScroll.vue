@@ -9,7 +9,7 @@
     <span class="material-symbols-rounded help menu-button">help</span>
     <div id="smooth-content">
       <div class="box box-a gradient-black" data-speed="0.5">
-        <WelcomeComponent />
+        <WelcomeComponent :user-name="userName" />
       </div>
       <div class="box box-b gradient-black">
         <div v-for="(year) in years" class="year">
@@ -39,7 +39,7 @@
                 @click="playTrack(artist.tracks[0])">
                 <span class="material-symbols-rounded play-icon">
                   {{ artist.tracks && artist.tracks[0] && artist.tracks[0].id === currentTrack.id && playing ? 'pause' :
-                    'play_arrow' }}
+                  'play_arrow' }}
                 </span>
                 <p class="artist-name">
                   {{ artist.name }}<br>
@@ -66,7 +66,7 @@
 
       <div class="line"></div>
       <footer class="footergradient-black">
-        <PrintComponent />
+        <PrintComponent :user-name="userName" :years="years"/>
         <button @click="scrollTo" class="totop">
           <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>
           <p>Back to Top</p>
@@ -80,7 +80,7 @@
 const props = defineProps({
   playerReady: Boolean
 });
-import { onMounted, onBeforeUnmount, onUnmounted, ref, inject } from 'vue';
+import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
@@ -92,6 +92,7 @@ import { getArtist } from '@/api/getArtist.js';
 import { getAudioAnalysis } from '@/api/getAudioAnalysis';
 import { getAudioFeatures } from '@/api/getAudioFeatures';
 import { getWrappedPlaylists } from '@/api/getWrappedPlaylists';
+import { getUserInfo } from '../api/user.js';
 
 import LoginPage from './LoginPage.vue';
 import BubbleComponent from './BubbleComponent.vue';
@@ -108,6 +109,7 @@ let updateInterval;
 let smoother;
 let ctx;
 let panel_tl;
+const userName = ref('');
 const years = ref([
   {
     title: 'now',
@@ -122,7 +124,6 @@ const years = ref([
     topGenres: []
   }
 ]);
-
 const currentTrack = ref({
   id: '',
   name: '',
@@ -201,6 +202,13 @@ function logOut() {
 }
 
 onMounted(() => {
+
+  getUserInfo().then(response => {
+    userName.value = response.display_name;
+  }).catch(error => {
+    console.error("Error fetching user info:", error);
+  });
+  console.log("User Name: ", userName);
 
   // now
   getTopTracks('short_term').then((response) => {
