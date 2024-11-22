@@ -10,10 +10,8 @@
             <div>
                 <h1>SPUTIFY</h1>
             </div>
-            <div>
-                <p>Discover your music DNA.</p>
-            </div>
             <div class="intro">
+                <h2>Discover your music Journey.</h2>
                 <p>Let your Spotify data speak for you and get unique visualizations of your favorite artists and songs.
                     Immerse yourself in your personal music history.</p>
             </div>
@@ -82,8 +80,8 @@ h1 {
 }
 
 .intro {
-    font-size: 1rem;
-    width: 40vw;
+    font-size: 1.2rem;
+    width: 50vw;
     padding-bottom: 5vh;
 }
 

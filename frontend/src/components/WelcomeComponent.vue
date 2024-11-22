@@ -6,22 +6,16 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+const props = defineProps({
+    userName: String
+});
+import { onMounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
-import { getUserInfo } from '../api/user.js';
 
 gsap.registerPlugin(ScrollTrigger); // Only register ScrollTrigger (not ScrollSmoother)
 
 const title = ref(null);
-const userName = ref('');
-
-getUserInfo().then(response => {
-    userName.value = response.display_name;
-}).catch(error => {
-    console.error("Error fetching user info:", error);
-});
-console.log("User Name: ", userName);
 
 onMounted(() => {
     gsap.fromTo(title.value, {
@@ -34,12 +28,6 @@ onMounted(() => {
         ease: 'power2.out'
     });
 });
-
-onBeforeUnmount(() => {
-    // Clean up GSAP animations when the component unmounts for better performance
-    gsap.killTweensOf(title.value);
-    gsap.killTweensOf(arrow.value);
-});
 </script>
 
 <style scoped>
@@ -48,6 +36,7 @@ onBeforeUnmount(() => {
 }
 
 .name {
+    padding-top: 1rem;
     background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

@@ -11,17 +11,23 @@
             <div class="portrait-container">
                 <div v-for="(canvas, index) in canvases" :key="index"
                     :class="['portrait', { selected: selectedCanvas === index }]"
-                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 100 + 50}% + 50vw)) scale(${selectedCanvas === index ? 1 : 0.8})` }">
+                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 100 + 50}% + 50vw)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
+                    @click="selectCanvas(index)">
                     <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                 </div>
+
             </div>
-
-
         </div>
 
         <div class="button-container">
-            <!-- <button class="share-button" @click.prevent="downloadCanvas">Download Image</button> -->
-            <button class="share-button" @click.prevent="shareCanvas">SHARE</button>
+            <button class="share-button" @click.prevent="shareCanvas">
+                <span class="material-symbols-rounded">share</span>
+                SHARE
+            </button>
+            <button class="share-button" @click.prevent="downloadCanvas">
+                <span class="material-symbols-rounded">download</span>
+                DOWNLOAD
+            </button>
         </div>
     </div>
 </template>
@@ -30,67 +36,158 @@
 import imageSrc from '@/assets/image1.png';
 export default {
     name: 'PrintComponent',
+    props: {
+        userName: {
+            type: String,
+            required: true
+        },
+        years: {
+            type: Array,
+            required: true
+        }
+    },
     data() {
         return {
-            selectedCanvas: 0,  // Keeps track of the selected canvas index
-            canvases: [1, 2, 3],  // List of canvases
+            selectedCanvas: 0,
+            canvases: [1, 2, 3],
         };
     },
-    async mounted() {
-        // Draw the initial content on the canvases
-        this.drawOnCanvas1(this.$refs.portraitCanvas1[0]);
-        this.drawOnCanvas2(this.$refs.portraitCanvas2[0]);
-
-        // For Canvas 3, include a local PNG image
-        const image = new Image();
-        image.src = imageSrc;
-        // Handle loading state
-        image.onload = () => {
-            this.drawOnCanvas3(this.$refs.portraitCanvas3[0], image);
-        };
-        // Handle loading errors
-        image.onerror = () => {
-            console.error("Error: Failed to load image.");
-        };
+    watch: {
+        userName: 'drawCanvases',
+        years: {
+            handler: 'drawCanvases',
+            deep: true
+        }
+    },
+    mounted() {
+        this.drawCanvases();
     },
     methods: {
+        drawCanvases() {
+            // Clear and redraw all canvases
+            this.drawOnCanvas1(this.$refs.portraitCanvas1[0]);
+            this.drawOnCanvas2(this.$refs.portraitCanvas2[0]);
+            this.drawOnCanvas3(this.$refs.portraitCanvas3[0]);
+        },
+
         drawOnCanvas1(canvas) {
             const ctx = canvas.getContext("2d");
+            this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
-            ctx.fillStyle = "#ff6347";
-            ctx.fillText("Unique Content - Image 1", 50, 80);
-            ctx.beginPath();
-            ctx.arc(300, 600, 100, 0, 2 * Math.PI); // x, y, radius, startAngle, endAngle
-            ctx.fillStyle = "#ff4500";
-            ctx.fill();
-            ctx.stroke();
+            ctx.fillStyle = "#1DB954";
+
+            const lines = `${this.userName}'s \ncurrent favorites`.split('\n');
+            lines.forEach((line, index) => {
+                ctx.font = "bold 42px Franie, sans-serif";
+                ctx.fillText(line, 50, 80 + index * 50);
+            });
+
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            const { topTracks = [], topArtists = [], topGenres = [] } = this.years[0] || {};
+            const topTracksText = `Top Tracks: \n${topTracks.map(track => track.name).join("\n")}`;
+            const topTracksLines = topTracksText.split('\n');
+            topTracksLines.forEach((line, index) => {
+                if (index === 0) {
+                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
+                } else {
+                    ctx.font = "36px Familjen Grotesk, sans-serif";
+                }
+                ctx.fillText(line, 50, 200 + index * 40);
+            });
+
+            const topArtistsText = `Top Artists: \n${topArtists.map(artist => artist.name).join("\n")}`;
+            const topArtistsLines = topArtistsText.split('\n');
+            topArtistsLines.forEach((line, index) => {
+                if (index === 0) {
+                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
+                } else {
+                    ctx.font = "36px Familjen Grotesk, sans-serif";
+                }
+                ctx.fillText(line, 50, 470 + index * 40);
+            });
+
+            const topGenresText = `Top Genres: \n${topGenres.join("\n")}`;
+            const topGenresLines = topGenresText.split('\n');
+            topGenresLines.forEach((line, index) => {
+                if (index === 0) {
+                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
+                } else {
+                    ctx.font = "36px Familjen Grotesk, sans-serif";
+                }
+                ctx.fillText(line, 50, 740 + index * 40);
+            });
         },
 
         drawOnCanvas2(canvas) {
             const ctx = canvas.getContext("2d");
+            this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
-            ctx.fillStyle = "#11bb5f";
-            ctx.fillText("Different Design - Image 2", 50, 80);
-            ctx.beginPath();
-            ctx.rect(100, 500, 400, 200); // left, top, width, height
-            ctx.fillStyle = "#00fa9a";
-            ctx.fill();
-            ctx.stroke();
+            ctx.fillStyle = "#4DD4AC";
+
+            ctx.font = "bold 42px Franie, sans-serif";
+            const lines = `${this.userName}'s \ntaste evolution \nover the years`.split('\n');
+            lines.forEach((line, index) => {
+                ctx.fillText(line, 50, 80 + index * 50);
+            });
+
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            this.years.forEach((year, index) => {
+                if (index < 7) {
+                    const yearText = `${year.title}`;
+                    const topTrackText = `Top Track: ${year.topTracks[0]?.name || "No data"}`;
+
+                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
+                    ctx.fillText(yearText, 50, 260 + index * 100);
+
+                    ctx.font = "36px Familjen Grotesk, sans-serif";
+                    ctx.fillText(topTrackText, 50, 300 + index * 100);
+                }
+            });
         },
 
-        drawOnCanvas3(canvas, image) {
+
+        drawOnCanvas3(canvas) {
             const ctx = canvas.getContext("2d");
-            if (ctx) {
-                this.setCanvasStyle(ctx);
-                ctx.fillStyle = "#4169e1";
-                ctx.fillText("Local Image - Image 3", 50, 80);
-                ctx.drawImage(image, 0, 200, 600, 500); // left, top, width, height
-            } else {
-                console.error("Error: Unable to get canvas context.");
-            }
+            this.clearCanvas(ctx);
+            this.setCanvasStyle(ctx);
+            ctx.fillStyle = "#FFA0AB";
+
+            ctx.font = "bold 42px Franie, sans-serif";
+            const lines = 'Create Your Own\nMusic Journey'.split('\n');
+            lines.forEach((line, index) => {
+                ctx.fillText(line, 50, 80 + index * 50);
+            });
+
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            ctx.font = "36px Familjen Grotesk, sans-serif";
+            const visitLines = 'Visit Spütify and\nstart your journey!'.split('\n');
+            visitLines.forEach((line, index) => {
+                ctx.fillText(line, 50, 200 + index * 40);
+            });
+
+            // Load and draw the local image
+            const image = new Image();
+            image.src = imageSrc;
+            image.onload = () => {
+                ctx.drawImage(image, 0, 300, 600, 500);
+            };
+            image.onerror = () => {
+                console.error("Error loading image for canvas3.");
+            };
+
+            ctx.font = "bold 36px Familjen Grotesk, sans-serif";
+            ctx.fillText(`www.sputify.com`, 50, 900);
+        },
+
+
+        clearCanvas(ctx) {
+            ctx.clearRect(0, 0, 1080, 1920);
         },
 
         setCanvasStyle(ctx) {
+            // Reset transformations
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+
             // Common Style Setup for High Resolution
             const scaleFactor = 2;
             ctx.scale(scaleFactor, scaleFactor);
@@ -136,6 +233,10 @@ export default {
 
         nextCanvas() {
             this.selectedCanvas = (this.selectedCanvas + 1) % this.canvases.length;
+        },
+
+        selectCanvas(index) {
+            this.selectedCanvas = index;
         }
     }
 };
@@ -157,23 +258,26 @@ h4 {
     width: 80vw;
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 5%;
 }
 
 .share-button {
     background-color: rgba(255, 255, 255, 0.8);
     color: black;
     cursor: pointer;
+    display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 5rem;
     padding: 1.5rem 3rem;
-    margin-top: 5vh;
     border: none;
     transition-duration: 0.4s;
     font-size: 1rem;
     font-weight: 900;
+    .material-symbols-rounded {
+        font-size: 1.5rem;
+        margin-right: 10px;
+    }
 }
 
 .share-button:hover {
@@ -186,7 +290,7 @@ h4 {
     overflow: hidden;
     display: flex;
     gap: 10px;
-    margin-top: 20px;
+    padding: 5% 0;
     transition: transform 0.5s ease-in-out;
 }
 
