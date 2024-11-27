@@ -1,4 +1,12 @@
 <template>
+  <div class="popup" v-if="showPopup">
+    <div class="popup-content">
+      <span class="material-symbols-rounded close" @click="closePopup">close</span>
+      <span class="material-symbols-rounded headphones">headphones</span>
+      <h2>Use headphones for better experience</h2>
+      <button @click="closePopup">OK</button>
+    </div>
+  </div>
   <div class="bubble" data-speed="0.5">
     <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis" :audio-features="currentTrack.audioFeatures"
       :playing="playing" />
@@ -12,19 +20,13 @@
         <WelcomeComponent :user-name="userName" />
       </div>
       <div class="box box-b gradient-black">
-        <YearComponent
-          v-for="(year, index) in years"
-          :key="index"
-          :year="year"
-          :currentTrack="currentTrack"
-          :playing="playing"
-          :playTrack="playTrack"
-        />
+        <YearComponent v-for="(year, index) in years" :key="index" :year="year" :currentTrack="currentTrack"
+          :playing="playing" :playTrack="playTrack" />
       </div>
 
       <div class="line"></div>
       <footer class="footergradient-black">
-        <ShareComponent :user-name="userName" :years="years"/>
+        <ShareComponent :user-name="userName" :years="years" />
         <button @click="scrollTo" class="totop">
           <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>
           <p>Back to Top</p>
@@ -290,31 +292,31 @@ onUnmounted(() => {
   ctx.revert();
 });
 
+// Scroll to top button jetzt mit lenis
 function scrollTo() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 //Lenis smooth scrolling
 const lenis = new Lenis({
-    autoRaf: false,
-  });
+  autoRaf: false,
+});
 
-
-  function raf(time) {
-    lenis.raf(time)
-    requestAnimationFrame(raf)
-  }
-
+function raf(time) {
+  lenis.raf(time)
   requestAnimationFrame(raf)
+}
 
-  lenis.on('scroll', ScrollTrigger.update);// Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
-  gsap.ticker.add((time) => { 
-    lenis.raf(time * 1000); 
-  });
+requestAnimationFrame(raf)
 
-  gsap.ticker.lagSmoothing(0); // Disable GSAP's lag smoothing
+lenis.on('scroll', ScrollTrigger.update);// Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
+gsap.ticker.add((time) => {
+  lenis.raf(time * 1000);
+});
 
- 
+gsap.ticker.lagSmoothing(0); // Disable GSAP's lag smoothing
+
+
 window.onload = function () {
   gsap.utils.toArray(".step").forEach(function (panel) {
     panel_tl = gsap.timeline({
@@ -334,16 +336,21 @@ window.onload = function () {
 };
 
 
+const showPopup = ref(true); // show popup on page load
 
-  // works only with previous user interaction
-  /* ScrollTrigger.create({
-    trigger: ".box-b",
-    start: "top top",
-    onEnter: () => {
-      playTrack(years.value[0].topTracks[0]);
-    },
-    once: true
-  }); */
+function closePopup() {
+  showPopup.value = false;
+}
+
+//starts music immediately when scrolling
+ScrollTrigger.create({
+  trigger: ".box-b",
+  start: "top top",
+  onEnter: () => {
+    playTrack(years.value[0].topTracks[0]);
+  },
+  once: true
+});
 
 
 </script>
@@ -538,5 +545,68 @@ p {
 
 .pin-spacer {
   pointer-events: none;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6); /* background could be adjusted to fullscreen popup */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.popup-content {
+  position: relative;
+  background-image: linear-gradient(#1DB954, #4DD4AC);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  max-width: 60vh;
+  font-family: 'Familjen Grotesk', sans-serif;
+}
+
+.popup-content h2 {
+  margin-bottom: 1.3rem;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.popup-content button {
+  background: white;
+  color: black;
+  border: none;
+  padding: 0.2rem 1.5rem;
+  border-radius: 1rem;
+  width: 25%;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.popup-content button:hover {
+  background: #1c6a20;
+}
+
+.close{
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.close:hover {
+  color: #1c6a20;
+}
+
+.headphones {
+  font-size: 3rem;
+  color: white;
 }
 </style>
