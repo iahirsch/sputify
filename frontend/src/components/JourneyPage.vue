@@ -41,7 +41,7 @@ const props = defineProps({
 import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
-import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
+import Lenis from 'lenis';
 import { playback } from '../api/playback.js';
 import { getTopTracks } from '../api/getTopTracks.js';
 import { getTopArtists } from '../api/getTopArtists.js';
@@ -57,10 +57,9 @@ import ShareComponent from './ShareComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 import YearComponent from './YearComponent.vue';
 
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+gsap.registerPlugin(ScrollTrigger);
 const main = ref();
 let updateInterval;
-let smoother;
 let ctx;
 let panel_tl;
 const userName = ref('');
@@ -159,10 +158,6 @@ function getDeviceId() {
   return localStorage.getItem('device_id');
 }
 
-const scrollTo = () => {
-  smoother.scrollTo('body', true, '0px, 0px');
-};
-
 function logOut() {
   window.location.href = '/';
 }
@@ -259,14 +254,6 @@ onMounted(() => {
   fetchTopTracksAndArtists('medium_term', 1);
   fetchWrappedPlaylists();
 
-  ctx = gsap.context(() => {
-    // Create the smooth scrolling effect
-    smoother = ScrollSmoother.create({
-      smooth: 1,
-      effects: true,
-    });
-  }, main.value);
-
 
   const bubble = document.querySelector('.bubble');
 
@@ -280,6 +267,18 @@ onMounted(() => {
       markers: false,
     },
   });
+
+  //disappear bubble when scrolling to footer aber es ghat ned
+  // gsap.to(bubble, {
+  //   opacity: 0,
+  //   scrollTrigger: {
+  //     trigger: 'footergradient-black',
+  //     start: 'top 30%', 
+  //     end: 'top 50%', 
+  //     scrub: true,
+  //     markers: false,
+  //   },
+  // });
 }, main.value);
 
 
@@ -291,6 +290,31 @@ onUnmounted(() => {
   ctx.revert();
 });
 
+function scrollTo() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+//Lenis smooth scrolling
+const lenis = new Lenis({
+    autoRaf: false,
+  });
+
+
+  function raf(time) {
+    lenis.raf(time)
+    requestAnimationFrame(raf)
+  }
+
+  requestAnimationFrame(raf)
+
+  lenis.on('scroll', ScrollTrigger.update);// Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
+  gsap.ticker.add((time) => { 
+    lenis.raf(time * 1000); 
+  });
+
+  gsap.ticker.lagSmoothing(0); // Disable GSAP's lag smoothing
+
+ 
 window.onload = function () {
   gsap.utils.toArray(".step").forEach(function (panel) {
     panel_tl = gsap.timeline({
@@ -307,6 +331,10 @@ window.onload = function () {
     panel_tl.to(panel, { opacity: 0, duration: 0.5 });
   });
 
+};
+
+
+
   // works only with previous user interaction
   /* ScrollTrigger.create({
     trigger: ".box-b",
@@ -316,7 +344,7 @@ window.onload = function () {
     },
     once: true
   }); */
-};
+
 
 </script>
 
@@ -324,6 +352,27 @@ window.onload = function () {
 body,
 html {
   margin: 0;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
 div.step {
@@ -335,7 +384,6 @@ div.step {
 
 #smooth-wrapper {
   position: relative;
-  height: 100vh;
 }
 
 #smooth-content {
@@ -464,7 +512,6 @@ footer {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 150vh;
 }
 
 p {
