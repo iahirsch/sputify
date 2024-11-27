@@ -342,14 +342,24 @@ function closePopup() {
   showPopup.value = false;
 }
 
-//starts music immediately when scrolling
-ScrollTrigger.create({
-  trigger: ".box-b",
-  start: "top top",
-  onEnter: () => {
-    playTrack(years.value[0].topTracks[0]);
-  },
-  once: true
+//A scroll event listener is added to the window. This means handleScroll will execute every time the user scrolls.
+onMounted(() => {
+  const boxB = document.querySelector(".box-b");
+
+  const handleScroll = () => {
+    const rect = boxB.getBoundingClientRect();
+    const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+    if (isVisible) {
+      // Play the first track
+      if (years.value[0]?.topTracks?.length > 0) {
+        playTrack(years.value[0].topTracks[0]);
+      }
+      window.removeEventListener("scroll", handleScroll);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
 });
 
 
@@ -590,6 +600,7 @@ p {
 
 .popup-content button:hover {
   background: #1c6a20;
+  color: white;
 }
 
 .close{
