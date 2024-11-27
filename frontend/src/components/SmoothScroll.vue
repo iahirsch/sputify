@@ -39,7 +39,7 @@
                 @click="playTrack(artist.tracks[0])">
                 <span class="material-symbols-rounded play-icon">
                   {{ artist.tracks && artist.tracks[0] && artist.tracks[0].id === currentTrack.id && playing ? 'pause' :
-                  'play_arrow' }}
+                    'play_arrow' }}
                 </span>
                 <p class="artist-name">
                   {{ artist.name }}<br>
@@ -66,7 +66,7 @@
 
       <div class="line"></div>
       <footer class="footergradient-black">
-        <PrintComponent :user-name="userName" :years="years"/>
+        <PrintComponent :user-name="userName" :years="years" />
         <button @click="scrollTo" class="totop">
           <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>
           <p>Back to Top</p>
@@ -83,7 +83,8 @@ const props = defineProps({
 import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
-import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
+
+import Lenis from 'lenis';
 import { playback } from '../api/playback.js';
 import { getTopTracks } from '../api/getTopTracks.js';
 import { getTopArtists } from '../api/getTopArtists.js';
@@ -98,7 +99,7 @@ import BubbleComponent from './BubbleComponent.vue';
 import PrintComponent from './PrintComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+gsap.registerPlugin(ScrollTrigger);
 const main = ref();
 let updateInterval;
 let smoother;
@@ -188,9 +189,6 @@ function getDeviceId() {
   return localStorage.getItem('device_id');
 }
 
-const scrollTo = () => {
-  smoother.scrollTo('body', true, '0px, 0px');
-};
 
 function logOut() {
   window.location.href = '/';
@@ -325,14 +323,24 @@ onMounted(() => {
     });
   });
 
-  ctx = gsap.context(() => {
-    // Create the smooth scrolling effect
-    smoother = ScrollSmoother.create({
-      smooth: 1,
-      effects: true,
-    });
-  }, main.value);
+  const lenis = new Lenis({
+    autoRaf: false,
+  });
 
+
+  function raf(time) {
+    lenis.raf(time)
+    requestAnimationFrame(raf)
+  }
+
+  requestAnimationFrame(raf)
+
+  lenis.on('scroll', ScrollTrigger.update);// Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
+  gsap.ticker.add((time) => { // Synchronize GSAP's ticker with Lenis
+    lenis.raf(time * 1000); 
+  });
+
+  gsap.ticker.lagSmoothing(0);
 
   const bubble = document.querySelector('.bubble');
 
@@ -392,6 +400,27 @@ html {
   margin: 0;
 }
 
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 div.step {
   background-color: rgba(255, 255, 255, 0.3);
   padding: 1em;
@@ -401,7 +430,6 @@ div.step {
 
 #smooth-wrapper {
   position: relative;
-  height: 100vh;
 }
 
 #smooth-content {
