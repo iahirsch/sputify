@@ -1,85 +1,495 @@
 <template>
-    <SmoothScroll v-if="accessToken" :player-ready="playerReady"></SmoothScroll>
-    <LoadingPage v-else></LoadingPage>
+  <div class="bubble" data-speed="0.5">
+    <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis" :audio-features="currentTrack.audioFeatures"
+      :playing="playing" />
+  </div>
+  <div id="smooth-wrapper" ref="main">
+    <!-- TODO: clear spotify authentication on logout -->
+    <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
+    <span class="material-symbols-rounded help menu-button">help</span>
+    <div id="smooth-content">
+      <div class="box box-a gradient-black" data-speed="0.5">
+        <WelcomeComponent :user-name="userName" />
+      </div>
+      <div class="box box-b gradient-black">
+        <YearComponent
+          v-for="(year, index) in years"
+          :key="index"
+          :year="year"
+          :currentTrack="currentTrack"
+          :playing="playing"
+          :playTrack="playTrack"
+        />
+      </div>
+
+      <div class="line"></div>
+      <footer class="footergradient-black">
+        <ShareComponent :user-name="userName" :years="years"/>
+        <button @click="scrollTo" class="totop">
+          <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>
+          <p>Back to Top</p>
+        </button>
+      </footer>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import SmoothScroll from './SmoothScroll.vue';
-import { ref, onMounted, provide } from 'vue';
-import { useRoute } from 'vue-router';
-import LoadingPage from './LoadingPage.vue';
-
-const playerReady = ref(false);
-const accessToken = ref(null);
-const route = useRoute();
-
-onMounted(async () => {
-    const state = route.query.state;
-    const code = route.query.code;
-    let currentTime = Math.floor(new Date().getTime() / 1000);
-
-    console.log(isNaN(localStorage.getItem('tokenExpirationTime')), currentTime, localStorage.getItem('tokenExpirationTime'));
-
-    if (!localStorage.getItem('tokenExpirationTime') || currentTime > localStorage.getItem('tokenExpirationTime')) {
-        let access_token_response = await fetch('http://localhost:3000/api/spotify/callback' + "?code=" + code + "&state=" + state,
-            { credentials: 'include' }
-        )
-        let access_token = await access_token_response.json()
-        console.log(access_token)
-        localStorage.setItem('tokenExpirationTime', currentTime + access_token.expires_in);
-        localStorage.setItem('access_token', access_token.access_token);
-        localStorage.setItem('refresh_token', access_token.refresh_token);
-        accessToken.value = access_token.access_token;
-        console.log(accessToken.value);
-    }
-    else {
-        accessToken.value = localStorage.getItem('access_token');
-        console.log("Token still valid: Access Token: ", localStorage.getItem('access_token'), "\n Refresh Token: ", localStorage.getItem('refresh_token'));
-    }
-
-    const script = document.createElement('script');
-    script.src = "https://sdk.scdn.co/spotify-player.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    window.onSpotifyWebPlaybackSDKReady = () => {
-        console.log('Spotify Web Playback SDK is ready');
-        const token = localStorage.getItem('access_token');
-        const player = new Spotify.Player({
-            name: 'Spütify',
-            getOAuthToken: cb => { cb(token); },
-            volume: 0.5
-        });
-
-        // Ready
-        player.addListener('ready', ({ device_id }) => {
-            playerReady.value = true;
-            localStorage.setItem('device_id', device_id);
-            console.log('Ready with Device ID', device_id);
-        });
-
-        // Not Ready
-        player.addListener('not_ready', ({ device_id }) => {
-            playerReady.value = false;
-            console.log('Device ID has gone offline', device_id);
-        });
-
-        player.addListener('initialization_error', ({ message }) => {
-            console.error(message);
-        });
-
-        player.addListener('authentication_error', ({ message }) => {
-            console.error(message);
-        });
-
-        player.addListener('account_error', ({ message }) => {
-            console.error(message);
-        });
-
-        player.connect();
-
-    }
+const props = defineProps({
+  playerReady: Boolean
 });
+import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
+import gsap from 'gsap-trial';
+import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
+import { ScrollSmoother } from 'gsap-trial/ScrollSmoother';
+import { playback } from '../api/playback.js';
+import { getTopTracks } from '../api/getTopTracks.js';
+import { getTopArtists } from '../api/getTopArtists.js';
+import { getArtistTopTracks } from '../api/getArtistTopTracks.js';
+import { getArtist } from '@/api/getArtist.js';
+import { getAudioAnalysis } from '@/api/getAudioAnalysis';
+import { getAudioFeatures } from '@/api/getAudioFeatures';
+import { getWrappedPlaylists } from '@/api/getWrappedPlaylists';
+import { getUserInfo } from '../api/user.js';
+
+import BubbleComponent from './BubbleComponent.vue';
+import ShareComponent from './ShareComponent.vue';
+import WelcomeComponent from './WelcomeComponent.vue';
+import YearComponent from './YearComponent.vue';
+
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+const main = ref();
+let updateInterval;
+let smoother;
+let ctx;
+let panel_tl;
+const userName = ref('');
+const years = ref([
+  {
+    title: 'last 3 weeks',
+    topTracks: [],
+    topArtists: [],
+    topGenres: []
+  },
+  {
+    title: 'last 6 months',
+    topTracks: [],
+    topArtists: [],
+    topGenres: []
+  }
+]);
+const currentTrack = ref({
+  id: '',
+  name: '',
+  artist: '',
+  genres: [],
+  image: '',
+  uri: '',
+  audioAnalysis: [
+    {
+      start: 0,
+      duration: 100,
+      loudness: -100,
+      tempo: 60,
+      key: 0,
+      mode: 0,
+      time_signature: 0
+    }
+  ],
+  audioFeatures: {
+    danceability: 0,
+    energy: 0,
+    key: 0,
+    loudness: 0,
+    mode: 0,
+    speechiness: 0,
+    acousticness: 0,
+    instrumentalness: 0,
+    liveness: 0,
+    valence: 0,
+    tempo: 0,
+    duration_ms: 0,
+    time_signature: 0
+  }
+});
+const playing = ref(false);
+
+function playTrack(track) {
+  const deviceId = getDeviceId();
+  const isSameTrack = track.id === currentTrack.value.id;
+
+  if (isSameTrack) {
+    playback(deviceId, null, props.playerReady, playing.value);
+    playing.value = !playing.value;
+  } else {
+    playback(deviceId, [track.uri], props.playerReady, false);
+    updateCurrentTrack(track);
+    playing.value = true;
+  }
+}
+
+function updateCurrentTrack(track) {
+  currentTrack.value = {
+    id: track.id,
+    name: track.name,
+    artist: track.artists[0].name,
+    genres: currentTrack.value.genres,
+    image: track.album.images[0].url,
+    uri: track.uri,
+    audioAnalysis: currentTrack.value.audioAnalysis,
+    audioFeatures: currentTrack.value.audioFeatures
+  };
+
+  getArtist(track.artists[0].id).then((artist) => {
+    currentTrack.value.genres = artist.genres;
+  });
+
+  getAudioAnalysis(track.id).then((response) => {
+    currentTrack.value.audioAnalysis = response;
+  });
+
+  getAudioFeatures(track.id).then((response) => {
+    currentTrack.value.audioFeatures = response;
+  });
+
+  console.log('Playing track:', currentTrack.value);
+}
+
+function getDeviceId() {
+  return localStorage.getItem('device_id');
+}
+
+const scrollTo = () => {
+  smoother.scrollTo('body', true, '0px, 0px');
+};
+
+function logOut() {
+  window.location.href = '/';
+}
+
+onMounted(() => {
+
+  async function fetchUserData() {
+    try {
+      const response = await getUserInfo();
+      userName.value = response.display_name;
+      console.log("User Name: ", userName);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  }
+
+  async function fetchTopTracksAndArtists(term, index) {
+    try {
+      const tracksResponse = await getTopTracks(term);
+      years.value[index].topTracks = tracksResponse.items.slice(0, 5);
+
+      const artistsResponse = await getTopArtists(term);
+      years.value[index].topArtists = artistsResponse.items.slice(0, 5);
+
+      const genreCount = {};
+      artistsResponse.items.forEach(artist => {
+        if (artist.genres) {
+          artist.genres.forEach(genre => {
+            genreCount[genre] = (genreCount[genre] || 0) + 1;
+          });
+        }
+      });
+      years.value[index].topGenres = Object.keys(genreCount)
+        .sort((a, b) => genreCount[b] - genreCount[a])
+        .slice(0, 5);
+
+      await Promise.all(
+        years.value[index].topArtists.map(async (artist) => {
+          const artistTracksResponse = await getArtistTopTracks(artist.id);
+          artist.tracks = artistTracksResponse.tracks.slice(0, 5);
+        })
+      );
+    } catch (error) {
+      console.error(`Error fetching top tracks and artists for ${term}:`, error);
+    }
+  }
+
+  async function fetchWrappedPlaylists() {
+    try {
+      const wrappedPlaylists = await getWrappedPlaylists();
+      console.log(wrappedPlaylists);
+
+      wrappedPlaylists.forEach((playlist) => {
+        if (playlist.year && playlist.playlist && playlist.playlist.tracks.items.length > 0) {
+          const artistCount = {};
+
+          playlist.playlist.tracks.items.forEach((item) => {
+            item.track.artists.forEach((artist) => {
+              artistCount[artist.name] = (artistCount[artist.name] || 0) + 1;
+            });
+          });
+
+          const topArtists = Object.keys(artistCount)
+            .sort((a, b) => artistCount[b] - artistCount[a])
+            .slice(0, 5)
+            .map((artistName) => {
+              const artist = playlist.playlist.tracks.items.find((item) =>
+                item.track.artists.some((artist) => artist.name === artistName)
+              ).track.artists.find((artist) => artist.name === artistName);
+              return {
+                ...artist,
+                tracks: playlist.playlist.tracks.items
+                  .filter((item) => item.track.artists.some((a) => a.name === artistName))
+                  .map((item) => item.track)
+                  .slice(0, 5),
+              };
+            });
+
+          years.value.push({
+            title: playlist.year,
+            topTracks: playlist.playlist.tracks.items.map((item) => item.track).slice(0, 5),
+            topArtists: topArtists,
+            topGenres: []
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching wrapped playlists:", error);
+    }
+  }
+
+  fetchUserData();
+  fetchTopTracksAndArtists('short_term', 0);
+  fetchTopTracksAndArtists('medium_term', 1);
+  fetchWrappedPlaylists();
+
+  ctx = gsap.context(() => {
+    // Create the smooth scrolling effect
+    smoother = ScrollSmoother.create({
+      smooth: 1,
+      effects: true,
+    });
+  }, main.value);
+
+
+  const bubble = document.querySelector('.bubble');
+
+  gsap.to(bubble, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top 70%',
+      end: 'top 20%',
+      scrub: true,
+      markers: false,
+    },
+  });
+}, main.value);
+
+
+onBeforeUnmount(() => {
+  clearInterval(updateInterval);
+});
+
+onUnmounted(() => {
+  ctx.revert();
+});
+
+window.onload = function () {
+  gsap.utils.toArray(".step").forEach(function (panel) {
+    panel_tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: panel,
+        start: "top 90%",
+        end: "bottom 10%",
+        scrub: true,
+        markers: false,
+        toggleActions: "resume pause reverse pause"
+      }
+    });
+    panel_tl.from(panel, { opacity: 0, duration: 0.5 });
+    panel_tl.to(panel, { opacity: 0, duration: 0.5 });
+  });
+
+  // works only with previous user interaction
+  /* ScrollTrigger.create({
+    trigger: ".box-b",
+    start: "top top",
+    onEnter: () => {
+      playTrack(years.value[0].topTracks[0]);
+    },
+    once: true
+  }); */
+};
+
 </script>
 
-<style scoped></style>
+<style scoped>
+body,
+html {
+  margin: 0;
+}
+
+div.step {
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 1em;
+  margin: 10vh 1em 15vh auto;
+  color: white;
+}
+
+#smooth-wrapper {
+  position: relative;
+  height: 100vh;
+}
+
+#smooth-content {
+  width: 100%;
+}
+
+.box {
+  height: 120vh;
+  transition: scale 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-a {
+  height: 120vh;
+}
+
+.box-b {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40vh;
+  position: relative;
+  z-index: 2;
+  padding-top: 20vh;
+  height: auto;
+}
+
+h2 {
+  font-size: 2rem;
+  margin: 1rem;
+}
+
+.bubble {
+  position: sticky;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.gradient-black {
+  background: none;
+  color: white;
+}
+
+.line {
+  height: 50px;
+  background: none;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu-button {
+  color: white;
+  margin-top: 2vh;
+  margin: 1rem;
+  font-size: 2rem;
+  opacity: 0.5;
+  z-index: 10;
+  position: fixed;
+  cursor: pointer;
+}
+
+.logout {
+  left: 1rem;
+  left: 0;
+}
+
+.help {
+  right: 1rem;
+  right: 0;
+}
+
+.menu-button:hover {
+  color: white;
+  opacity: 0.7;
+}
+
+.menu-button::after {
+  position: absolute;
+  top: 120%;
+  width: fit-content;
+  padding: 15px;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.4);
+  visibility: hidden;
+  transition: opacity 0.4s ease;
+  font-family: 'Familjen Grotesk', sans-serif;
+  font-size: 1.1rem;
+  opacity: 0;
+  border-radius: 10px;
+}
+
+.menu-button:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+
+.help::after {
+  width: 20vw;
+  text-wrap: wrap;
+  content: "Wie kann die Visualisierung des Musikgeschmacks in Form einer interaktiven Zeitreise das persönliche Musikerlebnis vertiefen? - Scrolle um es zu erfahren!";
+  right: 0;
+}
+
+.logout::after {
+  content: "Log out";
+  left: 0;
+}
+
+.logout:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 150vh;
+}
+
+p {
+  margin: 0;
+}
+
+.totop {
+  font-size: 1rem;
+  margin-top: 10vh;
+  background-color: transparent;
+  color: #ffffff55;
+  border: none;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.totop:hover {
+  color: #fff;
+}
+
+.totop-icon {
+  font-size: 3rem;
+}
+
+.pin-spacer {
+  pointer-events: none;
+}
+</style>
