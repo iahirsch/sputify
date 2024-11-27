@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '@/components/LoginPage.vue';
-import Journey from '@/components/JourneyPage.vue';
+import CallbackPage from '@/components/CallbackPage.vue';
 
 const routes = [
     { path: '/', component: LoginPage },
-    { path: '/journey', component: Journey },
-    { path: '/callback', component: Journey }
+    { path: '/journey', component: CallbackPage },
+    { path: '/callback', component: CallbackPage }
 ];
 
 const router = createRouter({
