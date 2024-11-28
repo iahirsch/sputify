@@ -637,8 +637,9 @@ p {
 }
 
 .logoJourney {
-  width: 10vw;
+  width: 10rem;
   margin: 1rem;
   position: fixed;
+  z-index: 10;
 }
 </style>
