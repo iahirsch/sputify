@@ -30,7 +30,7 @@
           </span>
           <p class="artist-name">
             {{ artist.name }}<br>
-            <span v-if="artist.tracks" class="artist-song">{{ artist.tracks[0].name }}</span>
+            <span v-if="artist.tracks.length > 0" class="artist-song">{{ artist.tracks[0].name }}</span>
           </p>
         </div>
       </div>

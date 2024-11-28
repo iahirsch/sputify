@@ -89,7 +89,7 @@ const currentTrack = ref({
     {
       start: 0,
       duration: 100,
-      loudness: -100,
+      loudness: 0,
       tempo: 60,
       key: 0,
       mode: 0,
@@ -199,12 +199,13 @@ onMounted(() => {
         .sort((a, b) => genreCount[b] - genreCount[a])
         .slice(0, 5);
 
-      await Promise.all(
-        years.value[index].topArtists.map(async (artist) => {
-          const artistTracksResponse = await getArtistTopTracks(artist.id);
-          artist.tracks = artistTracksResponse.tracks.slice(0, 5);
-        })
-      );
+      years.value[index].topArtists.forEach(async (artist, i) => {
+        const artistTopTracks = tracksResponse.items.filter(track =>
+          track.artists.some(a => a.id === years.value[index].topArtists[i].id)
+        ).slice(0, 5);
+        years.value[index].topArtists[i].tracks = artistTopTracks;
+      });
+
     } catch (error) {
       console.error(`Error fetching top tracks and artists for ${term}:`, error);
     }
@@ -257,7 +258,9 @@ onMounted(() => {
   fetchUserData();
   fetchTopTracksAndArtists('short_term', 0);
   fetchTopTracksAndArtists('medium_term', 1);
+  console.log(years.value);
   fetchWrappedPlaylists();
+
 
   ctx = gsap.context(() => {
     // Create the smooth scrolling effect
