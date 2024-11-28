@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "gsap-trial": "^3.12.5",
+    "smooth-scrollbar": "^8.8.4",
+    "axios": "^1.7.7"
+  }
+}
