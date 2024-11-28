@@ -8,7 +8,7 @@
     <body>
         <div class="container">
             <div>
-                <h1>SPUTIFY</h1>
+                <img class="logo" src="../assets/spütify_logo.png"/>
             </div>
             <div class="intro">
                 <h2>Discover your music Journey.</h2>
@@ -107,5 +107,11 @@ h1 {
 .button:hover {
     background-color: #4DD4AC;
     transform: scale(1.1);
+}
+
+.logo{
+    position: relative;
+    height: 15vh;
+    margin-top: 3rem;
 }
 </style>
