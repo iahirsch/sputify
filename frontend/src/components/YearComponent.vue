@@ -9,6 +9,7 @@
           <span class="material-symbols-rounded play-icon">
             {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
           </span>
+          <img class="albumCover" :src="track.album.images[0].url" alt="album cover" />
           <p class="song-name">
             {{ track.name }}<br>
             <span class="song-artist">{{ track.artists[0].name }}</span>
@@ -135,6 +136,25 @@ const props = defineProps({
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.5);
 }
+
+.albumCover {
+  width: 3vw;
+  margin-right: 2%;
+  opacity: 1;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.albumCover:hover {
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+.currently-playing .albumCover {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
 
 .currently-playing {
   background-color: rgba(255, 255, 255, 0.1);

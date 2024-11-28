@@ -16,6 +16,9 @@
     <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
     <span class="material-symbols-rounded help menu-button">help</span>
     <div id="smooth-content">
+      <div>
+        <img class="logoJourney" src="../assets/spütify_logo.png" />
+      </div>
       <div class="box box-a gradient-black" data-speed="0.5">
         <WelcomeComponent :user-name="userName" />
       </div>
@@ -257,7 +260,7 @@ onMounted(() => {
   fetchTopTracksAndArtists('medium_term', 1);
   console.log(years.value);
   //fetchWrappedPlaylists();
-  
+
 
 
   const bubble = document.querySelector('.bubble');
@@ -475,11 +478,15 @@ h2 {
 .logout {
   left: 1rem;
   left: 0;
+  top: 91%;
+  transform: scaleX(-1);
+  opacity: 1;
 }
 
 .help {
   right: 1rem;
   right: 0;
+  opacity: 1;
 }
 
 .menu-button:hover {
@@ -516,12 +523,14 @@ h2 {
 
 .logout::after {
   content: "Log out";
-  left: 0;
+  top: -30%;
+  left: -280%;
 }
 
 .logout:hover::after {
   visibility: visible;
   opacity: 1;
+  transform: scaleX(-1);
 }
 
 footer {
@@ -543,6 +552,7 @@ p {
   border: none;
   cursor: pointer;
   z-index: 4;
+  margin-bottom: 1rem;
 }
 
 .totop:hover {
@@ -563,7 +573,8 @@ p {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6); /* background could be adjusted to fullscreen popup */
+  background: rgba(0, 0, 0, 0.6);
+  /* background could be adjusted to fullscreen popup */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -600,10 +611,11 @@ p {
 
 .popup-content button:hover {
   background: #1c6a20;
+  ;
   color: white;
 }
 
-.close{
+.close {
   position: absolute;
   top: 0;
   right: 0;
@@ -619,5 +631,11 @@ p {
 .headphones {
   font-size: 3rem;
   color: white;
+}
+
+.logoJourney {
+  width: 10vw;
+  margin: 1rem;
+  position: fixed;
 }
 </style>
