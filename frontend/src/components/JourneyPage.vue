@@ -145,13 +145,13 @@ function updateCurrentTrack(track) {
     currentTrack.value.genres = artist.genres;
   });
 
-  getAudioAnalysis(track.id).then((response) => {
+  /* getAudioAnalysis(track.id).then((response) => {
     currentTrack.value.audioAnalysis = response;
   });
 
   getAudioFeatures(track.id).then((response) => {
     currentTrack.value.audioFeatures = response;
-  });
+  }); */
 
   console.log('Playing track:', currentTrack.value);
 }
@@ -256,16 +256,8 @@ onMounted(() => {
   fetchTopTracksAndArtists('short_term', 0);
   fetchTopTracksAndArtists('medium_term', 1);
   console.log(years.value);
-  fetchWrappedPlaylists();
-
-
-  ctx = gsap.context(() => {
-    // Create the smooth scrolling effect
-    smoother = ScrollSmoother.create({
-      smooth: 1,
-      effects: true,
-    });
-  }, main.value);
+  //fetchWrappedPlaylists();
+  
 
 
   const bubble = document.querySelector('.bubble');
@@ -346,14 +338,11 @@ window.onload = function () {
 
 };
 
-
-const showPopup = ref(true); // show popup on page load
-
+const showPopup = ref(true);
 function closePopup() {
   showPopup.value = false;
 }
 
-//A scroll event listener is added to the window. This means handleScroll will execute every time the user scrolls.
 onMounted(() => {
   const boxB = document.querySelector(".box-b");
 
