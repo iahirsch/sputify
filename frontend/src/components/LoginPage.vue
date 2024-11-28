@@ -58,16 +58,6 @@ body {
     overflow: hidden;
 }
 
-h1 {
-    font-weight: 700;
-    font-style: normal;
-    font-size: 4rem;
-    background: linear-gradient(90deg, #1DB954 0%, #4DD4AC 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
 .container {
     display: flex;
     flex-direction: column;
@@ -111,7 +101,9 @@ h1 {
 
 .logo{
     position: relative;
-    height: 15vh;
-    margin-top: 3rem;
+    width: 40vw;
+    padding-top: 10vh;
+    padding-bottom: 5vh;
 }
+
 </style>
