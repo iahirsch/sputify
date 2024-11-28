@@ -3,7 +3,7 @@
     <div class="popup-content">
       <span class="material-symbols-rounded close" @click="closePopup">close</span>
       <span class="material-symbols-rounded headphones">headphones</span>
-      <h2>Use headphones for better experience</h2>
+      <h2>Use headphones for a better experience.</h2>
       <button @click="closePopup">OK</button>
     </div>
   </div>
@@ -465,11 +465,10 @@ h2 {
 }
 
 .menu-button {
-  color: white;
+  color: rgba(255, 255, 255, 0.6);
   margin-top: 2vh;
   margin: 1rem;
   font-size: 2rem;
-  opacity: 0.5;
   z-index: 10;
   position: fixed;
   cursor: pointer;
@@ -480,18 +479,15 @@ h2 {
   left: 0;
   top: 91%;
   transform: scaleX(-1);
-  opacity: 1;
 }
 
 .help {
   right: 1rem;
   right: 0;
-  opacity: 1;
 }
 
 .menu-button:hover {
   color: white;
-  opacity: 0.7;
 }
 
 .menu-button::after {
@@ -500,12 +496,11 @@ h2 {
   width: fit-content;
   padding: 15px;
   color: white;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.2);
   visibility: hidden;
   transition: opacity 0.4s ease;
   font-family: 'Familjen Grotesk', sans-serif;
   font-size: 1.1rem;
-  opacity: 0;
   border-radius: 10px;
 }
 
@@ -556,7 +551,7 @@ p {
 }
 
 .totop:hover {
-  color: #fff;
+  color: white;
 }
 
 .totop-icon {
@@ -574,11 +569,10 @@ p {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.6);
-  /* background could be adjusted to fullscreen popup */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 11;
 }
 
 .popup-content {
@@ -586,46 +580,55 @@ p {
   background-image: linear-gradient(#1DB954, #4DD4AC);
   padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 5rem 5rem black;
   text-align: center;
-  max-width: 60vh;
-  font-family: 'Familjen Grotesk', sans-serif;
+  max-width: 60vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .popup-content h2 {
-  margin-bottom: 1.3rem;
+  width: 20vw;
+  min-width: fit-content;
+  padding: 1rem;
   font-size: 1.2rem;
   color: white;
+  text-shadow: 0 0 2rem black;
 }
 
 .popup-content button {
-  background: white;
+  background-color: rgba(255, 255, 255, 0.8);
   color: black;
-  border: none;
-  padding: 0.2rem 1.5rem;
-  border-radius: 1rem;
-  width: 25%;
   cursor: pointer;
-  font-size: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5rem;
+  padding: 1.5rem 3rem;
+  border: none;
+  transition-duration: 0.4s;
+  font-size: 1rem;
+  font-weight: 900;
 }
 
 .popup-content button:hover {
-  background: #1c6a20;
-  ;
-  color: white;
+  background: white;
+  transform: scale(1.1);
 }
 
 .close {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 1rem;
+  padding: 0.5rem;
   font-size: 1.5rem;
-  color: white;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .close:hover {
-  color: #1c6a20;
+  color: white;
+  cursor: pointer;
 }
 
 .headphones {

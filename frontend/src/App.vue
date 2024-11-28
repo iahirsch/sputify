@@ -27,7 +27,7 @@ body {
   overflow-x: hidden;
 
   ::selection {
-    background-color: rgba(0, 200, 100, 0.3);
+    background-color: rgba(255, 255, 255, 0.3);
   }
 
   font-family: "Familjen Grotesk",
