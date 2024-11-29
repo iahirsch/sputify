@@ -11,7 +11,7 @@
                 <img class="logo" src="../assets/spütify_logo.png"/>
             </div>
             <div class="intro">
-                <h2>Discover your music Journey.</h2>
+                <h2>Discover Your Music Journey.</h2>
                 <p>Let your Spotify data speak for you and get unique visualizations of your favorite artists and songs.
                     Immerse yourself in your personal music history.</p>
             </div>

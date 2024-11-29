@@ -62,13 +62,13 @@ let panel_tl;
 const userName = ref('');
 const years = ref([
   {
-    title: 'last 3 weeks',
+    title: 'Last 3 Weeks',
     topTracks: [],
     topArtists: [],
     topGenres: []
   },
   {
-    title: 'last 6 months',
+    title: 'Last 6 Months',
     topTracks: [],
     topArtists: [],
     topGenres: []
