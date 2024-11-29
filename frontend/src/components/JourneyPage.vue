@@ -285,10 +285,10 @@ onMounted ( async () => {
     opacity: 0,
     scrollTrigger: {
       trigger: 'footer', 
-      start: 'top 30%', 
+      start: 'top 50%', 
       end: 'top 50%', 
       scrub: true,
-      markers: true,
+      markers: false,
     },
   });
 }, main.value);
