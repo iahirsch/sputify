@@ -24,20 +24,22 @@
 body {
   margin: 0;
   background-color: black;
+  color: white;
   overflow-x: hidden;
+
+  font-family: "Familjen Grotesk", sans-serif;
+  font-size: 1.5rem;
 
   ::selection {
     background-color: rgba(255, 255, 255, 0.3);
   }
-
-  font-family: "Familjen Grotesk",
-  sans-serif;
-  font-size: 1.5rem;
+  
 }
 
 h1 {
   font-family: "Franie", sans-serif;
 }
+
 
 .material-symbols-rounded {
   font-family: 'Material Symbols Rounded';

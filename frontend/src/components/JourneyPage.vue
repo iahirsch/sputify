@@ -19,10 +19,8 @@
         <YearComponent v-for="(year, index) in years" :key="index" :year="year" :currentTrack="currentTrack"
           :playing="playing" :playTrack="playTrack" />
       </div>
-
-      <div class="line"></div>
+      <ShareComponent :user-name="userName" :years="years" />
       <footer class="footergradient-black">
-        <ShareComponent :user-name="userName" :years="years" />
         <button @click="scrollTo" class="totop">
           <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>
           <p>Back to Top</p>
@@ -423,10 +421,9 @@ div.step {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 40vh;
   position: relative;
   z-index: 2;
-  padding-top: 20vh;
+  padding-top: 5rem;
   height: auto;
 }
 
@@ -450,7 +447,7 @@ h2 {
 }
 
 .line {
-  height: 50px;
+  height: 250px;
   background: none;
 }
 

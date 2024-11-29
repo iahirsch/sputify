@@ -1,20 +1,21 @@
 <template>
+    <h2>Share Templates</h2>
     <div class="container text-center">
         <div class="canvas-container">
             <button @click.prevent="previousCanvas" class="arrow left-arrow">
                 <span class="material-symbols-rounded">keyboard_double_arrow_left</span>
             </button>
-            <button @click.prevent="nextCanvas" class="arrow right-arrow">
-                <span class="material-symbols-rounded">keyboard_double_arrow_right</span>
-            </button>
             <div class="portrait-container">
                 <div v-for="(canvas, index) in canvases" :key="index"
                     :class="['portrait', { selected: selectedCanvas === index }]"
-                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 100 + 50}% + 50vw)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
+                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103 + 100}% + 580px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
                     @click="selectCanvas(index)">
                     <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                 </div>
             </div>
+            <button @click.prevent="nextCanvas" class="arrow right-arrow">
+                <span class="material-symbols-rounded">keyboard_double_arrow_right</span>
+            </button>
         </div>
 
         <div class="button-container">
@@ -245,6 +246,11 @@ h4 {
     margin-bottom: 20px;
 }
 
+h2 {
+    margin-bottom: 0;
+    margin-left: 5vw;
+}
+
 .container {
     width: 100vw;
     display: flex;
@@ -287,8 +293,9 @@ h4 {
     width: 100vw;
     overflow: hidden;
     display: flex;
+    justify-content: center;
     gap: 10px;
-    padding: 5% 0;
+    padding: 5rem 0;
     transition: transform 0.5s ease-in-out;
 }
 
@@ -319,6 +326,10 @@ canvas {
     height: 480px;
 }
 
+.canvas-container {
+    display: flex;
+}
+
 .arrow {
     position: relative;
     top: 50%;
@@ -330,11 +341,11 @@ canvas {
 }
 
 .arrow.left-arrow {
-    left: 20px;
+    left: 80px;
 }
 
 .arrow.right-arrow {
-    left: calc(100vw - 150px);
+    right: 80px;
 }
 
 .arrow:hover {

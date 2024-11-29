@@ -2,7 +2,7 @@
     <div class="year">
         <h1 class="year-title">{{ year.title }}</h1>
         <div class="content-leftside">
-            <h2>your top songs</h2>
+            <h2>Your Top Songs</h2>
             <div v-if="year.topTracks.length > 0">
                 <div v-for="(track) in year.topTracks" :key="track.id" class="song"
                     :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
@@ -17,10 +17,10 @@
                 </div>
             </div>
             <div v-else>
-                <p class="loading">Loading top tracks...</p>
+                <p class="loading">Loading Top Tracks...</p>
             </div>
-            <div style="height: 40vh;"></div>
-            <h2>your top artists</h2>
+            <div class="line"></div>
+            <h2>Your Top Artists</h2>
             <div v-if="year.topArtists.length > 0">
                 <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
                     :class="{ 'currently-playing': artist.name === currentTrack.artist }">
@@ -51,20 +51,21 @@
                 </div>
             </div>
             <div v-else>
-                <p class="loading">Loading top artists...</p>
+                <p class="loading">Loading Top Artists...</p>
             </div>
         </div>
         <div class="content-rightside">
-            <h2>your top genres</h2>
+            <h2>Your Top Genres</h2>
             <div v-if="year.topGenres.length > 0" class="genre-container">
                 <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
                     :class="{ 'current-genre': false }">{{ genre }}</p>
             </div>
             <div v-else>
-                <p class="loading">Loading top genres...</p>
+                <p class="loading">Loading Top Genres...</p>
             </div>
         </div>
     </div>
+    <div class="line"></div>
 </template>
 
 <script setup>
@@ -249,5 +250,10 @@ function open(artist) {
 
 .loading {
     color: rgba(255, 255, 255, 0.5);
+}
+
+.line {
+    height: 250px;
+    background: none;
 }
 </style>
