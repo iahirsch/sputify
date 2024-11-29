@@ -62,17 +62,19 @@
                 </h5>
             </div>
         </div>
-        <div class="content-rightside">
-            <h2>Your Top Genres</h2>
+        <div class="content-center">
+          <h4 class="top-genre-text">Your Top Genres</h4>
             <div v-if="year.topGenres.length > 0" class="genre-container">
-                <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
-                    :class="{ 'current-genre': false }">
-                    {{
-                    genre }}</p>
+              <p v-for="(genre, index) in year.topGenres" :key="index" class="genre" :class="{ 'current-genre': false }">
+                {{ genre }}
+          </p>
             </div>
             <div v-else>
                 <p class="loading">Loading top genres...</p>
             </div>
+        </div>
+        <div class="content-rightside">
+            timeline platzhalter
         </div>
     </div>
     <div class="line"></div>
@@ -118,11 +120,16 @@ function open(artist) {
 }
 
 .content-leftside,
-.content-rightside {
-    width: 40vw;
+.content-rightside,
+.content-center {
+    width: 30vw;
     display: flex;
     flex-direction: column;
     padding-top: 200px;
+}
+
+.content-center{
+  margin-top: 25%;
 }
 
 .content-rightside {
@@ -241,7 +248,14 @@ function open(artist) {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
+}
+
+.top-genre-text {
+    color: rgba(255, 255, 255, 0.5);
+    /* color: white; */
+    margin-top: 4rem;
+    text-align: center;
 }
 
 .genre {
@@ -253,8 +267,8 @@ function open(artist) {
     font-size: 1.2rem;
     margin: 0.5rem;
     padding: 0.5rem 1rem;
-    color: rgba(255, 255, 255, 0.8);
-    background-color: rgba(255, 255, 255, 0.1);
+    color:  rgba(255, 255, 255, 0.5);
+    border: 2px solid  rgba(255, 255, 255, 0.5);
     border-radius: 2rem;
 }
 
