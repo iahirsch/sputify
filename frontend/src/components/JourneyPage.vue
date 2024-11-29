@@ -34,7 +34,7 @@
 const props = defineProps({
   playerReady: Boolean
 });
-import { onMounted, onBeforeUnmount, onUnmounted, ref } from 'vue';
+import { onMounted, onBeforeUnmount, onUnmounted, ref, nextTick } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import Lenis from 'lenis';
@@ -159,7 +159,7 @@ function logOut() {
   window.location.href = '/';
 }
 
-onMounted(() => {
+onMounted ( async () => {
 
   async function fetchUserData() {
     try {
@@ -249,12 +249,17 @@ onMounted(() => {
     }
   }
 
-  fetchUserData();
-  fetchTopTracksAndArtists('short_term', 0);
-  fetchTopTracksAndArtists('medium_term', 1);
+  await fetchUserData();
+  await fetchTopTracksAndArtists('short_term', 0);
+  await fetchTopTracksAndArtists('medium_term', 1);
   console.log(years.value);
+  await nextTick();
   //fetchWrappedPlaylists();
 
+  // wegen Layout Shift
+  // await functionen warten bis die Daten geholt wurden 
+  // nexttick ist eine Funktion von Vue, bis es ins DOM gerendert wurde
+  // erst dann GSAP
 
 
   const bubble = document.querySelector('.bubble');
@@ -269,19 +274,19 @@ onMounted(() => {
       markers: false,
     },
   });
-
-  //disappear bubble when scrolling to footer aber es ghat ned
-  // gsap.to(bubble, {
-  //   opacity: 0,
-  //   scrollTrigger: {
-  //     trigger: 'footergradient-black',
-  //     start: 'top 30%', 
-  //     end: 'top 50%', 
-  //     scrub: true,
-  //     markers: false,
-  //   },
-  // });
+  
+  gsap.to(bubble, {
+    opacity: 0,
+    scrollTrigger: {
+      trigger: 'footer', 
+      start: 'top 50%', 
+      end: 'top 50%', 
+      scrub: true,
+      markers: false,
+    },
+  });
 }, main.value);
+
 
 
 onBeforeUnmount(() => {
@@ -526,6 +531,7 @@ footer {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
 }
 
 p {

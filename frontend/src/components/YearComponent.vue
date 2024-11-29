@@ -54,16 +54,49 @@
                 <p class="loading">Loading Top Artists...</p>
             </div>
         </div>
-        <div class="content-rightside">
-            <h2>Your Top Genres</h2>
-            <div v-if="year.topGenres.length > 0" class="genre-container">
-                <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
-                    :class="{ 'current-genre': false }">{{ genre }}</p>
-            </div>
-            <div v-else>
-                <p class="loading">Loading Top Genres...</p>
-            </div>
+      </div>
+
+      <div v-else>
+        <p class="loading">Loading top tracks...</p>
+      </div>
+      <div style="height: 40vh;"></div>
+      <h2>your top artists</h2>
+      <div v-if="year.topArtists.length > 0">
+        <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
+          :class="{ 'currently-playing': artist.tracks && artist.tracks[0] && artist.tracks[0].id === currentTrack.id }"
+          @click="playTrack(artist.tracks[0])">
+          <span class="material-symbols-rounded play-icon">
+            {{ artist.tracks && artist.tracks[0] && artist.tracks[0].id === currentTrack.id && playing ? 'pause' :
+              'play_arrow' }}
+          </span>
+          <p class="artist-name">
+            {{ artist.name }}<br>
+            <span v-if="artist.tracks.length > 0" class="artist-song">{{ artist.tracks[0].name }}</span>
+          </p>
         </div>
+      </div>
+      <div v-else>
+        <p class="loading">Loading top artists...</p>
+      </div>
+      <div class="container-badge">
+        <span class="material-symbols-rounded badge ">Favorite</span>
+        <h5 class="badge-text">
+          you're obsessed with
+          <span v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
+          <span v-else>loading...</span>
+          lately
+        </h5>
+      </div>
+    </div>
+    <div class="content-rightside">
+      <h2>your top genres</h2>
+      <div v-if="year.topGenres.length > 0" class="genre-container">
+        <p v-for="(genre, index) in year.topGenres" :key="index" class="genre" :class="{ 'current-genre': false }">{{
+          genre }}</p>
+      </div>
+      <div v-else>
+        <p class="loading">Loading top genres...</p>
+      </div>
     </div>
     <div class="line"></div>
 </template>
@@ -255,5 +288,47 @@ function open(artist) {
 .line {
     height: 250px;
     background: none;
+}
+
+.badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-size: 2rem;
+  padding: 1vh;
+  color: white;
+  /* background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%); */
+  background-color: rgba(255, 255, 255, 0.3); 
+  border-radius: 50%;
+}
+.badge:hover {
+  /* Animation for smooth glow effect (optional) */
+  animation: glow 1s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 0 5px #35bd69;
+  }
+  50% {
+    box-shadow: 0 0 10px 10px #4DD4AC;
+  }
+  100% {
+    box-shadow: 0 0 0 5px #1DB954;
+  }
+}
+
+.container-badge {
+  display: flex;
+  align-items: center;
+  margin-top: 5vh;
+  margin-left: 5vh;
+}
+
+.badge-text {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: 2vh;
+  justify-content: center;
 }
 </style>
