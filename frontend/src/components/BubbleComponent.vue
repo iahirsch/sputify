@@ -246,7 +246,7 @@ export default {
       { deep: true, immediate: true }
     );
 
-    watch(() => props.playing, () => {
+    /* watch(() => props.playing, () => {
       clearAll();
       if (props.playing) {
         updateInterval = setInterval(updateVisualizer, getTempoTimeout());
@@ -255,7 +255,7 @@ export default {
       } else {
         remainingTime -= (Date.now() - startTime);
       }
-    });
+    }); */
 
     onBeforeUnmount(() => {
       clearAll();
