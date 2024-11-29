@@ -53,50 +53,28 @@
             <div v-else>
                 <p class="loading">Loading Top Artists...</p>
             </div>
+            <div class="container-badge">
+                <span class="material-symbols-rounded badge ">Favorite</span>
+                <h5 class="badge-text">
+                    you're obsessed with
+                    <span v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
+                    <span v-else>loading...</span>
+                    lately
+                </h5>
+            </div>
         </div>
-      </div>
-
-      <div v-else>
-        <p class="loading">Loading top tracks...</p>
-      </div>
-      <div style="height: 40vh;"></div>
-      <h2>your top artists</h2>
-      <div v-if="year.topArtists.length > 0">
-        <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
-          :class="{ 'currently-playing': artist.tracks && artist.tracks[0] && artist.tracks[0].id === currentTrack.id }"
-          @click="playTrack(artist.tracks[0])">
-          <span class="material-symbols-rounded play-icon">
-            {{ artist.tracks && artist.tracks[0] && artist.tracks[0].id === currentTrack.id && playing ? 'pause' :
-              'play_arrow' }}
-          </span>
-          <p class="artist-name">
-            {{ artist.name }}<br>
-            <span v-if="artist.tracks.length > 0" class="artist-song">{{ artist.tracks[0].name }}</span>
-          </p>
+        <div class="content-rightside">
+            <h2>your top genres</h2>
+            <div v-if="year.topGenres.length > 0" class="genre-container">
+                <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
+                    :class="{ 'current-genre': false }">
+                    {{
+                        genre }}</p>
+            </div>
+            <div v-else>
+                <p class="loading">Loading top genres...</p>
+            </div>
         </div>
-      </div>
-      <div v-else>
-        <p class="loading">Loading top artists...</p>
-      </div>
-      <div class="container-badge">
-        <span class="material-symbols-rounded badge ">Favorite</span>
-        <h5 class="badge-text">
-          you're obsessed with
-          <span v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
-          <span v-else>loading...</span>
-          lately
-        </h5>
-      </div>
-    </div>
-    <div class="content-rightside">
-      <h2>your top genres</h2>
-      <div v-if="year.topGenres.length > 0" class="genre-container">
-        <p v-for="(genre, index) in year.topGenres" :key="index" class="genre" :class="{ 'current-genre': false }">{{
-          genre }}</p>
-      </div>
-      <div v-else>
-        <p class="loading">Loading top genres...</p>
-      </div>
     </div>
     <div class="line"></div>
 </template>
