@@ -4,7 +4,9 @@
       <span class="material-symbols-rounded close" @click="closePopup">close</span>
       <span class="material-symbols-rounded headphones">headphones</span>
       <h2>Use headphones for a better experience.</h2>
-      <button @click="closePopup">OK</button>
+      <button @click="closePopup">
+        <p>OK</p>
+      </button>
     </div>
   </div>
 </template>
@@ -59,16 +61,9 @@ function closePopup() {
 .popup-content button {
     background-color: rgba(255, 255, 255, 0.8);
     color: black;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5rem;
-    padding: 1.5rem 3rem;
     border: none;
     transition-duration: 0.4s;
-    font-size: 1rem;
-    font-weight: 900;
+    padding: 1rem 2rem;
 }
 
 .popup-content button:hover {

@@ -16,7 +16,9 @@
                     Immerse yourself in your personal music history.</p>
             </div>
             <div>
-                <button @click="authorize" class="button">CONNECT TO SPOTIFY</button>
+                <button @click="authorize" class="button">
+                    <p>CONNECT TO SPOTIFY</p>
+                </button>
             </div>
             <div>
                 <img src="../assets/bubble_dark.png" alt="bubble-black-and-white" class="bubbleBlackWhite" />
@@ -87,11 +89,8 @@ body {
     justify-content: center;
     align-items: center;
     border-radius: 5rem;
-    padding: 1.5rem 3rem;
     border: none;
     transition-duration: 0.4s;
-    font-size: 1rem;
-    font-weight: 900;
 }
 
 .button:hover {

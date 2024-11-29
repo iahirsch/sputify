@@ -470,6 +470,7 @@ h2 {
   z-index: 10;
   position: fixed;
   cursor: pointer;
+  text-shadow: 0 0 0.2rem black;
 }
 
 .logout {
@@ -540,6 +541,7 @@ p {
 
 .totop {
   font-size: 1rem;
+  font-weight: 300;
   margin-top: 10vh;
   background-color: transparent;
   color: #ffffff55;
@@ -547,6 +549,7 @@ p {
   cursor: pointer;
   z-index: 4;
   margin-bottom: 1rem;
+  flex-direction: column;
 }
 
 .totop:hover {
