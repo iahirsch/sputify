@@ -11,12 +11,14 @@
                 <img class="logo" src="../assets/spütify_logo.png" />
             </div>
             <div class="intro">
-                <h2>Discover your music Journey.</h2>
+                <h2>Discover Your Music Journey.</h2>
                 <p>Let your Spotify data speak for you and get unique visualizations of your favorite artists and songs.
                     Immerse yourself in your personal music history.</p>
             </div>
             <div>
-                <button @click="authorize" class="button">CONNECT TO SPOTIFY</button>
+                <button @click="authorize" class="button">
+                    <p>CONNECT TO SPOTIFY</p>
+                </button>
             </div>
             <div>
                 <img src="../assets/bubble_dark.png" alt="bubble-black-and-white" class="bubbleBlackWhite" />
@@ -96,12 +98,8 @@ body {
     justify-content: center;
     align-items: center;
     border-radius: 5rem;
-    padding: 1.5rem 3rem;
     border: none;
     transition-duration: 0.4s;
-    font-family: 'Familjen Grotesk', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 900;
 }
 
 .button:hover {

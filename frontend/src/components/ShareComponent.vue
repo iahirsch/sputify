@@ -1,32 +1,31 @@
 <template>
+    <h2>Share Templates</h2>
     <div class="container text-center">
         <div class="canvas-container">
             <button @click.prevent="previousCanvas" class="arrow left-arrow">
                 <span class="material-symbols-rounded">keyboard_double_arrow_left</span>
             </button>
-            <button @click.prevent="nextCanvas" class="arrow right-arrow">
-                <span class="material-symbols-rounded">keyboard_double_arrow_right</span>
-            </button>
-
             <div class="portrait-container">
                 <div v-for="(canvas, index) in canvases" :key="index"
                     :class="['portrait', { selected: selectedCanvas === index }]"
-                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 100 + 50}% + 50vw)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
+                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103 + 100}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
                     @click="selectCanvas(index)">
                     <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                 </div>
-
             </div>
+            <button @click.prevent="nextCanvas" class="arrow right-arrow">
+                <span class="material-symbols-rounded">keyboard_double_arrow_right</span>
+            </button>
         </div>
 
         <div class="button-container">
             <button class="share-button" @click.prevent="shareCanvas">
-                <span class="material-symbols-rounded">share</span>
-                SHARE
+                <span class="material-symbols-rounded share">share</span>
+                <p>SHARE</p>
             </button>
             <button class="share-button" @click.prevent="downloadCanvas">
                 <span class="material-symbols-rounded">download</span>
-                DOWNLOAD
+                <p>DOWNLOAD</p>
             </button>
         </div>
     </div>
@@ -247,6 +246,11 @@ h4 {
     margin-bottom: 20px;
 }
 
+h2 {
+    margin-bottom: 0;
+    margin-left: 5vw;
+}
+
 .container {
     width: 100vw;
     display: flex;
@@ -258,26 +262,14 @@ h4 {
     width: 80vw;
     display: flex;
     justify-content: center;
-    gap: 5%;
+    flex-wrap: wrap;
+    gap: 2rem;
 }
 
 .share-button {
     background-color: rgba(255, 255, 255, 0.8);
     color: black;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5rem;
-    padding: 1.5rem 3rem;
-    border: none;
     transition-duration: 0.4s;
-    font-size: 1rem;
-    font-weight: 900;
-    .material-symbols-rounded {
-        font-size: 1.5rem;
-        margin-right: 10px;
-    }
 }
 
 .share-button:hover {
@@ -289,8 +281,9 @@ h4 {
     width: 100vw;
     overflow: hidden;
     display: flex;
+    justify-content: center;
     gap: 10px;
-    padding: 5% 0;
+    padding: 5rem 0;
     transition: transform 0.5s ease-in-out;
 }
 
@@ -321,6 +314,10 @@ canvas {
     height: 480px;
 }
 
+.canvas-container {
+    display: flex;
+}
+
 .arrow {
     position: relative;
     top: 50%;
@@ -332,11 +329,11 @@ canvas {
 }
 
 .arrow.left-arrow {
-    left: 20px;
+    left: 8rem;
 }
 
 .arrow.right-arrow {
-    left: calc(100vw - 150px);
+    right: 8rem;
 }
 
 .arrow:hover {
@@ -346,5 +343,9 @@ canvas {
 .material-symbols-rounded {
     font-family: 'Material Symbols Rounded';
     font-size: 3rem;
+}
+
+.share {
+    transform: scale(0.9);
 }
 </style>

@@ -24,15 +24,16 @@
 body {
   margin: 0;
   background-color: black;
+  color: white;
   overflow-x: hidden;
 
-  ::selection {
-    background-color: rgba(0, 200, 100, 0.3);
-  }
-
-  font-family: "Familjen Grotesk",
-  sans-serif;
+  font-family: "Familjen Grotesk", sans-serif;
   font-size: 1.5rem;
+
+  ::selection {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  
 }
 
 h1 {
@@ -44,4 +45,27 @@ h1 {
   font-size: 3rem;
   user-select: none;
 }
+
+button {
+  font-family: "Familjen Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  padding: 1.2rem 2.5rem;
+  border: none;
+  border-radius: 5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    margin: 0;
+    padding-bottom: 0.15rem;
+  }
+  .material-symbols-rounded {
+    font-size: 2rem !important;
+    margin-right: 0.5rem;
+  }
+}
+
 </style>
