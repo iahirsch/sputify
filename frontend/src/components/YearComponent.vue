@@ -34,7 +34,8 @@
                         </p>
                     </div>
                     <div class="artistSongs"
-                        :style="{ height: selectedArtist === artist && artist.tracks.length > 0 ? `${artist.tracks.length * 4.5 + 0.5}rem` : '0rem' }">
+                        :style="{ height: selectedArtist === artist && artist.tracks.length > 0 ? `${artist.tracks.length * 4.5 + 1.5}rem` : '0rem' }">
+                        <div style="height: 1rem;"></div>
                         <div v-for="(track) in artist.tracks" :key="track.id" class="song"
                             :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
                             <span class="material-symbols-rounded play-icon">

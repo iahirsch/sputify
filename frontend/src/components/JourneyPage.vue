@@ -1,12 +1,5 @@
 <template>
-  <div class="popup" v-if="showPopup">
-    <div class="popup-content">
-      <span class="material-symbols-rounded close" @click="closePopup">close</span>
-      <span class="material-symbols-rounded headphones">headphones</span>
-      <h2>Use headphones for a better experience.</h2>
-      <button @click="closePopup">OK</button>
-    </div>
-  </div>
+  <PopupComponent />
   <div class="bubble" data-speed="0.5">
     <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis" :audio-features="currentTrack.audioFeatures"
       :playing="playing" />
@@ -61,6 +54,7 @@ import BubbleComponent from './BubbleComponent.vue';
 import ShareComponent from './ShareComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 import YearComponent from './YearComponent.vue';
+import PopupComponent from './PopupComponent.vue';
 
 gsap.registerPlugin(ScrollTrigger);
 const main = ref();
@@ -187,6 +181,7 @@ onMounted(() => {
       const artistsResponse = await getTopArtists(term);
       years.value[index].topArtists = artistsResponse.items.slice(0, 5);
 
+      // Fetch top genres for each time period
       const genreCount = {};
       artistsResponse.items.forEach(artist => {
         if (artist.genres) {
@@ -197,8 +192,9 @@ onMounted(() => {
       });
       years.value[index].topGenres = Object.keys(genreCount)
         .sort((a, b) => genreCount[b] - genreCount[a])
-        .slice(0, 5);
+        .slice(0, 7);
 
+      // Fetch top tracks for each artist
       years.value[index].topArtists.forEach(async (artist, i) => {
         const artistTopTracks = tracksResponse.items.filter(track =>
           track.artists.some(a => a.id === years.value[index].topArtists[i].id)
@@ -560,80 +556,6 @@ p {
 
 .pin-spacer {
   pointer-events: none;
-}
-
-.popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 11;
-}
-
-.popup-content {
-  position: relative;
-  background-image: linear-gradient(#1DB954, #4DD4AC);
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 5rem 5rem black;
-  text-align: center;
-  max-width: 60vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.popup-content h2 {
-  width: 20vw;
-  min-width: fit-content;
-  padding: 1rem;
-  font-size: 1.2rem;
-  color: white;
-  text-shadow: 0 0 2rem black;
-}
-
-.popup-content button {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: black;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 5rem;
-  padding: 1.5rem 3rem;
-  border: none;
-  transition-duration: 0.4s;
-  font-size: 1rem;
-  font-weight: 900;
-}
-
-.popup-content button:hover {
-  background: white;
-  transform: scale(1.1);
-}
-
-.close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0.5rem;
-  font-size: 1.5rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.close:hover {
-  color: white;
-  cursor: pointer;
-}
-
-.headphones {
-  font-size: 3rem;
-  color: white;
 }
 
 .logoJourney {

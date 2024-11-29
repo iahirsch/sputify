@@ -7,7 +7,6 @@
             <button @click.prevent="nextCanvas" class="arrow right-arrow">
                 <span class="material-symbols-rounded">keyboard_double_arrow_right</span>
             </button>
-
             <div class="portrait-container">
                 <div v-for="(canvas, index) in canvases" :key="index"
                     :class="['portrait', { selected: selectedCanvas === index }]"
@@ -15,7 +14,6 @@
                     @click="selectCanvas(index)">
                     <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                 </div>
-
             </div>
         </div>
 
