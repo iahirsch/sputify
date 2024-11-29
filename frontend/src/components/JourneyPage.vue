@@ -110,7 +110,7 @@ const currentTrack = ref({
 });
 const playing = ref(false);
 
-function playTrack(track) {
+async function playTrack(track) {
   const deviceId = getDeviceId();
   const isSameTrack = track.id === currentTrack.value.id;
 
@@ -118,6 +118,21 @@ function playTrack(track) {
     playback(deviceId, null, props.playerReady, playing.value);
     playing.value = !playing.value;
   } else {
+    const response = await fetch('http://localhost:3000/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        track: {
+          name: track.name,
+          artist: track.artists[0].name
+        },
+      })
+    });
+    const json = await response.json();
+    console.log(json.analysisResults);
+
     playback(deviceId, [track.uri], props.playerReady, false);
     updateCurrentTrack(track);
     playing.value = true;
