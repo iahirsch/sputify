@@ -56,7 +56,7 @@
             <div class="container-badge">
                 <span class="material-symbols-rounded badge ">Favorite</span>
                 <h5 class="badge-text">
-                    you're obsessed with
+                    You're obsessed with
                     <span v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
                     <span v-else>loading...</span>
                     lately
