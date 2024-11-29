@@ -8,7 +8,7 @@
     <body>
         <div class="container">
             <div>
-                <img class="logo" src="../assets/spütify_logo.png"/>
+                <img class="logo" src="../assets/spütify_logo.png" />
             </div>
             <div class="intro">
                 <h2>Discover your music Journey.</h2>
@@ -44,15 +44,24 @@ export default {
             }
         },
         async authorize() {
-            let response = await fetch('http://localhost:3000/api/spotify/authorize', { credentials: 'include' })
-            let data = await response.json()
-            console.log(data)
-            console.log(response)
-            window.location.href = data.url;
+            try {
+                const response = await fetch('http://localhost:3000/authorize', { credentials: 'include' });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);
+                    console.log(response);
+                    window.location.href = data.url;
+                } else {
+                    console.error('Error authorizing with Spotify:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error authorizing with Spotify:', error);
+            }
         }
     }
 };
 </script>
+
 <style scoped>
 body {
     overflow: hidden;
@@ -90,7 +99,8 @@ body {
     padding: 1.5rem 3rem;
     border: none;
     transition-duration: 0.4s;
-    font-size: 1rem;
+    font-family: 'Familjen Grotesk', sans-serif;
+    font-size: 1.2rem;
     font-weight: 900;
 }
 
@@ -99,11 +109,10 @@ body {
     transform: scale(1.1);
 }
 
-.logo{
+.logo {
     position: relative;
     width: 40vw;
     padding-top: 10vh;
     padding-bottom: 5vh;
 }
-
 </style>

@@ -115,7 +115,7 @@ const currentTrack = ref({
 });
 const playing = ref(false);
 
-function playTrack(track) {
+async function playTrack(track) {
   const deviceId = getDeviceId();
   const isSameTrack = track.id === currentTrack.value.id;
 
@@ -123,6 +123,21 @@ function playTrack(track) {
     playback(deviceId, null, props.playerReady, playing.value);
     playing.value = !playing.value;
   } else {
+    const response = await fetch('http://localhost:3000/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        track: {
+          name: track.name,
+          artist: track.artists[0].name
+        },
+      })
+    });
+    const json = await response.json();
+    console.log(json.analysisResults);
+
     playback(deviceId, [track.uri], props.playerReady, false);
     updateCurrentTrack(track);
     playing.value = true;
@@ -257,7 +272,7 @@ onMounted(() => {
   fetchTopTracksAndArtists('medium_term', 1);
   console.log(years.value);
   //fetchWrappedPlaylists();
-  
+
 
 
   const bubble = document.querySelector('.bubble');
@@ -563,7 +578,8 @@ p {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6); /* background could be adjusted to fullscreen popup */
+  background: rgba(0, 0, 0, 0.6);
+  /* background could be adjusted to fullscreen popup */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -603,7 +619,7 @@ p {
   color: white;
 }
 
-.close{
+.close {
   position: absolute;
   top: 0;
   right: 0;
