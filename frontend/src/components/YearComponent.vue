@@ -56,10 +56,9 @@
             <div class="container-badge">
                 <span class="material-symbols-rounded badge ">Favorite</span>
                 <h5 class="badge-text">
-                    You're obsessed with
-                    <span v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
-                    <span v-else>loading...</span>
-                    lately
+                    You've been obsessed with
+                    <span v-if="year.topArtists.length > 0" style="color: #4DD4AC">{{ year.topArtists[0].name }}</span>
+                    <span v-else>loading...</span>.
                 </h5>
             </div>
         </div>
@@ -69,7 +68,7 @@
                 <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
                     :class="{ 'current-genre': false }">
                     {{
-                        genre }}</p>
+                    genre }}</p>
             </div>
             <div v-else>
                 <p class="loading">Loading top genres...</p>
@@ -272,9 +271,8 @@ function open(artist) {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
   font-size: 2rem;
-  padding: 1vh;
+  padding: 1rem;
   color: white;
   /* background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%); */
   background-color: rgba(255, 255, 255, 0.3); 
@@ -282,17 +280,17 @@ function open(artist) {
 }
 .badge:hover {
   /* Animation for smooth glow effect (optional) */
-  animation: glow 1s ease-in-out infinite alternate;
+  animation: glow 3s ease-in-out alternate;
 }
 @keyframes glow {
   0% {
-    box-shadow: 0 0 0 5px #35bd69;
+    box-shadow: 0 0 0 0 #35bd69;
   }
   50% {
-    box-shadow: 0 0 10px 10px #4DD4AC;
+    box-shadow: 0 0 1rem 1rem #4DD4AC;
   }
   100% {
-    box-shadow: 0 0 0 5px #1DB954;
+    box-shadow: 0 0 0 0 #1DB954;
   }
 }
 

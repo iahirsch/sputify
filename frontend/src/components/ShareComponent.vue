@@ -274,7 +274,7 @@ h2 {
 
 .share-button:hover {
     transform: scale(1.1);
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.6);
 }
 
 .portrait-container {
@@ -326,6 +326,9 @@ canvas {
     border: none;
     cursor: pointer;
     z-index: 4;
+    .material-symbols-rounded {
+        font-size: 3rem !important;
+    }
 }
 
 .arrow.left-arrow {
@@ -338,11 +341,6 @@ canvas {
 
 .arrow:hover {
     color: #fff;
-}
-
-.material-symbols-rounded {
-    font-family: 'Material Symbols Rounded';
-    font-size: 3rem;
 }
 
 .share {

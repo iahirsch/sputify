@@ -10,7 +10,7 @@
     <span class="material-symbols-rounded help menu-button">help</span>
     <div id="smooth-content">
       <div>
-        <img class="logoJourney" src="../assets/spütify_logo.png" />
+        <img class="logoJourney" src="../assets/spütify_logo.png" @click="scrollTo" />
       </div>
       <div class="box box-a gradient-black" data-speed="0.5">
         <WelcomeComponent :user-name="userName" />
@@ -211,7 +211,7 @@ onMounted ( async () => {
       years.value[index].topArtists.forEach(async (artist, i) => {
         const artistTopTracks = tracksResponse.items.filter(track =>
           track.artists.some(a => a.id === years.value[index].topArtists[i].id)
-        ).slice(0, 5);
+        ).slice(0, 3);
         years.value[index].topArtists[i].tracks = artistTopTracks;
       });
 
@@ -485,7 +485,8 @@ h2 {
   z-index: 10;
   position: fixed;
   cursor: pointer;
-  text-shadow: 0 0 0.2rem black;
+  -webkit-filter: drop-shadow(0 0 0.5rem black);
+  filter: drop-shadow(0 0 0.5rem black);
 }
 
 .logout {
@@ -584,5 +585,7 @@ p {
   margin: 1rem;
   position: fixed;
   z-index: 10;
+  -webkit-filter: drop-shadow(0 0 0.5rem black);
+  filter: drop-shadow(0 0 0.5rem black);
 }
 </style>

@@ -33,6 +33,7 @@ onMounted(() => {
 <style scoped>
 .title {
     text-align: center;
+    max-width: 90vw;
 }
 
 .name {
