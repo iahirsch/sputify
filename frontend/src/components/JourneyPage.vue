@@ -1,8 +1,7 @@
 <template>
   <PopupComponent />
   <div class="bubble" data-speed="0.5">
-    <BubbleComponent :audio-analysis-sections="currentTrack.audioAnalysis" :audio-features="currentTrack.audioFeatures"
-      :playing="playing" />
+    <BubbleComponent :analysis="currentTrack.analysis" :playing="playing" />
   </div>
   <div id="smooth-wrapper" ref="main">
     <!-- TODO: clear spotify authentication on logout -->
@@ -81,31 +80,19 @@ const currentTrack = ref({
   genres: [],
   image: '',
   uri: '',
-  audioAnalysis: [
-    {
-      start: 0,
-      duration: 100,
-      loudness: 0,
-      tempo: 60,
-      key: 0,
-      mode: 0,
-      time_signature: 0
-    }
-  ],
-  audioFeatures: {
-    danceability: 0,
-    energy: 0,
-    key: 0,
-    loudness: 0,
-    mode: 0,
-    speechiness: 0,
-    acousticness: 0,
-    instrumentalness: 0,
-    liveness: 0,
-    valence: 0,
+  analysis: {
     tempo: 0,
-    duration_ms: 0,
-    time_signature: 0
+    energy: 0,
+    valence: 0,
+    danceability: 0,
+    segments: [
+      {
+        start: 0,
+        duration: 100,
+        frequency_spectrum: []
+      }
+    ],
+    color: 'rgb(255, 255, 255)',
   }
 });
 const playing = ref(false);
@@ -131,7 +118,8 @@ async function playTrack(track) {
       })
     });
     const json = await response.json();
-    console.log(json.analysisResults);
+    console.log(json);
+    currentTrack.value.analysis = json.analysisResults;
 
     playback(deviceId, [track.uri], props.playerReady, false);
     updateCurrentTrack(track);
@@ -147,8 +135,7 @@ function updateCurrentTrack(track) {
     genres: currentTrack.value.genres,
     image: track.album.images[0].url,
     uri: track.uri,
-    audioAnalysis: currentTrack.value.audioAnalysis,
-    audioFeatures: currentTrack.value.audioFeatures
+    analysis: currentTrack.value.analysis
   };
 
   getArtist(track.artists[0].id).then((artist) => {
@@ -206,6 +193,21 @@ onMounted ( async () => {
       years.value[index].topGenres = Object.keys(genreCount)
         .sort((a, b) => genreCount[b] - genreCount[a])
         .slice(0, 7);
+
+      // Fetch top 3 artists for each genre
+      const genreArtists = {};
+      for (const genre of years.value[index].topGenres) {
+        genreArtists[genre] = [];
+        for (const artist of artistsResponse.items) {
+          if (artist.genres.includes(genre) && genreArtists[genre].length < 3) {
+            genreArtists[genre].push(artist);
+          }
+        }
+      }
+      years.value[index].topGenres = years.value[index].topGenres.map(genre => ({
+        name: genre,
+        artists: genreArtists[genre]
+      }));
 
       // Fetch top tracks for each artist
       years.value[index].topArtists.forEach(async (artist, i) => {
