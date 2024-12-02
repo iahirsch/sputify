@@ -63,13 +63,13 @@
                 </h5>
             </div>
         </div>
-        <div class="content-rightside">
-            <h2>Your Top Genres</h2>
+        <div class="content-center">
+            <h4 class="top-genre-text">Your Top Genres</h4>
             <div v-if="year.topGenres.length > 0" class="genre-container">
                 <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
-                    :class="{ 'current-genre': false }">
-                    {{
-                        genre }}</p>
+                    :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }" >
+                    {{ genre.name }}
+                </p>
             </div>
             <div v-else>
                 <p class="loading">Loading top genres...</p>
@@ -242,7 +242,16 @@ function open(artist) {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
+    max-height: 7.5rem;
+    overflow: hidden;
+}
+
+.top-genre-text {
+    color: rgba(255, 255, 255, 0.6);
+    /* color: white; */
+    margin-top: 4rem;
+    text-align: center;
 }
 
 .genre {
@@ -254,9 +263,17 @@ function open(artist) {
     font-size: 1.2rem;
     margin: 0.5rem;
     padding: 0.5rem 1rem;
-    color: rgba(255, 255, 255, 0.8);
-    background-color: rgba(255, 255, 255, 0.1);
+    color:  rgba(255, 255, 255, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 2rem;
+    cursor: default;
+}
+
+.current-genre {
+    border-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0.6);
+    color: rgba(0, 0, 0, 1);
+    font-weight: 700;
 }
 
 .loading {

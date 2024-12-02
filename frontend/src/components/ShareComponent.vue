@@ -21,11 +21,11 @@
         <div class="button-container">
             <button class="share-button" @click.prevent="shareCanvas">
                 <span class="material-symbols-rounded share">share</span>
-                <p>SHARE</p>
+                <p>Share</p>
             </button>
             <button class="share-button" @click.prevent="downloadCanvas">
                 <span class="material-symbols-rounded">download</span>
-                <p>DOWNLOAD</p>
+                <p>Download</p>
             </button>
         </div>
     </div>

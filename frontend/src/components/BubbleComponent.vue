@@ -11,11 +11,7 @@ import { onMounted, onBeforeUnmount, ref, watch, nextTick } from 'vue';
 export default {
   name: 'BubbleComponent',
   props: {
-    audioAnalysisSections: {
-      type: Array,
-      required: true
-    },
-    audioFeatures: {
+    analysis: {
       type: Object,
       required: true
     },
@@ -46,12 +42,11 @@ export default {
 
     function generateData() {
       let data;
-      if (toZero || !props.audioFeatures.energy) {
+      if (toZero || !props.analysis.energy) {
         data = Array.from({ length: detail }, () => ({ value: 0 }));
       } else {
-        console.log("Energy: ", props.audioFeatures.energy);
         data = Array.from({ length: detail }, () => ({
-          value: Math.random(0, props.audioFeatures.energy)
+          value: Math.random(0, props.analysis.energy)
         }));
       }
       toZero = !toZero;
@@ -66,9 +61,9 @@ export default {
     function nextSection() {
       clearAll();
       currentSection += 1;
-      if (currentSection < props.audioAnalysisSections.length) {
+      if (currentSection < props.analysis.segments.length) {
         console.log("Next Section: ", currentSection);
-        remainingTime = props.audioAnalysisSections[currentSection].duration * 1000;
+        remainingTime = props.analysis.segments[currentSection].duration * 1000;
         updateInterval = setInterval(updateVisualizer, getTempoTimeout());
         updateTimeout = setTimeout(nextSection, remainingTime);
         startTime = Date.now();
@@ -79,7 +74,7 @@ export default {
       clearAll();
       console.log("Initialize Visualizer");
       currentSection = 0;
-      remainingTime = props.audioAnalysisSections[currentSection].duration * 1000;
+      remainingTime = props.analysis.segments[currentSection].duration * 1000;
       updateInterval = setInterval(updateVisualizer, getTempoTimeout());
       updateTimeout = setTimeout(nextSection, remainingTime);
       startTime = Date.now();
@@ -170,7 +165,7 @@ export default {
     }
 
     function getColor() {
-      const { valence, energy, danceability} = props.audioFeatures;
+      const { valence, energy, danceability} = props.analysis;
       if (valence === 0 && energy === 0) {
         return `rgba(200, 200, 200, 1)`; // Gray
       } else {
@@ -180,28 +175,6 @@ export default {
 
         return `rgba(${red}, ${green}, ${blue}, 1)`;
       }
-
-      /* if (valence <= 0.1) {
-        return `rgba(50, 200, 120, 1)`; // Green
-      } else if (valence <= 0.2) {
-        return `rgba(80, 100, 220, 1)`; // Blue
-      } else if (valence <= 0.3) {
-        return `rgba(100, 100, 220, 1)`; // Slightly lighter blue
-      } else if (valence <= 0.4) {
-        return `rgba(120, 100, 220, 1)`; // Even lighter blue
-      } else if (valence <= 0.5) {
-        return `rgba(140, 100, 220, 1)`; // Light blue
-      } else if (valence <= 0.6) {
-        return `rgba(160, 75, 200, 1)`; // Transition to purple
-      } else if (valence <= 0.7) {
-        return `rgba(180, 50, 180, 1)`; // Purple
-      } else if (valence <= 0.8) {
-        return `rgba(200, 50, 150, 1)`; // Transition to red
-      } else if (valence <= 0.9) {
-        return `rgba(220, 50, 100, 1)`; // Light red
-      } else {
-        return `rgba(200, 50, 50, 1)`; // Red
-      } */
     }
 
     function updateVisualizer() {
@@ -224,29 +197,29 @@ export default {
 
       bubbleGroup.select('path')
         .transition()
-        .duration(getTempoTimeout() * (1 / props.audioFeatures.energy)) // Adjust duration based on energy
+        .duration(getTempoTimeout() * (1 / props.analysis.energy)) // Adjust duration based on energy
         .ease(d3.easeLinear)
         .attr('d', pathData);
       });
     }
 
     function getTempoTimeout() {
-      if (props.audioAnalysisSections[currentSection].tempo != 0) {
-        return 30000 / props.audioAnalysisSections[currentSection].tempo;
-      } else if (props.audioFeatures.tempo != 0) {
-        return 30000 / props.audioFeatures.tempo;
+      if (props.analysis.segments[currentSection].tempo && props.analysis.segments[currentSection].tempo != 0) {
+        return 30000 / props.analysis.segments[currentSection].tempo;
+      } else if (props.analysis.tempo != 0) {
+        return 30000 / props.analysis.tempo;
       } else {
         return 30000;
       }
     }
 
     watch(
-      () => [props.audioAnalysisSections, props.audioFeatures],
+      () => [props.analysis.segments, props.analysis],
       () => { initializeVisualizer() },
       { deep: true, immediate: true }
     );
 
-    /* watch(() => props.playing, () => {
+    watch(() => props.playing, () => {
       clearAll();
       if (props.playing) {
         updateInterval = setInterval(updateVisualizer, getTempoTimeout());
@@ -255,7 +228,7 @@ export default {
       } else {
         remainingTime -= (Date.now() - startTime);
       }
-    }); */
+    });
 
     onBeforeUnmount(() => {
       clearAll();
