@@ -1,9 +1,10 @@
 <template>
     <div class="timeline-container">
-        <div class="timeline">
-            <TimelineDatapoint v-for="n in datapoints" :key="n" :positionStyle="getCirclePosition(n)"
-                :active="isActive(n)" />
+        <div class="timeline-content">
+            <TimelineDatapoint v-for="(title, index) in yearsTitles" :key="index"
+                :positionStyle="getCirclePosition(index + 1)" :active="isActive(index + 1)" :title="title" />
         </div>
+        <span class="timeline"></span>
     </div>
 </template>
 
@@ -12,10 +13,10 @@ import { toRefs } from 'vue';
 import TimelineDatapoint from './TimelineDatapoint.vue';
 
 const props = defineProps({
-    datapoints: {
-        type: Number,
+    yearsTitles: {
+        type: Array,
         required: true,
-        validator: (value) => value > 0,
+        validator: (value) => value.length > 0, //must be a non-empty array. If an empty array is passed, Vue will issue a warning in the console.
     },
     active: {
         type: Boolean,
@@ -24,16 +25,14 @@ const props = defineProps({
     },
 });
 
-const { datapoints } = toRefs(props);
+const { yearsTitles } = toRefs(props);
 
 const getCirclePosition = (index) => {
-    const position = (index - 1) / (datapoints.value - 1) * 100;
+    const position = (index - 1) / (yearsTitles.value.length - 1) * 100;
     return { top: `${position}%` };
 };
 
 const isActive = (index) => {
-    // Define your logic to determine if the datapoint is active
-    // For example, you can return true for the first datapoint
     return index === 1;
 };
 </script>
@@ -42,18 +41,34 @@ const isActive = (index) => {
 .timeline-container {
     position: fixed;
     top: 0;
-    right: 0;
+    right: 5vw;
     height: 100vh;
+    width: 50%;
     display: flex;
     justify-content: flex-end;
 }
 
-.timeline {
+.timeline-content {
+    display: flex;
     position: relative;
     height: 80vh;
+    width: 50%;
+    top: 10%;
+    /* left: 1vw; */
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 2;
+}
+
+.timeline {
+    position: relative;
+    height: 73vh;
     width: 1px;
     background-color: #9c9c9c;
-    margin-right: 40px;
-    top: 10%
+    top: 14%;
+    right: 11px;
+    z-index: 1;
 }
 </style>

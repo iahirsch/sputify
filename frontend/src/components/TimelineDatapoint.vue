@@ -1,13 +1,17 @@
 <template>
-    <div :class="['datapoint', { active }]" :style="positionStyle">
-        <!-- Add any content or styling for the datapoint here -->
+    <div :style="positionStyle" class="container">
+        <div :class="['yearTitle', { active }]">{{ title }}</div>
+        <div :class="['datapoint', { active }]"></div>
     </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 
-const props = defineProps({
+defineProps({
+    title: {
+        type: String,
+        required: true
+    },
     positionStyle: {
         type: Object,
         required: true,
@@ -20,10 +24,29 @@ const props = defineProps({
 </script>
 
 <style scoped>
+.container {
+    display: flex;
+    align-items: baseline;
+    cursor: pointer;
+}
+
+.yearTitle {
+    margin-right: 20px;
+    white-space: nowrap;
+    transition: font-size 0.3s ease;
+    font-family: 'Franie Test', sans-serif;
+    font-size: 0.8em;
+    font-weight: 550;
+    color: #b8b8b8;
+}
+
+.yearTitle.active {
+    font-weight: 550;
+    color: white;
+    font-size: 1.6em;
+}
+
 .datapoint {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     width: 20px;
     height: 20px;
     background-color: #333333;
@@ -33,5 +56,6 @@ const props = defineProps({
 
 .datapoint.active {
     background-color: white;
+    color: white;
 }
 </style>
