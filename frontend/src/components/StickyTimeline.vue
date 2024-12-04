@@ -54,7 +54,6 @@ const isActive = (index) => {
     height: 80vh;
     width: 50%;
     top: 10%;
-    /* left: 1vw; */
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: space-between;
@@ -64,10 +63,10 @@ const isActive = (index) => {
 
 .timeline {
     position: relative;
-    height: 73vh;
+    height: 73%;
     width: 1px;
     background-color: #9c9c9c;
-    top: 14%;
+    top: 15%;
     right: 11px;
     z-index: 1;
 }

@@ -1,13 +1,14 @@
 <template>
-    <div :style="positionStyle" class="container">
+    <div :style="positionStyle" class="container" @click="scrollToPoint">
         <div :class="['yearTitle', { active }]">{{ title }}</div>
         <div :class="['datapoint', { active }]"></div>
     </div>
 </template>
 
 <script setup>
+import { defineProps } from 'vue';
 
-defineProps({
+const props = defineProps({
     title: {
         type: String,
         required: true
@@ -21,6 +22,13 @@ defineProps({
         default: false,
     },
 });
+
+const scrollToPoint = () => {
+    const element = document.querySelector(`[data-year="${props.title}"]`);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+};
 </script>
 
 <style scoped>
@@ -34,9 +42,9 @@ defineProps({
     margin-right: 20px;
     white-space: nowrap;
     transition: font-size 0.3s ease;
-    font-family: 'Franie Test', sans-serif;
+    font-family: 'Franie', sans-serif;
     font-size: 0.8em;
-    font-weight: 550;
+    font-weight: 100;
     color: #b8b8b8;
 }
 

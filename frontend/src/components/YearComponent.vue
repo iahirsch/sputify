@@ -1,7 +1,7 @@
 <template>
     <div class="year" v-if="year && year.topTracks">
         <h1 class="year-title">{{ year.title }}</h1>
-        <div class="content-leftside">
+        <div class="content-leftside" :data-year="year.title">
             <h2>Your Top Songs</h2>
             <div v-if="year.topTracks.length > 0">
                 <div v-for="(track) in year.topTracks" :key="track.id" class="song"
@@ -77,6 +77,32 @@
             </div>
         </div>
         <div class="content-rightside">
+        </div>
+    </div>
+    <div class="year" v-else-if="year && yearIndex === 0">
+        <h1 class="year-title">{{ year.title }}</h1>
+        <div class="content-leftside">
+            <h2>Recently Played Songs</h2>
+            <div v-if="year.recentTracks.length > 0">
+                <div v-for="(track) in year.recentTracks" :key="track.id" class="song"
+                    :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
+                    <span class="material-symbols-rounded play-icon">
+                        {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
+                    </span>
+                    <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
+                    <p class="song-name">
+                        {{ track.name }}<br>
+                        <span class="song-artist">{{ track.artists[0].name }}</span>
+                    </p>
+                </div>
+            </div>
+            <div v-else>
+                <p class="loading">Loading Recently Played Tracks...</p>
+            </div>
+        </div>
+        <div class="content-center">
+        </div>
+        <div class="content-rightside">
             timeline platzhalter
         </div>
     </div>
@@ -124,6 +150,29 @@ const props = defineProps({
     playing: Boolean,
     playTrack: Function
 });
+
+const years = ref([
+    {
+        title: 'Last 3 Weeks',
+        topTracks: [],
+        topArtists: [],
+        topGenres: []
+    },
+    {
+        title: 'Last 3 Months',
+        topTracks: [],
+        topArtists: [],
+        topGenres: []
+    },
+    {
+        title: 'Last 6 Months',
+        topTracks: [],
+        topArtists: [],
+        topGenres: []
+    }
+]);
+
+const yearsTitles = ref(years.value.map(year => year.title).concat("Share Journey"));
 
 const selectedArtist = ref(null);
 
