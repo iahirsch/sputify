@@ -16,18 +16,18 @@ router.post("/", async function (req, res, next) {
         const prompt = `Generate a JSON object containing detailed information about a song. Include the following keys:
 song_name: ${track.name}.
 artist:  ${track.artist}.
-tempo: The tempo of the song in beats per minute (BPM)
+tempo: The tempo of the song in beats per minute (BPM) as a number.
 energy: A value between 0 and 1 indicating the song's energy level.
 valence: A value between 0 and 1 representing the emotional positivity of the song.
 danceability: A value between 0 and 1 representing how suitable the song is for dancing.
-duration_ms: Duration of the song in milliseconds.
-acousticness: A value between 0 and 1 indicating how acoustic the song is.
-instrumentalness: A value between 0 and 1 representing the likelihood the track is instrumental.
-segments: An array where each object represents a segment of the song. Each segment should include:start: The starting time of the segment in seconds.
+color: A color that represents the mood of the song in rgb(r, g, b) format. Consider title, artist and genre of the song to determine the color too. Avoid using the same color for different songs.
+color_explanation: A brief explanation of how the color represents the song. First word should be a fitting und unique color name.
+segments: An array where each object represents a segment of the song. Segments should be divided by distinct changes in tempo, mood, or instrumentation.
+Each segment should include:
+tempo: The tempo of the segment in beats per minute (BPM) as a number.
+start: The starting time of the segment in seconds.
 duration: The duration of the segment in seconds.
-confidence: A value between 0 and 1 indicating the confidence level in this segments distinctiveness.
 frequency_spectrum: An array of 10 numerical values between 0 and 1 representing the normalized amplitude of 10 frequency bands in the segment (from bass to treble).
-color: give me an rgb color that represents the mood of the song.
 
 Make sure the values are correct and the data is complete. Ensure the JSON is formatted correctly and provide realistic sample values.`;
 

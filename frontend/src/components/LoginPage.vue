@@ -17,7 +17,7 @@
             </div>
             <div>
                 <button @click="authorize" class="button">
-                    <p>CONNECT TO SPOTIFY</p>
+                    <p>Connect to Spotify</p>
                 </button>
             </div>
             <div>

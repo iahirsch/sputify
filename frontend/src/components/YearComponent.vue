@@ -25,8 +25,9 @@
                 <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
                     :class="{ 'currently-playing': artist.name === currentTrack.artist }">
                     <div @click="open(artist)" class="artistHead">
-                        <span class="material-symbols-rounded accordeon-icon"
-                            :class="{'rotate-icon': selectedArtist === artist}">chevron_right
+                        <span :style="{ color: artist.tracks.length > 0 ? '' : 'transparent' }"
+                            class="material-symbols-rounded accordeon-icon"
+                            :class="{ 'rotate-icon': selectedArtist === artist }">chevron_right
                         </span>
                         <img class="artistCover cover" :src="artist.images[0].url" alt="artist image" />
                         <p class="artist-name">
@@ -66,9 +67,11 @@
         <div class="content-center">
             <h2 class="top-genre-text">Your Top Genres</h2>
             <div v-if="year.topGenres.length > 0" class="genre-container">
-              <p v-for="(genre, index) in year.topGenres.slice(0, 5)" :key="index" class="genre" :class="{ 'current-genre': false }">
-                {{ genre }}
-              </p>
+                <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
+                    :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
+                    :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
+                    {{ genre.name }}
+                </p>
             </div>
             <div v-else>
                 <p class="loading">Loading top genres...</p>
@@ -85,20 +88,20 @@
 import { ref } from 'vue';
 
 const props = defineProps({
-  year: Object,
-  currentTrack: Object,
-  playing: Boolean,
-  playTrack: Function
+    year: Object,
+    currentTrack: Object,
+    playing: Boolean,
+    playTrack: Function
 });
 
 const selectedArtist = ref(null);
 
 function open(artist) {
-  if (selectedArtist.value === artist) {
-    selectedArtist.value = null;
-  } else {
-    selectedArtist.value = artist;
-  }
+    if (selectedArtist.value === artist) {
+        selectedArtist.value = null;
+    } else {
+        selectedArtist.value = artist;
+    }
 }
 </script>
 
@@ -129,8 +132,8 @@ function open(artist) {
     padding-top: 200px;
 }
 
-.content-center{
-  margin-top: 25%;
+.content-center {
+    margin-top: 25%;
 }
 
 .content-rightside {
@@ -146,12 +149,14 @@ function open(artist) {
     padding: 0.5rem;
     margin: 0.5rem;
 }
+
 .artist {
     background-color: rgba(255, 255, 255, 0);
     border-radius: 1rem;
     padding: 0.5rem;
     margin: 0.5rem;
 }
+
 .artistHead {
     display: flex;
     align-items: center;
@@ -164,6 +169,7 @@ function open(artist) {
     margin-right: 0.25rem;
     transition-duration: 0.4s;
 }
+
 .rotate-icon {
     transform: rotate(90deg);
 }
@@ -181,6 +187,7 @@ function open(artist) {
         color: rgba(255, 255, 255, 0.3);
     }
 }
+
 .artist:hover {
     cursor: pointer;
     background-color: rgba(255, 255, 255, 0.1);
@@ -236,6 +243,7 @@ function open(artist) {
         opacity: 1;
     }
 }
+
 .currently-playing.artist {
     background-color: rgba(255, 255, 255, 0.1);
 
@@ -250,10 +258,12 @@ function open(artist) {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    max-height: 7.5rem;
+    overflow: hidden;
 }
 
 .top-genre-text {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
     /* color: white; */
     margin-top: 4rem;
     text-align: center;
@@ -268,9 +278,17 @@ function open(artist) {
     font-size: 1.2rem;
     margin: 0.5rem;
     padding: 0.5rem 1rem;
-    color:  rgba(255, 255, 255, 0.5);
-    border: 2px solid  rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 2rem;
+    cursor: default;
+}
+
+.current-genre {
+    border-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0.6);
+    color: rgba(0, 0, 0, 1);
+    font-weight: 700;
 }
 
 .loading {
@@ -283,44 +301,48 @@ function open(artist) {
 }
 
 .badge {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  font-size: 2rem;
-  padding: 1vh;
-  color: white;
-  /* background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%); */
-  background-color: rgba(255, 255, 255, 0.3); 
-  border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    font-size: 2rem;
+    padding: 1vh;
+    color: white;
+    /* background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%); */
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
 }
+
 .badge:hover {
-  /* Animation for smooth glow effect (optional) */
-  animation: glow 1s ease-in-out infinite alternate;
+    /* Animation for smooth glow effect (optional) */
+    animation: glow 1s ease-in-out infinite alternate;
 }
+
 @keyframes glow {
-  0% {
-    box-shadow: 0 0 0 5px #35bd69;
-  }
-  50% {
-    box-shadow: 0 0 10px 10px #4DD4AC;
-  }
-  100% {
-    box-shadow: 0 0 0 5px #1DB954;
-  }
+    0% {
+        box-shadow: 0 0 0 5px #35bd69;
+    }
+
+    50% {
+        box-shadow: 0 0 10px 10px #4DD4AC;
+    }
+
+    100% {
+        box-shadow: 0 0 0 5px #1DB954;
+    }
 }
 
 .container-badge {
-  display: flex;
-  align-items: center;
-  margin-top: 5vh;
-  margin-left: 5vh;
+    display: flex;
+    align-items: center;
+    margin-top: 5vh;
+    margin-left: 5vh;
 }
 
 .badge-text {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-left: 2vh;
-  justify-content: center;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-left: 2vh;
+    justify-content: center;
 }
 </style>
