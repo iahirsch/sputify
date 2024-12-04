@@ -2,9 +2,11 @@
   <div class="popup" v-if="showPopup">
     <div class="popup-content">
       <span class="material-symbols-rounded close" @click="closePopup">close</span>
-      <span class="material-symbols-rounded headphones">headphones</span>
-      <h2>Use headphones for a better experience.</h2>
-      <button @click="closePopup">OK</button>
+      <span class="material-symbols-rounded sound">volume_up</span>
+      <h2>Turn on sound for a better experience.</h2>
+      <button @click="closePopup">
+        <p>OK</p>
+      </button>
     </div>
   </div>
 </template>
@@ -36,7 +38,7 @@ function closePopup() {
 
 .popup-content {
     position: relative;
-    background-image: linear-gradient(#1DB954, #4DD4AC);
+    background-image: linear-gradient( #1DB954 40%, #4DD4AC);
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 5rem 5rem black;
@@ -51,28 +53,22 @@ function closePopup() {
     width: 20vw;
     min-width: fit-content;
     padding: 1rem;
+    margin-top: 0;
     font-size: 1.2rem;
     color: white;
-    text-shadow: 0 0 2rem black;
+    text-shadow: 0 0 2rem rgba(0, 0, 0, 0.5);
 }
 
 .popup-content button {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: white;
     color: black;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5rem;
-    padding: 1.5rem 3rem;
     border: none;
     transition-duration: 0.4s;
-    font-size: 1rem;
-    font-weight: 900;
+    padding: 0.75rem 3rem;
 }
 
 .popup-content button:hover {
-    background: white;
+    background: rgba(255, 255, 255, 0.8);
     transform: scale(1.1);
 }
 
@@ -82,7 +78,7 @@ function closePopup() {
     right: 0;
     padding: 0.5rem;
     font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .close:hover {
@@ -90,8 +86,7 @@ function closePopup() {
     cursor: pointer;
 }
 
-.headphones {
+.sound {
     font-size: 3rem;
-    color: white;
 }
 </style>
