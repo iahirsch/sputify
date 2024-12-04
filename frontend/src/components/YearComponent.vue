@@ -69,7 +69,6 @@
             <div v-if="year.topGenres.length > 0" class="genre-container">
                 <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
                     :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
-                    :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
                     {{ genre.name }}
                 </p>
             </div>
