@@ -2,8 +2,8 @@
   <div class="popup" v-if="showPopup">
     <div class="popup-content">
       <span class="material-symbols-rounded close" @click="closePopup">close</span>
-      <span class="material-symbols-rounded sound">volume_up</span>
-      <h2>Turn on sound for a better experience.</h2>
+      <span class="material-symbols-rounded headphones">headphones</span>
+      <h4>Use headphones for a better experience.</h4>
       <button @click="closePopup">
         <p>OK</p>
       </button>

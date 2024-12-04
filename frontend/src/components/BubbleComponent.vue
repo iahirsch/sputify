@@ -170,7 +170,7 @@ export default {
     }
 
     function getColor() {
-      const { valence, energy, danceability} = props.audioFeatures;
+      const { valence, energy, danceability} = props.analysis;
       if (valence === 0 && energy === 0) {
         return `rgba(200, 200, 200, 1)`; // Gray
       } else {
@@ -180,28 +180,8 @@ export default {
 
         return `rgba(${red}, ${green}, ${blue}, 1)`;
       }
-
-      /* if (valence <= 0.1) {
-        return `rgba(50, 200, 120, 1)`; // Green
-      } else if (valence <= 0.2) {
-        return `rgba(80, 100, 220, 1)`; // Blue
-      } else if (valence <= 0.3) {
-        return `rgba(100, 100, 220, 1)`; // Slightly lighter blue
-      } else if (valence <= 0.4) {
-        return `rgba(120, 100, 220, 1)`; // Even lighter blue
-      } else if (valence <= 0.5) {
-        return `rgba(140, 100, 220, 1)`; // Light blue
-      } else if (valence <= 0.6) {
-        return `rgba(160, 75, 200, 1)`; // Transition to purple
-      } else if (valence <= 0.7) {
-        return `rgba(180, 50, 180, 1)`; // Purple
-      } else if (valence <= 0.8) {
-        return `rgba(200, 50, 150, 1)`; // Transition to red
-      } else if (valence <= 0.9) {
-        return `rgba(220, 50, 100, 1)`; // Light red
-      } else {
-        return `rgba(200, 50, 50, 1)`; // Red
-      } */
+      /* const rgb = props.analysis.color.match(/\d+/g);
+      return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`; */
     }
 
     function updateVisualizer() {
