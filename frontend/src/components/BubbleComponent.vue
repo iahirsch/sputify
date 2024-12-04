@@ -165,7 +165,7 @@ export default {
     }
 
     function getColor() {
-      const { valence, energy, danceability} = props.analysis;
+      /* const { valence, energy, danceability} = props.analysis;
       if (valence === 0 && energy === 0) {
         return `rgba(200, 200, 200, 1)`; // Gray
       } else {
@@ -174,7 +174,9 @@ export default {
         const blue = Math.min(255, Math.floor((1 - valence) * 300 * (1 - energy)) + Math.floor(danceability * 100)); // Danceability adds blue for pink tones.
 
         return `rgba(${red}, ${green}, ${blue}, 1)`;
-      }
+      } */
+      const rgb = props.analysis.color.match(/\d+/g);
+      return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`;
     }
 
     function updateVisualizer() {

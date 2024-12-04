@@ -25,7 +25,8 @@
                 <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
                     :class="{ 'currently-playing': artist.name === currentTrack.artist }">
                     <div @click="open(artist)" class="artistHead">
-                        <span class="material-symbols-rounded accordeon-icon"
+                        <span :style="{ color: artist.tracks.length > 0 ? '' : 'transparent' }"
+                            class="material-symbols-rounded accordeon-icon"
                             :class="{'rotate-icon': selectedArtist === artist}">chevron_right
                         </span>
                         <img class="artistCover cover" :src="artist.images[0].url" alt="artist image" />
@@ -67,7 +68,7 @@
             <h4 class="top-genre-text">Your Top Genres</h4>
             <div v-if="year.topGenres.length > 0" class="genre-container">
                 <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
-                    :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }" >
+                    :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
                     {{ genre.name }}
                 </p>
             </div>
