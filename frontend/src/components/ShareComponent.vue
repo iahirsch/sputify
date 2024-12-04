@@ -77,7 +77,7 @@ export default {
 
             const lines = `${this.userName}'s \ncurrent favorites`.split('\n');
             lines.forEach((line, index) => {
-                ctx.font = "bold 42px Franie, sans-serif";
+                ctx.font = "bold 42px FranieBlack, sans-serif";
                 ctx.fillText(line, 50, 80 + index * 50);
             });
 
@@ -123,7 +123,7 @@ export default {
             this.setCanvasStyle(ctx);
             ctx.fillStyle = "#4DD4AC";
 
-            ctx.font = "bold 42px Franie, sans-serif";
+            ctx.font = "bold 42px FranieBlack, sans-serif";
             const lines = `${this.userName}'s \ntaste evolution \nover the years`.split('\n');
             lines.forEach((line, index) => {
                 ctx.fillText(line, 50, 80 + index * 50);
@@ -151,7 +151,7 @@ export default {
             this.setCanvasStyle(ctx);
             ctx.fillStyle = "#FFA0AB";
 
-            ctx.font = "bold 42px Franie, sans-serif";
+            ctx.font = "bold 42px FranieBlack, sans-serif";
             const lines = 'Create Your Own\nMusic Journey'.split('\n');
             lines.forEach((line, index) => {
                 ctx.fillText(line, 50, 80 + index * 50);

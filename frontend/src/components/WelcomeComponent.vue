@@ -49,7 +49,7 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     min-height: 150vh;
-    font-family: 'Franie', sans-serif;
+    font-family: 'FranieBlack', sans-serif;
     font-size: 3rem;
     color: white;
 }

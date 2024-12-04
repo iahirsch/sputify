@@ -64,7 +64,7 @@
             </div>
         </div>
         <div class="content-center">
-          <h4 class="top-genre-text">Your Top Genres</h4>
+            <h2 class="top-genre-text">Your Top Genres</h2>
             <div v-if="year.topGenres.length > 0" class="genre-container">
               <p v-for="(genre, index) in year.topGenres.slice(0, 5)" :key="index" class="genre" :class="{ 'current-genre': false }">
                 {{ genre }}

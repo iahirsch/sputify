@@ -17,8 +17,12 @@
 
 <style>
 @font-face {
-  font-family: 'Franie';
+  font-family: 'FranieBlack';
   src: url('assets/FranieFontFamily/FranieVariableTest-Black.otf') format('opentype');
+}
+@font-face {
+  font-family: 'FranieSemiBold';
+  src: url('assets/FranieFontFamily/FranieVariableTest-SemiBold.otf') format('opentype');
 }
 
 body {
@@ -37,7 +41,10 @@ body {
 }
 
 h1 {
-  font-family: "Franie", sans-serif;
+  font-family: "FranieBlack", sans-serif;
+}
+h2 {
+  font-family: "FranieSemiBold", sans-serif;
 }
 
 .material-symbols-rounded {
