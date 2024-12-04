@@ -8,7 +8,7 @@
             <div class="portrait-container">
                 <div v-for="(canvas, index) in canvases" :key="index"
                     :class="['portrait', { selected: selectedCanvas === index }]"
-                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103 + 100}% + 580px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
+                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103 + 100}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
                     @click="selectCanvas(index)">
                     <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                 </div>
@@ -20,12 +20,12 @@
 
         <div class="button-container">
             <button class="share-button" @click.prevent="shareCanvas">
-                <span class="material-symbols-rounded">share</span>
-                SHARE
+                <span class="material-symbols-rounded share">share</span>
+                <p>SHARE</p>
             </button>
             <button class="share-button" @click.prevent="downloadCanvas">
                 <span class="material-symbols-rounded">download</span>
-                DOWNLOAD
+                <p>DOWNLOAD</p>
             </button>
         </div>
     </div>
@@ -262,31 +262,19 @@ h2 {
     width: 80vw;
     display: flex;
     justify-content: center;
-    gap: 5%;
+    flex-wrap: wrap;
+    gap: 2rem;
 }
 
 .share-button {
     background-color: rgba(255, 255, 255, 0.8);
     color: black;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5rem;
-    padding: 1.5rem 3rem;
-    border: none;
     transition-duration: 0.4s;
-    font-size: 1rem;
-    font-weight: 900;
-    .material-symbols-rounded {
-        font-size: 1.5rem;
-        margin-right: 10px;
-    }
 }
 
 .share-button:hover {
     transform: scale(1.1);
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.6);
 }
 
 .portrait-container {
@@ -338,22 +326,24 @@ canvas {
     border: none;
     cursor: pointer;
     z-index: 4;
+    .material-symbols-rounded {
+        font-size: 3rem !important;
+    }
 }
 
 .arrow.left-arrow {
-    left: 80px;
+    left: 8rem;
 }
 
 .arrow.right-arrow {
-    right: 80px;
+    right: 8rem;
 }
 
 .arrow:hover {
     color: #fff;
 }
 
-.material-symbols-rounded {
-    font-family: 'Material Symbols Rounded';
-    font-size: 3rem;
+.share {
+    transform: scale(0.9);
 }
 </style>

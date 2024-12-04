@@ -40,10 +40,32 @@ h1 {
   font-family: "Franie", sans-serif;
 }
 
-
 .material-symbols-rounded {
   font-family: 'Material Symbols Rounded';
   font-size: 3rem;
   user-select: none;
 }
+
+button {
+  font-family: "Familjen Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  padding: 1.2rem 2.5rem;
+  border: none;
+  border-radius: 5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    margin: 0;
+    padding-bottom: 0.15rem;
+  }
+  .material-symbols-rounded {
+    font-size: 2rem !important;
+    margin-right: 0.5rem;
+  }
+}
+
 </style>
