@@ -40,11 +40,7 @@ import Lenis from 'lenis';
 import { playback } from '../api/playback.js';
 import { getTopTracks } from '../api/getTopTracks.js';
 import { getTopArtists } from '../api/getTopArtists.js';
-import { getArtistTopTracks } from '../api/getArtistTopTracks.js';
 import { getArtist } from '@/api/getArtist.js';
-import { getAudioAnalysis } from '@/api/getAudioAnalysis';
-import { getAudioFeatures } from '@/api/getAudioFeatures';
-import { getWrappedPlaylists } from '@/api/getWrappedPlaylists';
 import { getUserInfo } from '../api/user.js';
 
 import BubbleComponent from './BubbleComponent.vue';
@@ -103,6 +99,28 @@ const currentTrack = ref({
 });
 const playing = ref(false);
 
+async function getAudioAnalysis(name, artist) {
+  try {
+    const response = await fetch('http://localhost:3000/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        track: {
+          name: name,
+          artist: artist
+        },
+      })
+    });
+    const json = await response.json();
+    console.log(json);
+    return json.analysisResults;
+  } catch (error) {
+    console.error('Error fetching audio analysis:', error);
+  }
+}
+
 async function playTrack(track) {
   const deviceId = getDeviceId();
   const isSameTrack = track.id === currentTrack.value.id;
@@ -111,22 +129,6 @@ async function playTrack(track) {
     playback(deviceId, null, props.playerReady, playing.value);
     playing.value = !playing.value;
   } else {
-    const response = await fetch('http://localhost:3000/analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        track: {
-          name: track.name,
-          artist: track.artists[0].name
-        },
-      })
-    });
-    const json = await response.json();
-    console.log(json);
-    currentTrack.value.analysis = json.analysisResults;
-
     playback(deviceId, [track.uri], props.playerReady, false);
     updateCurrentTrack(track);
     playing.value = true;
@@ -148,13 +150,9 @@ function updateCurrentTrack(track) {
     currentTrack.value.genres = artist.genres;
   });
 
-  /* getAudioAnalysis(track.id).then((response) => {
-    currentTrack.value.audioAnalysis = response;
+  getAudioAnalysis(track.name, track.artists[0].name).then((analysis) => {
+    currentTrack.value.analysis = analysis;
   });
-
-  getAudioFeatures(track.id).then((response) => {
-    currentTrack.value.audioFeatures = response;
-  }); */
 
   console.log('Playing track:', currentTrack.value);
 }
