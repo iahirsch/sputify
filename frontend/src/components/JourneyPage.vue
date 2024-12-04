@@ -98,7 +98,7 @@ const currentTrack = ref({
         frequency_spectrum: []
       }
     ],
-    color: '',
+    color: 'rgb(255, 255, 255)',
   }
 });
 const playing = ref(false);
