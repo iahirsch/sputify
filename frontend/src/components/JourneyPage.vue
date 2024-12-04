@@ -61,13 +61,19 @@ let panel_tl;
 const userName = ref('');
 const years = ref([
   {
-    title: 'Last 3 Weeks',
+    title: 'Last 4 Weeks',
     topTracks: [],
     topArtists: [],
     topGenres: []
   },
   {
     title: 'Last 6 Months',
+    topTracks: [],
+    topArtists: [],
+    topGenres: []
+  },
+  {
+    title: 'Last 12 Months',
     topTracks: [],
     topArtists: [],
     topGenres: []
@@ -92,7 +98,7 @@ const currentTrack = ref({
         frequency_spectrum: []
       }
     ],
-    color: 'rgb(255, 255, 255)',
+    color: '',
   }
 });
 const playing = ref(false);
@@ -192,7 +198,7 @@ onMounted ( async () => {
       });
       years.value[index].topGenres = Object.keys(genreCount)
         .sort((a, b) => genreCount[b] - genreCount[a])
-        .slice(0, 7);
+        .slice(0, 5);
 
       // Fetch top 3 artists for each genre
       const genreArtists = {};
@@ -269,6 +275,7 @@ onMounted ( async () => {
   await fetchUserData();
   await fetchTopTracksAndArtists('short_term', 0);
   await fetchTopTracksAndArtists('medium_term', 1);
+  await fetchTopTracksAndArtists('long_term', 2);
   console.log(years.value);
   await nextTick();
   //fetchWrappedPlaylists();
