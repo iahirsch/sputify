@@ -167,7 +167,7 @@ function logOut() {
   window.location.href = '/';
 }
 
-onMounted ( async () => {
+onMounted(async () => {
 
   async function fetchUserData() {
     try {
@@ -277,14 +277,8 @@ onMounted ( async () => {
   await fetchTopTracksAndArtists('medium_term', 1);
   await fetchTopTracksAndArtists('long_term', 2);
   console.log(years.value);
-  await nextTick();
+  await nextTick();//nexttick ist eine Funktion von Vue, bis es ins DOM gerendert wurde
   //fetchWrappedPlaylists();
-
-  // wegen Layout Shift
-  // await functionen warten bis die Daten geholt wurden 
-  // nexttick ist eine Funktion von Vue, bis es ins DOM gerendert wurde
-  // erst dann GSAP
-
 
   const bubble = document.querySelector('.bubble');
 
@@ -298,17 +292,20 @@ onMounted ( async () => {
       markers: false,
     },
   });
-  
+
   gsap.to(bubble, {
     opacity: 0,
     scrollTrigger: {
-      trigger: 'footer', 
-      start: 'top 50%', 
-      end: 'top 50%', 
+      trigger: 'footer',
+      start: 'top bottom',
+      end: 'top bottom',
       scrub: true,
       markers: false,
+      onEnter: () => gsap.to(bubble, { opacity: 0 }),
+      onLeaveBack: () => gsap.to(bubble, { opacity: 1 }),
     },
   });
+
 }, main.value);
 
 
@@ -364,11 +361,6 @@ window.onload = function () {
 
 };
 
-const showPopup = ref(true);
-function closePopup() {
-  showPopup.value = false;
-}
-
 onMounted(() => {
   const boxB = document.querySelector(".box-b");
 
@@ -387,7 +379,6 @@ onMounted(() => {
 
   window.addEventListener("scroll", handleScroll);
 });
-
 
 </script>
 

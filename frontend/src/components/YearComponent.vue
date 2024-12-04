@@ -65,7 +65,7 @@
             </div>
         </div>
         <div class="content-center">
-            <h2 class="top-genre-text">Your Top Genres</h2>
+            <h3 class="top-genre-text">Your Top Genres</h3>
             <div v-if="year.topGenres.length > 0" class="genre-container">
                 <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
                     :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
@@ -85,6 +85,10 @@
 
 <script setup>
 import { ref } from 'vue';
+import gsap from 'gsap-trial';
+import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
+
 
 const props = defineProps({
     year: Object,
@@ -102,7 +106,24 @@ function open(artist) {
         selectedArtist.value = artist;
     }
 }
+
+const genre = document.querySelector('.content-center');
+
+gsap.to(genre, { // Set initial opacity to 1
+  opacity: 1,
+  scrollTrigger: {
+    trigger: '.year-title',
+    start: 'bottom top',
+    end: 'top 20%',
+    scrub: true,
+    markers: false,
+    onEnter: () => console.log('Genre Trigger Entered'), // Log for debugging
+    onLeave: () => console.log('Genre Trigger Left'),  // Log for debugging
+  },
+});
 </script>
+
+
 
 <style scoped>
 .year {
