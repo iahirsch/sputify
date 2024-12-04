@@ -10,7 +10,7 @@
     <span class="material-symbols-rounded help menu-button">help</span>
     <div id="smooth-content">
       <div>
-        <img class="logoJourney" src="../assets/spütify_logo.png" @click="scrollTo" />
+        <img class="logoJourney" src="../assets/spütify_logo.png" />
       </div>
       <div class="box box-a gradient-black" data-speed="0.5">
         <WelcomeComponent :user-name="userName" />
@@ -110,7 +110,7 @@ const currentTrack = ref({
 });
 const playing = ref(false);
 
-async function playTrack(track) {
+function playTrack(track) {
   const deviceId = getDeviceId();
   const isSameTrack = track.id === currentTrack.value.id;
 
@@ -118,21 +118,6 @@ async function playTrack(track) {
     playback(deviceId, null, props.playerReady, playing.value);
     playing.value = !playing.value;
   } else {
-    const response = await fetch('http://localhost:3000/analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        track: {
-          name: track.name,
-          artist: track.artists[0].name
-        },
-      })
-    });
-    const json = await response.json();
-    console.log(json.analysisResults);
-
     playback(deviceId, [track.uri], props.playerReady, false);
     updateCurrentTrack(track);
     playing.value = true;
@@ -211,7 +196,7 @@ onMounted ( async () => {
       years.value[index].topArtists.forEach(async (artist, i) => {
         const artistTopTracks = tracksResponse.items.filter(track =>
           track.artists.some(a => a.id === years.value[index].topArtists[i].id)
-        ).slice(0, 3);
+        ).slice(0, 5);
         years.value[index].topArtists[i].tracks = artistTopTracks;
       });
 
@@ -485,8 +470,6 @@ h2 {
   z-index: 10;
   position: fixed;
   cursor: pointer;
-  -webkit-filter: drop-shadow(0 0 0.5rem black);
-  filter: drop-shadow(0 0 0.5rem black);
 }
 
 .logout {
@@ -557,7 +540,6 @@ p {
 
 .totop {
   font-size: 1rem;
-  font-weight: 300;
   margin-top: 10vh;
   background-color: transparent;
   color: #ffffff55;
@@ -565,7 +547,6 @@ p {
   cursor: pointer;
   z-index: 4;
   margin-bottom: 1rem;
-  flex-direction: column;
 }
 
 .totop:hover {
@@ -585,7 +566,5 @@ p {
   margin: 1rem;
   position: fixed;
   z-index: 10;
-  -webkit-filter: drop-shadow(0 0 0.5rem black);
-  filter: drop-shadow(0 0 0.5rem black);
 }
 </style>
