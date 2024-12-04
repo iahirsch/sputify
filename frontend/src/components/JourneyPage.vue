@@ -40,8 +40,9 @@ import Lenis from 'lenis';
 import { playback } from '../api/playback.js';
 import { getTopTracks } from '../api/getTopTracks.js';
 import { getTopArtists } from '../api/getTopArtists.js';
-import { getArtist } from '@/api/getArtist.js';
+import { getArtist } from '../api/getArtist.js';
 import { getUserInfo } from '../api/user.js';
+import { getWrappedPlaylists } from '../api/getWrappedPlaylists.js';
 
 import BubbleComponent from './BubbleComponent.vue';
 import ShareComponent from './ShareComponent.vue';
@@ -177,6 +178,44 @@ onMounted(async () => {
     }
   }
 
+  function analyseTopItems(topArtists, topTracks, index) {
+    // Fetch top genres for each time period
+    const genreCount = {};
+    topArtists.items.forEach(artist => {
+      if (artist.genres) {
+        artist.genres.forEach(genre => {
+          genreCount[genre] = (genreCount[genre] || 0) + 1;
+        });
+      }
+    });
+    years.value[index].topGenres = Object.keys(genreCount)
+      .sort((a, b) => genreCount[b] - genreCount[a])
+      .slice(0, 5);
+
+    // Fetch top 3 artists for each genre
+    const genreArtists = {};
+    for (const genre of years.value[index].topGenres) {
+      genreArtists[genre] = [];
+      for (const artist of topArtists.items) {
+        if (artist.genres.includes(genre) && genreArtists[genre].length < 3) {
+          genreArtists[genre].push(artist);
+        }
+      }
+    }
+    years.value[index].topGenres = years.value[index].topGenres.map(genre => ({
+      name: genre,
+      artists: genreArtists[genre]
+    }));
+
+    // Fetch top tracks for each artist
+    years.value[index].topArtists.forEach(async (_artist, i) => {
+      const artistTopTracks = topTracks.items.filter(track =>
+        track.artists.some(a => a.id === years.value[index].topArtists[i].id)
+      ).slice(0, 3);
+      years.value[index].topArtists[i].tracks = artistTopTracks;
+    });
+  }
+
   async function fetchTopTracksAndArtists(term, index) {
     try {
       const tracksResponse = await getTopTracks(term);
@@ -185,41 +224,7 @@ onMounted(async () => {
       const artistsResponse = await getTopArtists(term);
       years.value[index].topArtists = artistsResponse.items.slice(0, 5);
 
-      // Fetch top genres for each time period
-      const genreCount = {};
-      artistsResponse.items.forEach(artist => {
-        if (artist.genres) {
-          artist.genres.forEach(genre => {
-            genreCount[genre] = (genreCount[genre] || 0) + 1;
-          });
-        }
-      });
-      years.value[index].topGenres = Object.keys(genreCount)
-        .sort((a, b) => genreCount[b] - genreCount[a])
-        .slice(0, 5);
-
-      // Fetch top 3 artists for each genre
-      const genreArtists = {};
-      for (const genre of years.value[index].topGenres) {
-        genreArtists[genre] = [];
-        for (const artist of artistsResponse.items) {
-          if (artist.genres.includes(genre) && genreArtists[genre].length < 3) {
-            genreArtists[genre].push(artist);
-          }
-        }
-      }
-      years.value[index].topGenres = years.value[index].topGenres.map(genre => ({
-        name: genre,
-        artists: genreArtists[genre]
-      }));
-
-      // Fetch top tracks for each artist
-      years.value[index].topArtists.forEach(async (artist, i) => {
-        const artistTopTracks = tracksResponse.items.filter(track =>
-          track.artists.some(a => a.id === years.value[index].topArtists[i].id)
-        ).slice(0, 3);
-        years.value[index].topArtists[i].tracks = artistTopTracks;
-      });
+      analyseTopItems(artistsResponse, tracksResponse, index);
 
     } catch (error) {
       console.error(`Error fetching top tracks and artists for ${term}:`, error);
@@ -228,41 +233,37 @@ onMounted(async () => {
 
   async function fetchWrappedPlaylists() {
     try {
-      const wrappedPlaylists = await getWrappedPlaylists();
-      console.log(wrappedPlaylists);
+      const wrappedPlaylists = await getWrappedPlaylists(getDeviceId());
 
-      wrappedPlaylists.forEach((playlist) => {
-        if (playlist.year && playlist.playlist && playlist.playlist.tracks.items.length > 0) {
+      console.log('Wrapped Playlists:', wrappedPlaylists);
+
+      wrappedPlaylists.forEach(async (playlist) => {
+        if (playlist.year && playlist.tracks && playlist.tracks.length > 0) {
+
+          // get top artists for each playlist
           const artistCount = {};
-
-          playlist.playlist.tracks.items.forEach((item) => {
-            item.track.artists.forEach((artist) => {
-              artistCount[artist.name] = (artistCount[artist.name] || 0) + 1;
-            });
+          playlist.tracks.forEach(track => {
+            const artistId = track.artists[0].id;
+            artistCount[artistId] = (artistCount[artistId] || 0) + 1;
           });
 
-          const topArtists = Object.keys(artistCount)
-            .sort((a, b) => artistCount[b] - artistCount[a])
-            .slice(0, 5)
-            .map((artistName) => {
-              const artist = playlist.playlist.tracks.items.find((item) =>
-                item.track.artists.some((artist) => artist.name === artistName)
-              ).track.artists.find((artist) => artist.name === artistName);
-              return {
-                ...artist,
-                tracks: playlist.playlist.tracks.items
-                  .filter((item) => item.track.artists.some((a) => a.name === artistName))
-                  .map((item) => item.track)
-                  .slice(0, 5),
-              };
-            });
+          const sortedArtistIds = Object.keys(artistCount).sort((a, b) => artistCount[b] - artistCount[a]);
 
+          const topArtists = [];
+          for (const artistId of sortedArtistIds.slice(0, 5)) {
+            const artist = await getArtist(artistId);
+            topArtists.push(artist);
+          }
+
+          const topTracks = playlist.tracks;
           years.value.push({
             title: playlist.year,
-            topTracks: playlist.playlist.tracks.items.map((item) => item.track).slice(0, 5),
-            topArtists: topArtists,
+            topTracks: topTracks.slice(0, 5),
+            topArtists: topArtists.slice(0, 5),
             topGenres: []
           });
+
+          analyseTopItems({ items: topArtists }, { items: topTracks }, playlist.index);
         }
       });
     } catch (error) {
@@ -274,8 +275,12 @@ onMounted(async () => {
   await fetchTopTracksAndArtists('short_term', 0);
   await fetchTopTracksAndArtists('medium_term', 1);
   await fetchTopTracksAndArtists('long_term', 2);
-  console.log(years.value);
-  await nextTick();//nexttick ist eine Funktion von Vue, bis es ins DOM gerendert wurde
+
+  await fetchWrappedPlaylists();
+
+  console.log('Years:', years.value);
+
+  await nextTick();
   //fetchWrappedPlaylists();
 
   const bubble = document.querySelector('.bubble');
@@ -295,8 +300,8 @@ onMounted(async () => {
     opacity: 0,
     scrollTrigger: {
       trigger: 'footer',
-      start: 'top bottom',
-      end: 'top bottom',
+      start: 'top 50%',
+      end: 'top 50%',
       scrub: true,
       markers: false,
       onEnter: () => gsap.to(bubble, { opacity: 0 }),
