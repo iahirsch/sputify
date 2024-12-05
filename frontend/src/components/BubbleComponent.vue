@@ -27,7 +27,7 @@ export default {
     let currentSection = 0;
     let toZero = false;
     const data = ref(generateData());
-    let updateTimeout;
+    //let updateTimeout;
     let updateInterval;
     let startTime;
     let remainingTime;
@@ -55,9 +55,10 @@ export default {
 
     function clearAll() {
       clearInterval(updateInterval);
-      clearTimeout(updateTimeout);
+      //clearTimeout(updateTimeout);
     }
 
+    // gemini sections are not usable (yet)
     function nextSection() {
       clearAll();
       currentSection += 1;
@@ -65,7 +66,7 @@ export default {
         console.log("Next Section: ", currentSection);
         remainingTime = props.analysis.segments[currentSection].duration * 1000;
         updateInterval = setInterval(updateVisualizer, getTempoTimeout());
-        updateTimeout = setTimeout(nextSection, remainingTime);
+        //updateTimeout = setTimeout(nextSection, remainingTime);
         startTime = Date.now();
       }
     }
@@ -74,11 +75,12 @@ export default {
       clearAll();
       console.log("Initialize Visualizer");
       currentSection = 0;
-      remainingTime = props.analysis.segments[currentSection].duration * 1000;
-      updateInterval = setInterval(updateVisualizer, getTempoTimeout());
-      updateTimeout = setTimeout(nextSection, remainingTime);
-      startTime = Date.now();
-
+      if (props.playing) {
+        remainingTime = props.analysis.segments[currentSection].duration * 1000;
+        updateInterval = setInterval(updateVisualizer, getTempoTimeout());
+        //updateTimeout = setTimeout(nextSection, remainingTime);
+        startTime = Date.now();
+      }
       updateBubbleColor();
     }
 
@@ -225,7 +227,7 @@ export default {
       clearAll();
       if (props.playing) {
         updateInterval = setInterval(updateVisualizer, getTempoTimeout());
-        updateTimeout = setTimeout(nextSection, remainingTime);
+        //updateTimeout = setTimeout(nextSection, remainingTime);
         startTime = Date.now();
       } else {
         remainingTime -= (Date.now() - startTime);
@@ -262,6 +264,4 @@ export default {
   width: 100%;
   height: 100%;
 }
-
-.bubble {}
 </style>
