@@ -57,11 +57,12 @@ onUnmounted(() => {
 .timeline-container {
     position: fixed;
     top: 0;
-    right: 5vw;
+    right: 3vw;
+    width: 15%;
     height: 100vh;
-    width: 50%;
     display: flex;
     justify-content: flex-end;
+    z-index: 10;
 }
 
 .timeline-content {

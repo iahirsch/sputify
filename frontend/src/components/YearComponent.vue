@@ -140,10 +140,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import gsap from 'gsap-trial';
-import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
-gsap.registerPlugin(ScrollTrigger);
-
 
 const props = defineProps({
     yearIndex: Number,
@@ -153,29 +149,6 @@ const props = defineProps({
     playTrack: Function,
     index: Number
 });
-
-const years = ref([
-    {
-        title: 'Last 4 Weeks',
-        topTracks: [],
-        topArtists: [],
-        topGenres: []
-    },
-    {
-        title: 'Last 6 Months',
-        topTracks: [],
-        topArtists: [],
-        topGenres: []
-    },
-    {
-        title: 'Last 12 Months',
-        topTracks: [],
-        topArtists: [],
-        topGenres: []
-    }
-]);
-
-const yearsTitles = ref(years.value.map(year => year.title).concat("Share Journey"));
 
 const selectedArtist = ref(null);
 

@@ -3,6 +3,9 @@
   <div class="bubble" data-speed="0.5">
     <BubbleComponent :analysis="currentTrack.analysis" :playing="playing" />
   </div>
+  <div class="timeline">
+    <StickyTimeline :years-titles="yearsTitles" :active="false" />
+  </div>
   <div id="smooth-wrapper" ref="main">
     <!-- TODO: clear spotify authentication on logout -->
     <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
@@ -18,7 +21,9 @@
         <YearComponent v-for="(year, index) in years" :yearIndex="index" :year="year" :currentTrack="currentTrack"
           :playing="playing" :playTrack="playTrack" />
       </div>
-      <ShareComponent :user-name="userName" :years="years" :index="years.length" />
+      <div class="share">
+        <ShareComponent :user-name="userName" :years="years" :index="years.length" />
+      </div>
       <footer class="footergradient-black">
         <button @click="scrollTo" class="totop">
           <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>
@@ -46,6 +51,7 @@ import { getWrappedPlaylists } from '../api/getWrappedPlaylists.js';
 import { getRecentlyPlayed } from '@/api/getRecentlyPlayed.js';
 
 import BubbleComponent from './BubbleComponent.vue';
+import StickyTimeline from './StickyTimeline.vue';
 import ShareComponent from './ShareComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 import YearComponent from './YearComponent.vue';
@@ -81,6 +87,9 @@ const years = ref([
     topGenres: []
   }
 ]);
+
+const yearsTitles = ref(years.value.map(year => year.title).concat("Share Journey"));
+
 const currentTrack = ref({
   id: '',
   name: '',
@@ -328,6 +337,18 @@ onMounted(async () => {
     },
   });
 
+  const timeline = document.querySelector('.timeline');
+
+  gsap.to(timeline, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top 70%',
+      end: 'top 20%',
+      scrub: true,
+      markers: false,
+    },
+  });
 }, main.value);
 
 
@@ -482,6 +503,10 @@ h2 {
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  opacity: 0;
+}
+
+.timeline {
   opacity: 0;
 }
 

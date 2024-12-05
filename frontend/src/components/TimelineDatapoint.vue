@@ -56,7 +56,7 @@ const scrollToPoint = () => {
 .yearTitle.active {
     font-family: 'FranieBlack', sans-serif;
     color: white;
-    font-size: 1.6em;
+    font-size: 1.5em;
 }
 
 .datapoint {
