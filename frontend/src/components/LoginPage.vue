@@ -12,8 +12,8 @@
             </div>
             <div class="intro">
                 <h2>Discover Your Music Journey.</h2>
-                <p>Let your Spotify data speak for you and get unique visualizations of your favorite artists and songs.
-                    Immerse yourself in your personal music history.</p>
+                <p>Let your Spotify data speak for you and get unique visualizations of your favorite songs.
+                <br>See how your taste has evolved over the years.</p>
             </div>
             <div>
                 <button @click="authorize" class="button">
@@ -82,7 +82,7 @@ body {
 
 .intro {
     font-size: 1.2rem;
-    width: 50vw;
+    width: 80vw;
     padding-bottom: 5vh;
 }
 
@@ -109,7 +109,8 @@ body {
 
 .logo {
     position: relative;
-    width: 40vw;
+    width: 400px;
+    max-width: 80vw;
     padding-top: 10vh;
     padding-bottom: 5vh;
 }

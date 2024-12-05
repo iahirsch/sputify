@@ -256,7 +256,7 @@ onMounted(async () => {
           }
 
           const topTracks = playlist.tracks;
-          years.value.push({
+          years.value[playlist.index] = Object.assign({}, years.value[playlist.index], {
             title: playlist.year,
             topTracks: topTracks.slice(0, 5),
             topArtists: topArtists.slice(0, 5),

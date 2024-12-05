@@ -3,14 +3,17 @@ export async function getWrappedPlaylists(device_id) {
 
     let wrappedPlaylists = [];
 
+    const playlist2024 = await getPlaylistTracks('37i9dQZF1FoH7WYtu8FGYL');
+    wrappedPlaylists.push({ year: 2024, tracks: playlist2024, index: 3 });
+
     const playlist2023 = await getPlaylistTracks('37i9dQZF1Fa1IIVtEpGUcU');
-    wrappedPlaylists.push({ year: 2023, tracks: playlist2023, index: 3 });
+    wrappedPlaylists.push({ year: 2023, tracks: playlist2023, index: 4 });
 
     const playlist2022 = await getPlaylistTracks('37i9dQZF1F0sijgNaJdgit');
-    wrappedPlaylists.push({ year: 2022, tracks: playlist2022, index: 4 });
+    wrappedPlaylists.push({ year: 2022, tracks: playlist2022, index: 5 });
 
     const playlist2021 = await getPlaylistTracks('37i9dQZF1EUMDoJuT8yJsl');
-    wrappedPlaylists.push({ year: 2021, tracks: playlist2021, index: 5 });
+    wrappedPlaylists.push({ year: 2021, tracks: playlist2021, index: 6 });
 
     return wrappedPlaylists;
 
@@ -26,6 +29,14 @@ export async function getWrappedPlaylists(device_id) {
                 'context_uri': `spotify:playlist:${playlistId}`
             })
         });
+        await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${device_id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
         await new Promise(resolve => setTimeout(resolve, 500));
         if (playResponse.ok) {
             const queueResponse = await fetch(`https://api.spotify.com/v1/me/player/queue`, {

@@ -1,5 +1,5 @@
 <template>
-    <div class="year">
+    <div class="year" v-if="year">
         <h1 class="year-title">{{ year.title }}</h1>
         <div class="content-leftside">
             <h2>Your Top Songs</h2>
@@ -117,8 +117,8 @@ gsap.to(genre, { // Set initial opacity to 1
     end: 'top 20%',
     scrub: true,
     markers: false,
-    onEnter: () => console.log('Genre Trigger Entered'), // Log for debugging
-    onLeave: () => console.log('Genre Trigger Left'),  // Log for debugging
+    //onEnter: () => console.log('Genre Trigger Entered'), // Log for debugging
+    //onLeave: () => console.log('Genre Trigger Left'),  // Log for debugging
   },
 });
 </script>
