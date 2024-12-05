@@ -18,7 +18,7 @@
         <YearComponent v-for="(year, index) in years" :yearIndex="index" :year="year" :currentTrack="currentTrack"
           :playing="playing" :playTrack="playTrack" />
       </div>
-      <ShareComponent :user-name="userName" :years="years" />
+      <ShareComponent :user-name="userName" :years="years" :index="years.length" />
       <footer class="footergradient-black">
         <button @click="scrollTo" class="totop">
           <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>

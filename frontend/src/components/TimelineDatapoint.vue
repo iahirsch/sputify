@@ -26,7 +26,13 @@ const props = defineProps({
 const scrollToPoint = () => {
     const element = document.querySelector(`[data-year="${props.title}"]`);
     if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        const offset = 100;
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - offset;
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
     }
 };
 </script>
@@ -34,7 +40,7 @@ const scrollToPoint = () => {
 <style scoped>
 .container {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     cursor: pointer;
 }
 
@@ -42,14 +48,13 @@ const scrollToPoint = () => {
     margin-right: 20px;
     white-space: nowrap;
     transition: font-size 0.3s ease;
-    font-family: 'Franie', sans-serif;
+    font-family: 'FranieSemiBold', sans-serif;
     font-size: 0.8em;
-    font-weight: 100;
     color: #b8b8b8;
 }
 
 .yearTitle.active {
-    font-weight: 550;
+    font-family: 'FranieBlack', sans-serif;
     color: white;
     font-size: 1.6em;
 }

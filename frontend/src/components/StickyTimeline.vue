@@ -2,14 +2,14 @@
     <div class="timeline-container">
         <div class="timeline-content">
             <TimelineDatapoint v-for="(title, index) in yearsTitles" :key="index"
-                :positionStyle="getCirclePosition(index + 1)" :active="isActive(index + 1)" :title="title" />
+                :positionStyle="getCirclePosition(index + 1)" :active="activeId === index.toString()" :title="title" />
         </div>
         <span class="timeline"></span>
     </div>
 </template>
 
 <script setup>
-import { toRefs } from 'vue';
+import { ref, onMounted, onUnmounted, toRefs } from 'vue';
 import TimelineDatapoint from './TimelineDatapoint.vue';
 
 const props = defineProps({
@@ -17,11 +17,6 @@ const props = defineProps({
         type: Array,
         required: true,
         validator: (value) => value.length > 0, //must be a non-empty array. If an empty array is passed, Vue will issue a warning in the console.
-    },
-    active: {
-        type: Boolean,
-        required: true,
-        default: false,
     },
 });
 
@@ -32,9 +27,30 @@ const getCirclePosition = (index) => {
     return { top: `${position}%` };
 };
 
-const isActive = (index) => {
-    return index === 1;
-};
+const activeId = ref(0);
+let observer;
+
+onMounted(() => {
+    observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                activeId.value = entry.target.id;
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '-50% 0px -50% 0px',
+        threshold: 0
+    });
+
+    document.querySelectorAll('.journey-sections').forEach((section) => {
+        observer.observe(section);
+    });
+});
+
+onUnmounted(() => {
+    if (observer) observer.disconnect();
+});
 </script>
 
 <style scoped>
@@ -61,12 +77,18 @@ const isActive = (index) => {
     z-index: 2;
 }
 
+.timeline-content.active {
+    font-family: 'FranieBlack', sans-serif;
+    color: white;
+    font-size: 1.6em;
+}
+
 .timeline {
     position: relative;
-    height: 73%;
     width: 1px;
     background-color: #9c9c9c;
-    top: 15%;
+    top: 12.5vh;
+    height: 75vh;
     right: 11px;
     z-index: 1;
 }
