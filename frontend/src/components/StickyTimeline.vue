@@ -87,9 +87,9 @@ onUnmounted(() => {
 .timeline {
     position: relative;
     width: 1px;
-    background-color: #9c9c9c;
-    top: 12.5vh;
-    height: 75vh;
+    background-color: rgba(255, 255, 255, 0.6);
+    top: 12.3vh;
+    height: 75.2vh;
     right: 11px;
     z-index: 1;
 }

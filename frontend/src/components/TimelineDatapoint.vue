@@ -50,7 +50,7 @@ const scrollToPoint = () => {
     transition: font-size 0.3s ease;
     font-family: 'FranieSemiBold', sans-serif;
     font-size: 0.8em;
-    color: #b8b8b8;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .yearTitle.active {
