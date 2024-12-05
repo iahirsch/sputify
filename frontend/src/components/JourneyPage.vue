@@ -15,7 +15,7 @@
         <WelcomeComponent :user-name="userName" />
       </div>
       <div class="box box-b gradient-black">
-        <YearComponent v-for="(year, index) in years" :key="index" :year="year" :currentTrack="currentTrack"
+        <YearComponent v-for="(year, index) in years" :yearIndex="index" :year="year" :currentTrack="currentTrack"
           :playing="playing" :playTrack="playTrack" />
       </div>
       <ShareComponent :user-name="userName" :years="years" />
@@ -43,6 +43,7 @@ import { getTopArtists } from '../api/getTopArtists.js';
 import { getArtist } from '../api/getArtist.js';
 import { getUserInfo } from '../api/user.js';
 import { getWrappedPlaylists } from '../api/getWrappedPlaylists.js';
+import { getRecentlyPlayed } from '@/api/getRecentlyPlayed.js';
 
 import BubbleComponent from './BubbleComponent.vue';
 import ShareComponent from './ShareComponent.vue';
@@ -57,6 +58,10 @@ let ctx;
 let panel_tl;
 const userName = ref('');
 const years = ref([
+  {
+    title: 'now',
+    recentTracks: [],
+  },
   {
     title: 'Last 4 Weeks',
     topTracks: [],
@@ -271,10 +276,24 @@ onMounted(async () => {
     }
   }
 
+  async function fetchRecentlyPlayed() {
+    try {
+      const response = await getRecentlyPlayed();
+      const recentTracks = response.items.map(item => item.track);
+
+      years.value[0].recentTracks = recentTracks.slice(0, 5);
+    } catch (error) {
+      console.error('Error fetching recently played:', error);
+    }
+  }
+
   await fetchUserData();
-  await fetchTopTracksAndArtists('short_term', 0);
-  await fetchTopTracksAndArtists('medium_term', 1);
-  await fetchTopTracksAndArtists('long_term', 2);
+
+  await fetchRecentlyPlayed();
+
+  await fetchTopTracksAndArtists('short_term', 1);
+  await fetchTopTracksAndArtists('medium_term', 2);
+  await fetchTopTracksAndArtists('long_term', 3);
 
   await fetchWrappedPlaylists();
 
@@ -375,6 +394,8 @@ onMounted(() => {
       // Play the first track
       if (years.value[0]?.topTracks?.length > 0) {
         playTrack(years.value[0].topTracks[0]);
+      } else if (years.value[0]?.recentTracks?.length > 0) {
+        playTrack(years.value[0].recentTracks[0]);
       }
       window.removeEventListener("scroll", handleScroll);
     }
