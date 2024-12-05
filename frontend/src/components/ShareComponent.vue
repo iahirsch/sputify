@@ -82,7 +82,7 @@ export default {
             });
 
             ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            const { topTracks = [], topArtists = [], topGenres = [] } = this.years[0] || {};
+            const { topTracks = [], topArtists = [], topGenres = [] } = this.years[1] || {};
             const topTracksText = `Top Tracks: \n${topTracks.map(track => track.name).join("\n")}`;
             const topTracksLines = topTracksText.split('\n');
             topTracksLines.forEach((line, index) => {
@@ -131,7 +131,7 @@ export default {
 
             ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
             this.years.forEach((year, index) => {
-                if (index < 7) {
+                if (index < 7 && index !== 0) {
                     const yearText = `${year.title}`;
                     const topTrackText = `Top Track: ${year.topTracks[0]?.name || "No data"}`;
 
