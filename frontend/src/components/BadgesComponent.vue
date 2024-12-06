@@ -3,10 +3,20 @@
         <h2 data-year="Your Badges">Your Badges</h2>
         <div class="badges">
             <div v-for="badge in badges" :badge="badge" class="container-badge">
+                <svg viewBox="0 0 500 500" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" class="zigzag">
+                    <path stroke="#35bd69" fill="none" stroke-width="15"
+                        d="M 500,250 473.216,279.409 491.536,314.718 458.049,336.172 466.532,375.03 428.619,387.055
+                        426.778,426.778 387.044,428.619 375.02,466.543 336.161,458.049 314.707,491.547 279.409,473.226 250,500 220.581,473.226
+                        185.282,491.547 163.818,458.049 124.959,466.543 112.945,428.619 73.222,426.778 71.371,387.044 33.458,375.021 41.941,336.172
+                        8.453,314.718 26.774,279.409 0,250 26.774,220.591 8.453,185.282 41.941,163.829 33.458,124.97 71.371,112.956 73.222,73.222
+                        112.956,71.381 124.97,33.468 163.829,41.952 185.282,8.463 220.581,26.784 250,0 279.409,26.784 314.718,8.463 336.172,41.962
+                        375.03,33.468 387.044,71.381 426.778,73.232 428.619,112.966 466.532,124.98 458.049,163.839 491.536,185.282 473.216,220.591 z" />
+                </svg>
                 <span class="material-symbols-rounded badge">{{ badge.icon }}</span>
                 <h5 class="badge-title">
                     {{ badge.title }}
                 </h5>
+                <span class="material-symbols-rounded more">chevron_left</span>
                 <p class="badge-text">
                     {{ badge.text }}
                 </p>
@@ -55,11 +65,10 @@ h2 {
     justify-content: center;
     align-items: center;
     padding: 2rem;
-    font-size: 2rem;
     padding: 1vh;
     color: white;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
+    font-size: 2.5rem;
+    z-index: 2;
 }
 
 .container-badge {
@@ -67,52 +76,80 @@ h2 {
     align-items: center;
     margin-left: 5vw;
     cursor: default;
+    height: 7rem;
+    max-width: 50vw;
+    width: fit-content;
+    padding-right: 1rem;
+    border-radius: 2rem;
 }
 
 .badge-title {
     font-size: 1.5rem;
     color: rgba(255, 255, 255, 0.8);
-    margin-left: 2vh;
+    margin-left: 3vw;
     justify-content: center;
     width: fit-content;
     max-width: 20vw;
 }
+
+.more {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: 1rem;
+    visibility: hidden;
+}
+
 .badge-text {
     visibility: hidden;
     font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-left: 2vh;
+    color: rgba(255, 255, 255, 0.4);
     justify-content: center;
     width: 20vw;
-    position: absolute;
+    max-height: 7rem;
     left: 25vw;
+    overflow: hidden;
 }
 
-.bold {
-    font-weight: bold;
+.zigzag {
+    width: 5rem;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    transform: translate(-0.7rem, 0);
+    overflow: visible;
+    filter: drop-shadow(0 0 0.5rem #35bd69);
+}
+
+@keyframes glow {
+    0% {
+        filter: drop-shadow(0 0 0.1rem #1DB954);
+    }
+
+    50% {
+        filter: drop-shadow(0 0 0.5rem #4DD4AC);
+    }
+
+    100% {
+        filter: drop-shadow(0 0 0.1rem #1DB954);
+    }
 }
 
 .container-badge:hover {
+
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+
     .badge {
-        animation: glow 1s ease-in-out infinite alternate;
+        animation: glow 2s ease-in-out infinite alternate;
     }
 
     .badge-text {
         visibility: visible;
     }
-}
 
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 0 0px #35bd69;
-    }
-
-    50% {
-        box-shadow: 0 0 10px 10px #4DD4AC;
-    }
-
-    100% {
-        box-shadow: 0 0 0 0px #1DB954;
+    .more {
+        visibility: visible;
     }
 }
 

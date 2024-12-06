@@ -171,6 +171,7 @@ onMounted(async () => {
 
 .content-center {
     margin-top: 25%;
+    height: fit-content;
 }
 
 .content-rightside {
@@ -336,51 +337,5 @@ onMounted(async () => {
 .line {
     height: 250px;
     background: none;
-}
-
-.badge {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    font-size: 2rem;
-    padding: 1vh;
-    color: white;
-    /* background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%); */
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-}
-
-.badge:hover {
-    /* Animation for smooth glow effect (optional) */
-    animation: glow 1s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 0 5px #35bd69;
-    }
-
-    50% {
-        box-shadow: 0 0 10px 10px #4DD4AC;
-    }
-
-    100% {
-        box-shadow: 0 0 0 5px #1DB954;
-    }
-}
-
-.container-badge {
-    display: flex;
-    align-items: center;
-    margin-top: 5vh;
-    margin-left: 5vh;
-}
-
-.badge-text {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-left: 2vh;
-    justify-content: center;
 }
 </style>

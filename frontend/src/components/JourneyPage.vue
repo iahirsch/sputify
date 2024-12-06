@@ -279,7 +279,7 @@ function getBadges() {
           gem = {
             icon: 'diamond',
             title: 'Hidden Gem',
-            text: `You listened to ${artist.name} a lot in ${year.title}, an artist with a popularity of only ${artist.popularity}%.`,
+            text: `You were listening to ${artist.name} a lot in ${year.title} with a popularity of only ${artist.popularity}%.`,
           };
           popularity = artist.popularity;
         }
@@ -336,7 +336,7 @@ function getBadges() {
         const commonArtists = [...currentYearArtists].filter(artist => previousYearArtists.has(artist));
         if (commonArtists.length === 0) {
           newMe = {
-            icon: 'emoticon',
+            icon: 'switch_account',
             title: 'New Me',
             text: `Your top artists completely switched up from ${year.title} to ${previousYear.title}.`,
           };
@@ -373,7 +373,7 @@ function getBadges() {
   }
   if (uniqueGenres.size > 10) {
     diverse = {
-      icon: 'explore',
+      icon: 'category',
       title: 'Diverse Taste',
       text: `Across all years ${uniqueGenres.size} unique genres appeared in your top genres.`,
     };
