@@ -339,11 +339,11 @@ canvas {
 }
 
 .arrow.left-arrow {
-    left: 8rem;
+    left: 40vw;
 }
 
 .arrow.right-arrow {
-    right: 8rem;
+    right: 38vw;
 }
 
 .arrow:hover {

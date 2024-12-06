@@ -9,7 +9,6 @@
   <div id="smooth-wrapper" ref="main">
     <!-- TODO: clear spotify authentication on logout -->
     <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
-    <span class="material-symbols-rounded help menu-button">help</span>
     <div id="smooth-content">
       <div>
         <img class="logoJourney" src="../assets/spütify_logo.png" @click="scrollTo" />
@@ -388,11 +387,6 @@ h2 {
   transform: scaleX(-1);
 }
 
-.help {
-  right: 1rem;
-  right: 0;
-}
-
 .menu-button:hover {
   color: white;
 }
@@ -414,13 +408,6 @@ h2 {
 .menu-button:hover::after {
   visibility: visible;
   opacity: 1;
-}
-
-.help::after {
-  width: 20vw;
-  text-wrap: wrap;
-  content: "Wie kann die Visualisierung des Musikgeschmacks in Form einer interaktiven Zeitreise das persönliche Musikerlebnis vertiefen? - Scrolle um es zu erfahren!";
-  right: 0;
 }
 
 .logout::after {
