@@ -46,7 +46,6 @@ const years = ref([
     }
 ]);
 const userName = ref('');
-
 const isReady = ref(false);
 
 onMounted(async () => {
@@ -117,6 +116,19 @@ onMounted(async () => {
 
         player.connect();
 
+    }
+
+    // Retrieve data from sessionStorage
+    const sessionUserName = sessionStorage.getItem('userName');
+    const sessionYears = JSON.parse(sessionStorage.getItem('years'));
+
+    if (sessionUserName && sessionYears) {
+        userName.value = sessionUserName;
+        years.value = sessionYears;
+        await fetchRecentlyPlayed();
+        console.log("now:", years.value);
+        isReady.value = true;
+        return;
     }
 
     async function fetchUserData() {
@@ -243,6 +255,10 @@ onMounted(async () => {
     await fetchWrappedPlaylists();
 
     console.log('Years:', years.value);
+
+    // Store data in sessionStorage
+    sessionStorage.setItem('userName', userName.value);
+    sessionStorage.setItem('years', JSON.stringify(years.value));
 
     isReady.value = true;
 });
