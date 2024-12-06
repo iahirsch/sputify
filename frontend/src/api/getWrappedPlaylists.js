@@ -30,6 +30,7 @@ export async function getWrappedPlaylists(device_id) {
                 'context_uri': `spotify:playlist:${playlistId}`
             })
         });
+        await new Promise(resolve => setTimeout(resolve, 500));
         await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${device_id}`, {
             method: 'PUT',
             headers: {
@@ -37,7 +38,6 @@ export async function getWrappedPlaylists(device_id) {
                 'Content-Type': 'application/json',
             },
         });
-
         await new Promise(resolve => setTimeout(resolve, 500));
         if (playResponse.ok) {
             const queueResponse = await fetch(`https://api.spotify.com/v1/me/player/queue`, {

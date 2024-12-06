@@ -2,7 +2,7 @@
     <div id="app">
         <div class="container">
             <div class="text-container">
-                <p>Your musical bubble floats through the galaxy of your Spotify story.</p>
+                <h2>Your musical bubble floats through your Spotify history...</h2>
             </div>
             <div class="soundwave-container">
                 <div v-for="(bar, index) in bars" :key="index" class="bar" :style="barStyle(index)">
@@ -16,24 +16,23 @@
 export default {
     data() {
         return {
-            bars: Array.from({ length: 25 }), // 25 Balken
-            interval: null
+            bars: Array(25).fill(0),
+            interval: null,
+            time: 0
         };
     },
     mounted() {
-        // Startet die Animation beim Laden der Komponente
         this.startAnimation();
     },
     beforeUnmount() {
-        // Stoppt die Animation beim Verlassen der Komponente
         clearInterval(this.interval);
     },
     methods: {
         startAnimation() {
             this.interval = setInterval(() => {
-                // Trigger für Reaktivität
+                this.time += 0.02;
                 this.bars = [...this.bars];
-            }, 500); // Animation alle 500ms
+            }, 100);
         },
         barStyle(index) {
             // Farbverlauf
@@ -45,12 +44,15 @@ export default {
             const g = Math.round(startColor.g + (endColor.g - startColor.g) * step);
             const b = Math.round(startColor.b + (endColor.b - startColor.b) * step);
 
-            // Dynamische Höhe
-            const randomHeight = Math.random() * 200 + 20;
+            // Sound wave height
+            const base = 20;
+            const amplitude = 100;
+            const frequency = 17 + this.time;
+            const height = amplitude * Math.sin(frequency * (index + this.time)) + amplitude + base;
 
             return {
                 backgroundColor: `rgb(${r}, ${g}, ${b})`,
-                height: `${randomHeight}px`,
+                height: `${height}px`,
                 width: "20px",
                 margin: "0 5px",
                 borderRadius: "20px"
@@ -72,15 +74,14 @@ export default {
 }
 
 .text-container {
-    margin-bottom: 30px;
-    color: white;
+    color: rgba(255, 255, 255, 0.8);
     font-size: 1rem;
-    padding: 10px;
     text-align: center;
     font-family: 'FranieSemiBold', sans-serif;
     z-index: 1;
     position: fixed;
-    top: 25vh;
+    top: 20vh;
+    max-width: 80vw;
 }
 
 .soundwave-container {
@@ -93,13 +94,6 @@ export default {
 }
 
 .bar {
-    transition: height 0.5s ease, transform 0.5s ease;
-}
-
-@media (max-width: 768px) {
-    .bar {
-        width: 15px;
-        margin: 0 3px;
-    }
+    transition: height 0.1s linear;
 }
 </style>

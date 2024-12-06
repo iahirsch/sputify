@@ -2,7 +2,7 @@
     <div class="journey-sections" :id="badgeIndex">
         <h2 data-year="Your Badges">Your Badges</h2>
         <div class="badges">
-            <div v-for="badge in badges" :badge="badge" class="container-badge">
+            <div v-for="(badge, index) in filteredBadges" :key="index" :badge="badge" class="container-badge">
                 <svg viewBox="0 0 500 500" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" class="zigzag">
                     <path stroke="#35bd69" fill="none" stroke-width="15"
                         d="M 500,250 473.216,279.409 491.536,314.718 458.049,336.172 466.532,375.03 428.619,387.055
@@ -27,7 +27,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+
+import sound from '@/assets/sound.wav';
 
 const props = defineProps({
     badges: {
@@ -40,9 +42,36 @@ const props = defineProps({
     }
 });
 
-onMounted(() => {
+const showBadge = ref([]);
 
+onMounted(() => {
+    const trigger = document.querySelector(".badges");
+
+    const handleScroll = () => {
+        const rect = trigger.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+        if (isVisible) {
+            props.badges.forEach((badge, index) => {
+                setTimeout(() => {
+                    showBadge.value[index] = true;
+                    const audio = new Audio(sound);
+                    audio.play().catch(() => {
+                        console.log("Sound could not be played");
+                    });
+                }, index * 1000 + 1000);
+            });
+            window.removeEventListener("scroll", handleScroll);
+        }
+    };
+
+    window.addEventListener("scroll", handleScroll);
 });
+
+const filteredBadges = computed(() => {
+    return props.badges.filter((badge, index) => showBadge.value[index]);
+});
+
 </script>
 
 <style scoped>
@@ -55,6 +84,7 @@ h2 {
     flex-wrap: nowrap;
     justify-content: flex-start;
     margin-top: 5vh;
+    height: 35rem;
     max-height: 80vh;
     overflow: hidden;
     flex-direction: column;
@@ -81,6 +111,19 @@ h2 {
     width: fit-content;
     padding-right: 1rem;
     border-radius: 2rem;
+    animation: show 1s ease-in-out;
+}
+
+@keyframes show {
+    0% {
+        opacity: 0;
+        transform: scale(0.1) translateX(-20vw);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+    }
 }
 
 .badge-title {

@@ -73,7 +73,6 @@ export default {
 
     function initializeVisualizer() {
       clearAll();
-      console.log("Initialize Visualizer");
       currentSection = 0;
       if (props.playing) {
         remainingTime = props.analysis.segments[currentSection].duration * 1000;

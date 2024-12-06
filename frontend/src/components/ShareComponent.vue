@@ -322,13 +322,14 @@ canvas {
     position: relative;
     top: 50%;
     background-color: transparent;
-    color: #ffffff55;
+    color: #555;
     border: none;
     cursor: pointer;
     z-index: 4;
 
     .material-symbols-rounded {
         font-size: 3rem !important;
+        text-shadow: 0 0 0.5rem black;
     }
 }
 

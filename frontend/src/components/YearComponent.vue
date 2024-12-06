@@ -130,7 +130,6 @@ onMounted(async () => {
     console.log(genreRef.value)
     console.log(yearRef.value)
     if (genreRef.value && yearRef.value) {
-
         ScrollTrigger.create({
             trigger: yearRef.value,
             pin: genreRef.value,

@@ -279,7 +279,7 @@ function getBadges() {
           gem = {
             icon: 'diamond',
             title: 'Hidden Gem',
-            text: `You were listening to ${artist.name} a lot in ${year.title} with a popularity of only ${artist.popularity}%.`,
+            text: `You listened to ${artist.name} a lot in ${year.title} with a popularity of only ${artist.popularity}%.`,
           };
           popularity = artist.popularity;
         }
@@ -490,24 +490,26 @@ window.onload = function () {
 };
 
 onMounted(() => {
-  const boxB = document.querySelector(".box-b");
+  const yearTitles = document.querySelectorAll(".year-title");
 
-  const handleScroll = () => {
-    const rect = boxB.getBoundingClientRect();
-    const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+  yearTitles.forEach((yearTitle, index) => {
+    const handleYearScroll = () => {
+      const rect = yearTitle.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight/2 && rect.bottom > 0;
 
-    if (isVisible) {
-      // Play the first track
-      if (props.years[0]?.topTracks?.length > 0) {
-        playTrack(props.years[0].topTracks[0]);
-      } else if (props.years[0]?.recentTracks?.length > 0) {
-        playTrack(props.years[0].recentTracks[0]);
+      if (isVisible) {
+        const year = props.years[index];
+        if (year?.topTracks?.length > 0 && year.topTracks[0].id !== currentTrack.value.id) {
+          playTrack(year.topTracks[0]);
+        } else if (year?.recentTracks?.length > 0 && year.recentTracks[0].id !== currentTrack.value.id) {
+          playTrack(year.recentTracks[0]);
+        }
+        window.removeEventListener("scroll", handleYearScroll);
       }
-      window.removeEventListener("scroll", handleScroll);
-    }
-  };
+    };
 
-  window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleYearScroll);
+  });
 
   badges.value = getBadges();
 });
