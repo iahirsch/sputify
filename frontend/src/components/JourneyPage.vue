@@ -1,5 +1,5 @@
 <template>
-  <PopupComponent />
+  <PopupComponent v-if="showPopup" />
   <div class="bubble" data-speed="0.5">
     <BubbleComponent :analysis="currentTrack.analysis" :playing="playing" />
   </div>
@@ -83,6 +83,7 @@ const currentTrack = ref({
   }
 });
 const playing = ref(false);
+let showPopup = handleShowPopup();
 
 async function getAudioAnalysis(name, artist) {
   try {
@@ -144,6 +145,18 @@ function updateCurrentTrack(track) {
 
 function logOut() {
   window.location.href = '/';
+  localStorage.removeItem('showPopup');
+  console.log(localStorage);
+}
+
+function handleShowPopup() {
+  const storedShowPopup = localStorage.getItem('showPopup');
+  if (storedShowPopup === null) {
+    localStorage.setItem('showPopup', 'false');
+    return true;
+  } else {
+    return false;
+  }
 }
 
 onMounted(async () => {
