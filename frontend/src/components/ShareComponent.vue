@@ -1,5 +1,5 @@
 <template>
-    <div class="journey-sections" :id="index">
+    <div class="journey-sections" :id="shareIndex">
         <h2>Share Templates</h2>
         <div class="container text-center">
             <div class="canvas-container">
@@ -46,7 +46,7 @@ export default {
             type: Array,
             required: true
         },
-        index: {
+        shareIndex: {
             type: Number,
             required: true
         }

@@ -1,29 +1,30 @@
 <template>
     <div class="timeline-container">
         <div class="timeline-content">
-            <TimelineDatapoint v-for="(title, index) in yearsTitles" :key="index"
-                :positionStyle="getCirclePosition(index + 1)" :active="activeId === index.toString()" :title="title" />
+            <TimelineDatapoint v-for="(year, index) in years" :key="index" :positionStyle="getCirclePosition(index + 1)"
+                :active="activeId === index.toString()" :title="year?.title || ''" />
+            <TimelineDatapoint :positionStyle="getCirclePosition(years.length + 1)" :active="activeId === years.length.toString()" :title="'Share Journey'" />
         </div>
         <span class="timeline"></span>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, toRefs } from 'vue';
+import { ref, onMounted, onUnmounted, toRefs, watch } from 'vue';
 import TimelineDatapoint from './TimelineDatapoint.vue';
 
 const props = defineProps({
-    yearsTitles: {
+    years: {
         type: Array,
         required: true,
-        validator: (value) => value.length > 0, //must be a non-empty array. If an empty array is passed, Vue will issue a warning in the console.
+        validator: (value) => value.length > 0
     },
 });
 
-const { yearsTitles } = toRefs(props);
+const { years: years } = toRefs(props);
 
 const getCirclePosition = (index) => {
-    const position = (index - 1) / (yearsTitles.value.length - 1) * 100;
+    const position = (index - 1) / (years.value.length - 1) * 100;
     return { top: `${position}%` };
 };
 

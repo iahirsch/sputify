@@ -34,7 +34,7 @@ export default {
     width: 0;
     height: 100%;
     background-color: white;
-    animation: progress-animation 2s infinite;
+    animation: progress-animation 10s;
 }
 
 @keyframes progress-animation {
@@ -47,7 +47,7 @@ export default {
     }
 
     100% {
-        width: 0;
+        width: 100%;
     }
 }
 </style>

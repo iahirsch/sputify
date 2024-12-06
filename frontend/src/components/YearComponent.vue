@@ -1,5 +1,5 @@
 <template>
-    <div class="journey-sections" :id="index">
+    <div class="journey-sections" :id="yearIndex">
         <div class="year" v-if="year && year.topTracks">
             <div class="year-title" :data-year="year.title"></div>
             <div class="content-leftside">
@@ -82,34 +82,7 @@
             </div>
         </div>
         <div class="year" v-else-if="year && yearIndex === 0">
-            <h1 class="year-title">{{ year.title }}</h1>
-            <div class="content-leftside">
-                <h2>Recently Played Songs</h2>
-                <div v-if="year.recentTracks.length > 0">
-                    <div v-for="(track) in year.recentTracks" :key="track.id" class="song"
-                        :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
-                        <span class="material-symbols-rounded play-icon">
-                            {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
-                        </span>
-                        <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
-                        <p class="song-name">
-                            {{ track.name }}<br>
-                            <span class="song-artist">{{ track.artists[0].name }}</span>
-                        </p>
-                    </div>
-                </div>
-                <div v-else>
-                    <p class="loading">Loading Recently Played Tracks...</p>
-                </div>
-            </div>
-            <div class="content-center">
-            </div>
-            <div class="content-rightside">
-                timeline platzhalter
-            </div>
-        </div>
-        <div class="year" v-else-if="year && yearIndex === 0">
-            <h1 class="year-title">{{ year.title }}</h1>
+            <div class="year-title" :data-year="year.title"></div>
             <div class="content-leftside">
                 <h2>Recently Played Songs</h2>
                 <div v-if="year.recentTracks.length > 0">
@@ -140,14 +113,16 @@
 
 <script setup>
 import { ref } from 'vue';
+import gsap from 'gsap-trial';
+import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
 
 const props = defineProps({
     yearIndex: Number,
     year: Object,
     currentTrack: Object,
     playing: Boolean,
-    playTrack: Function,
-    index: Number
+    playTrack: Function
 });
 
 const selectedArtist = ref(null);
