@@ -388,6 +388,229 @@ function getBadges() {
   return badges.slice(0, 5);
 }
 
+function getBadges() {
+  const testYears = [
+    {
+      title: '0000',
+      recentTracks: [
+        { name: 'Song 0', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 2', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 3', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 4', artists: [{ name: 'Artist B' }] },
+        { name: 'Song 5', artists: [{ name: 'Artist C' }] },
+      ],
+    },
+    {
+      title: '2023',
+      topArtists: [
+        {
+          name: 'Unpopular Artist',
+          popularity: 30,
+        }
+      ],
+      topTracks: [
+        { name: 'Song 0', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 2', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 3', artists: [{ name: 'Artist B' }] },
+        { name: 'Song 4', artists: [{ name: 'Artist B' }] },
+        { name: 'Song 5', artists: [{ name: 'Artist C' }] },
+      ],
+      topGenres: [
+        { name: 'Pop' },
+        { name: 'Rock' },
+        { name: 'Hip-Hop' },
+        { name: 'Jazz' },
+        { name: 'Classical' }
+      ]
+    },
+    {
+      title: '2022',
+      topArtists: [
+        {
+          name: 'Consistent Artist',
+          popularity: 100,
+        },
+      ],
+      topTracks: [
+        { name: 'Song 1', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 2', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 3', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 4', artists: [{ name: 'Artist B' }] },
+        { name: 'Song 5', artists: [{ name: 'Artist C' }] },
+      ],
+      topGenres: [
+        { name: 'Electronic' },
+        { name: 'Reggae' },
+        { name: 'Blues' },
+        { name: 'Country' },
+        { name: 'Soul' }
+      ]
+    },
+    {
+      title: '2021',
+      topArtists: [
+        {
+          name: 'Consistent Artist',
+          popularity: 100,
+        },
+      ],
+      topTracks: [
+        { name: 'Song 1', artists: [{ name: 'Artist A' }] },
+        { name: 'Song 2', artists: [{ name: 'Artist B' }] },
+        { name: 'Song 3', artists: [{ name: 'Artist B' }] },
+        { name: 'Song 4', artists: [{ name: 'Artist B' }] },
+        { name: 'Song 5', artists: [{ name: 'Artist B' }] },
+      ],
+      topGenres: [
+        { name: 'R&B' },
+        { name: 'Latin' },
+        { name: 'Punk' },
+        { name: 'Grunge' },
+        { name: 'Ska' }
+      ]
+    },
+  ];
+  
+  //const years = testYears;
+  const years = props.years;
+
+  const badges = [];
+
+  let gem = {};
+  let popularity = 100;
+
+  let topArtist = null;
+  let topArtistCount = 0;
+
+  let fan = {};
+  let highCount = 0;
+
+  let repeat = {};
+  let maxAppearances = 1;
+  const trackAppearances = {};
+
+  let diverse = {};
+  const uniqueGenres = new Set();
+
+  let newMe = {};
+
+  years.forEach((year, index) => {
+    if (index != 0) {
+      year.topArtists.forEach((artist, index) => {
+        // Hidden Gem
+        if (artist.popularity < 40 && artist.popularity < popularity) {
+          gem = {
+            icon: 'diamond',
+            title: 'Hidden Gem',
+            text: `You listened to ${artist.name} a lot in ${year.title}, an artist with a popularity of only ${artist.popularity}%.`,
+          };
+          popularity = artist.popularity;
+        }
+
+        // Loyal Listener
+        let count = 0;
+        years.forEach((innerYear, innerIndex) => {
+          if (innerIndex !== 0 && innerYear.topArtists.some(innerArtist => innerArtist.name === artist.name)) {
+            count++;
+          }
+        });
+        if (count > topArtistCount) {
+          topArtist = artist;
+          topArtistCount = count;
+        }
+
+      });
+
+      // Super Fan
+      const trackArtistCount = year.topTracks.reduce((acc, track) => {
+        acc[track.artists[0].name] = (acc[track.artists[0].name] || 0) + 1;
+        return acc;
+      }, {});
+      for (const [artist, count] of Object.entries(trackArtistCount)) {
+        if (count >= 3 && count >= highCount) {
+          fan = {
+            icon: 'mode_fan',
+            title: 'Super Fan',
+            text: `You were obsessed with ${artist.name}, ${count} of your top 5 songs in ${year.title} are from them.`,
+          };
+          highCount = count;
+        }
+      }
+
+      // On Repeat
+      year.topTracks.forEach((track) => {
+        const trackName = track.name;
+        if (!trackAppearances[trackName]) {
+          trackAppearances[trackName] = 0;
+        }
+        trackAppearances[trackName]++;
+      });
+
+      // Genre Explorer
+      year.topGenres.forEach((genre) => {
+        uniqueGenres.add(genre.name);
+      });
+
+      // New Me
+      if (index != 1) {
+        const previousYear = years[index - 1];
+        const currentYearArtists = new Set(year.topArtists.map(artist => artist.name));
+        const previousYearArtists = new Set((previousYear.topArtists || []).map(artist => artist.name));
+        const commonArtists = [...currentYearArtists].filter(artist => previousYearArtists.has(artist));
+        if (commonArtists.length === 0) {
+          newMe = {
+            icon: 'emoticon',
+            title: 'New Me',
+            text: `Your top artists completely switched up from ${year.title} to ${previousYear.title}.`,
+          };
+        }
+      }
+    }
+  });
+  if (topArtistCount === years.length - 1) {
+    badges.push({
+      icon: 'volunteer_activism',
+      title: 'Loyal Listener',
+      text: `You listened to ${topArtist.name} consistently across all years.`,
+    });
+  }
+  for (const [trackName, count] of Object.entries(trackAppearances)) {
+    if (count > maxAppearances) {
+      maxAppearances = count;
+      repeat = {
+        icon: 'repeat',
+        title: 'On Repeat',
+        text: `You can't stop listening to "${trackName}", it appears in your top tracks ${maxAppearances} times.`,
+      };
+    }
+  }
+
+  if (Object.keys(gem).length !== 0) {
+    badges.push(gem);
+  }
+  if (Object.keys(fan).length !== 0) {
+    badges.push(fan);
+  }
+  if (Object.keys(repeat).length !== 0) {
+    badges.push(repeat);
+  }
+  if (uniqueGenres.size > 10) {
+    diverse = {
+      icon: 'explore',
+      title: 'Diverse Taste',
+      text: `Across all years ${uniqueGenres.size} unique genres appeared in your top genres.`,
+    };
+    badges.push(diverse);
+  }
+  if (Object.keys(newMe).length !== 0) {
+    badges.push(newMe);
+  }
+
+  console.log('Badges:', badges);
+
+  return badges.slice(0, 5);
+}
+
 onMounted(async () => {
 
   await nextTick();
