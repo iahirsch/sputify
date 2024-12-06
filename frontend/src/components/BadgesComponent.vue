@@ -2,11 +2,14 @@
     <div class="journey-sections" :id="badgeIndex">
         <h2 data-year="Your Badges">Your Badges</h2>
         <div class="badges">
-            <div v-for="badge in badges" :key="badge.id" :badge="badge" class="container-badge">
+            <div v-for="badge in badges" :badge="badge" class="container-badge">
                 <span class="material-symbols-rounded badge">{{ badge.icon }}</span>
-                <h5 class="badge-text">
-                    {{ badge.text }}
+                <h5 class="badge-title">
+                    {{ badge.title }}
                 </h5>
+                <p class="badge-text">
+                    {{ badge.text }}
+                </p>
             </div>
         </div>
     </div>
@@ -22,7 +25,7 @@ const props = defineProps({
         required: true
     },
     badgeIndex: {
-        type: String,
+        type: Number,
         required: true
     }
 });
@@ -55,19 +58,53 @@ h2 {
     font-size: 2rem;
     padding: 1vh;
     color: white;
-    /* background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%); */
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 50%;
 }
 
-.badge:hover {
-    /* Animation for smooth glow effect (optional) */
-    animation: glow 1s ease-in-out infinite alternate;
+.container-badge {
+    display: flex;
+    align-items: center;
+    margin-left: 5vh;
+    cursor: default;
+}
+
+.badge-title {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-left: 2vh;
+    justify-content: center;
+    width: fit-content;
+    max-width: 20vw;
+}
+.badge-text {
+    visibility: hidden;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-left: 2vh;
+    justify-content: center;
+    width: 20vw;
+    position: absolute;
+    left: 25vw;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.container-badge:hover {
+    .badge {
+        animation: glow 1s ease-in-out infinite alternate;
+    }
+
+    .badge-text {
+        visibility: visible;
+    }
 }
 
 @keyframes glow {
     0% {
-        box-shadow: 0 0 0 5px #35bd69;
+        box-shadow: 0 0 0 0px #35bd69;
     }
 
     50% {
@@ -75,22 +112,8 @@ h2 {
     }
 
     100% {
-        box-shadow: 0 0 0 5px #1DB954;
+        box-shadow: 0 0 0 0px #1DB954;
     }
-}
-
-.container-badge {
-    display: flex;
-    align-items: center;
-    margin-left: 5vh;
-}
-
-.badge-text {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-left: 2vh;
-    justify-content: center;
-    width: 20vw;
 }
 
 .line {
