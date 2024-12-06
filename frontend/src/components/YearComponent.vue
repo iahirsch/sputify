@@ -57,7 +57,9 @@
                     <p class="loading">Loading Top Artists...</p>
                 </div>
                 <div class="container-badge">
-                    <span class="material-symbols-rounded badge ">Favorite</span>
+                    <div class="zigzag">
+                        <span class="material-symbols-rounded ">Favorite</span>
+                    </div>
                     <h5 class="badge-text">
                         You're obsessed with
                         <span style="color: #1DB954;" v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
@@ -347,35 +349,50 @@ onMounted(async () => {
     background: none;
 }
 
-.badge {
+.zigzag {
+    width: 10vw;
+    height: 10vh;
+    background:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(16.36deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(32.73deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(49.09deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(65.45deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(81.81deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(98.18deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(114.54deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(130.90deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(147.27deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-97 -3 256 262' stroke-dasharray='45, 35' stroke='lightgreen' stroke-width='6' fill='transparent' style='transform:rotate(164.2deg);'><polygon points='48,16 32,0 16,16' /><polygon points='48,240 16,240 32,256' stroke-dashoffset='-32' /></svg>");
+    background-size: 100% 100%;
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 2rem;
-    font-size: 2rem;
-    padding: 1vh;
-    color: white;
-    /* background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%); */
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    filter: drop-shadow(0 0 20px #35bd69);
 }
 
-.badge:hover {
-    /* Animation for smooth glow effect (optional) */
-    animation: glow 1s ease-in-out infinite alternate;
+.zigzag:hover {
+    animation: svg-glow 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes glow {
+.material-symbols-rounded {
+    font-size: 2.5rem;
+    z-index: 2;
+}
+
+@keyframes svg-glow {
     0% {
-        box-shadow: 0 0 0 5px #35bd69;
+        filter: drop-shadow(0 0 5px #35bd69);
     }
 
     50% {
-        box-shadow: 0 0 10px 10px #4DD4AC;
+        filter: drop-shadow(0 0 15px #4DD4AC);
     }
 
     100% {
-        box-shadow: 0 0 0 5px #1DB954;
+        filter: drop-shadow(0 0 5px #1DB954);
     }
 }
 
