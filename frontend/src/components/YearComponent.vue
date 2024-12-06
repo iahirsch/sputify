@@ -1,110 +1,111 @@
 <template>
-    <div class="year" v-if="year && year.topTracks">
-        <h1 class="year-title">{{ year.title }}</h1>
-        <div class="content-leftside">
-            <h2>Your Top Songs</h2>
-            <div v-if="year.topTracks.length > 0">
-                <div v-for="(track) in year.topTracks" :key="track.id" class="song"
-                    :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
-                    <span class="material-symbols-rounded play-icon">
-                        {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
-                    </span>
-                    <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
-                    <p class="song-name">
-                        {{ track.name }}<br>
-                        <span class="song-artist">{{ track.artists[0].name }}</span>
-                    </p>
-                </div>
-            </div>
-            <div v-else>
-                <p class="loading">Loading Top Tracks...</p>
-            </div>
-            <div class="line"></div>
-            <h2>Your Top Artists</h2>
-            <div v-if="year.topArtists.length > 0">
-                <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
-                    :class="{ 'currently-playing': artist.name === currentTrack.artist }">
-                    <div @click="open(artist)" class="artistHead">
-                        <span :style="{ color: artist.tracks.length > 0 ? '' : 'transparent' }"
-                            class="material-symbols-rounded accordeon-icon"
-                            :class="{ 'rotate-icon': selectedArtist === artist }">chevron_right
+    <div class="journey-sections" :id="yearIndex">
+        <div class="year" v-if="year && year.topTracks">
+            <div class="year-title" :data-year="year.title"></div>
+            <div class="content-leftside">
+                <h2>Your Top Songs</h2>
+                <div v-if="year.topTracks.length > 0">
+                    <div v-for="(track) in year.topTracks" :key="track.id" class="song"
+                        :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
+                        <span class="material-symbols-rounded play-icon">
+                            {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
                         </span>
-                        <img class="artistCover cover" :src="artist.images[0].url" alt="artist image" />
-                        <p class="artist-name">
-                            {{ artist.name }}<br>
+                        <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
+                        <p class="song-name">
+                            {{ track.name }}<br>
+                            <span class="song-artist">{{ track.artists[0].name }}</span>
                         </p>
                     </div>
-                    <div class="artistSongs"
-                        :style="{ height: selectedArtist === artist && artist.tracks.length > 0 ? `${artist.tracks.length * 4.5 + 1.5}rem` : '0rem' }">
-                        <div style="height: 1rem;"></div>
-                        <div v-for="(track) in artist.tracks" :key="track.id" class="song"
-                            :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
-                            <span class="material-symbols-rounded play-icon">
-                                {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
+                </div>
+                <div v-else>
+                    <p class="loading">Loading Top Tracks...</p>
+                </div>
+                <div class="line"></div>
+                <h2>Your Top Artists</h2>
+                <div v-if="year.topArtists.length > 0">
+                    <div v-for="(artist, index) in year.topArtists" :key="index" class="artist"
+                        :class="{ 'currently-playing': artist.name === currentTrack.artist }">
+                        <div @click="open(artist)" class="artistHead">
+                            <span :style="{ color: artist.tracks.length > 0 ? '' : 'transparent' }"
+                                class="material-symbols-rounded accordeon-icon"
+                                :class="{ 'rotate-icon': selectedArtist === artist }">chevron_right
                             </span>
-                            <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
-                            <p class="song-name">
-                                {{ track.name }}<br />
+                            <img class="artistCover cover" :src="artist.images[0].url" alt="artist image" />
+                            <p class="artist-name">
+                                {{ artist.name }}<br>
                             </p>
                         </div>
-                    </div>
+                        <div class="artistSongs"
+                            :style="{ height: selectedArtist === artist && artist.tracks.length > 0 ? `${artist.tracks.length * 4.5 + 1.5}rem` : '0rem' }">
+                            <div style="height: 1rem;"></div>
+                            <div v-for="(track) in artist.tracks" :key="track.id" class="song"
+                                :class="{ 'currently-playing': track.id === currentTrack.id }"
+                                @click="playTrack(track)">
+                                <span class="material-symbols-rounded play-icon">
+                                    {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
+                                </span>
+                                <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
+                                <p class="song-name">
+                                    {{ track.name }}<br />
+                                </p>
+                            </div>
+                        </div>
 
+                    </div>
+                </div>
+                <div v-else>
+                    <p class="loading">Loading Top Artists...</p>
+                </div>
+                <div class="container-badge">
+                    <span class="material-symbols-rounded badge ">Favorite</span>
+                    <h5 class="badge-text">
+                        You're obsessed with
+                        <span v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
+                        <span v-else>loading...</span>
+                        lately
+                    </h5>
                 </div>
             </div>
-            <div v-else>
-                <p class="loading">Loading Top Artists...</p>
-            </div>
-            <div class="container-badge">
-                <span class="material-symbols-rounded badge ">Favorite</span>
-                <h5 class="badge-text">
-                    You're obsessed with
-                    <span v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
-                    <span v-else>loading...</span>
-                    lately
-                </h5>
-            </div>
-        </div>
-        <div class="content-center">
-            <h3 class="top-genre-text">Your Top Genres</h3>
-            <div v-if="year.topGenres.length > 0" class="genre-container">
-                <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
-                    :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
-                    {{ genre.name }}
-                </p>
-            </div>
-            <div v-else>
-                <p class="loading">Loading top genres...</p>
-            </div>
-        </div>
-        <div class="content-rightside">
-            timeline platzhalter
-        </div>
-    </div>
-    <div class="year" v-else-if="year && yearIndex === 0">
-        <h1 class="year-title">{{ year.title }}</h1>
-        <div class="content-leftside">
-            <h2>Recently Played Songs</h2>
-            <div v-if="year.recentTracks.length > 0">
-                <div v-for="(track) in year.recentTracks" :key="track.id" class="song"
-                    :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
-                    <span class="material-symbols-rounded play-icon">
-                        {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
-                    </span>
-                    <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
-                    <p class="song-name">
-                        {{ track.name }}<br>
-                        <span class="song-artist">{{ track.artists[0].name }}</span>
+            <div class="content-center">
+                <h3 class="top-genre-text">Your Top Genres</h3>
+                <div v-if="year.topGenres.length > 0" class="genre-container">
+                    <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
+                        :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
+                        {{ genre.name }}
                     </p>
                 </div>
+                <div v-else>
+                    <p class="loading">Loading top genres...</p>
+                </div>
             </div>
-            <div v-else>
-                <p class="loading">Loading Recently Played Tracks...</p>
+            <div class="content-rightside">
             </div>
         </div>
-        <div class="content-center">
-        </div>
-        <div class="content-rightside">
-            timeline platzhalter
+        <div class="year" v-else-if="year && yearIndex === 0">
+            <div class="year-title" :data-year="year.title"></div>
+            <div class="content-leftside">
+                <h2>Recently Played Songs</h2>
+                <div v-if="year.recentTracks.length > 0">
+                    <div v-for="(track) in year.recentTracks" :key="track.id" class="song"
+                        :class="{ 'currently-playing': track.id === currentTrack.id }" @click="playTrack(track)">
+                        <span class="material-symbols-rounded play-icon">
+                            {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
+                        </span>
+                        <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
+                        <p class="song-name">
+                            {{ track.name }}<br>
+                            <span class="song-artist">{{ track.artists[0].name }}</span>
+                        </p>
+                    </div>
+                </div>
+                <div v-else>
+                    <p class="loading">Loading Recently Played Tracks...</p>
+                </div>
+            </div>
+            <div class="content-center">
+            </div>
+            <div class="content-rightside">
+            </div>
         </div>
     </div>
     <div class="line"></div>
@@ -115,7 +116,6 @@ import { ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
-
 
 const props = defineProps({
     yearIndex: Number,
@@ -138,16 +138,16 @@ function open(artist) {
 const genre = document.querySelector('.content-center');
 
 gsap.to(genre, { // Set initial opacity to 1
-  opacity: 1,
-  scrollTrigger: {
-    trigger: '.year-title',
-    start: 'bottom top',
-    end: 'top 20%',
-    scrub: true,
-    markers: false,
-    //onEnter: () => console.log('Genre Trigger Entered'), // Log for debugging
-    //onLeave: () => console.log('Genre Trigger Left'),  // Log for debugging
-  },
+    opacity: 1,
+    scrollTrigger: {
+        trigger: '.year-title',
+        start: 'bottom top',
+        end: 'top 20%',
+        scrub: true,
+        markers: false,
+        //onEnter: () => console.log('Genre Trigger Entered'), // Log for debugging
+        //onLeave: () => console.log('Genre Trigger Left'),  // Log for debugging
+    },
 });
 </script>
 
@@ -167,8 +167,6 @@ gsap.to(genre, { // Set initial opacity to 1
     position: absolute;
     left: 0;
     top: 0;
-    font-size: 5rem;
-    color: rgba(255, 255, 255, 0.5);
 }
 
 .content-leftside,
@@ -177,7 +175,6 @@ gsap.to(genre, { // Set initial opacity to 1
     width: 30vw;
     display: flex;
     flex-direction: column;
-    padding-top: 200px;
 }
 
 .content-center {

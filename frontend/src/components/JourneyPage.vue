@@ -3,6 +3,9 @@
   <div class="bubble" data-speed="0.5">
     <BubbleComponent :analysis="currentTrack.analysis" :playing="playing" />
   </div>
+  <div class="timeline">
+    <StickyTimeline :years="years" :active="false" />
+  </div>
   <div id="smooth-wrapper" ref="main">
     <!-- TODO: clear spotify authentication on logout -->
     <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
@@ -18,7 +21,9 @@
         <YearComponent v-for="(year, index) in years" :yearIndex="index" :year="year" :currentTrack="currentTrack"
           :playing="playing" :playTrack="playTrack" />
       </div>
-      <ShareComponent :user-name="userName" :years="years" />
+      <div class="share">
+        <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length" />
+      </div>
       <footer class="footergradient-black">
         <button @click="scrollTo" class="totop">
           <span class="material-symbols-rounded totop-icon">keyboard_double_arrow_up</span>
@@ -30,57 +35,34 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  playerReady: Boolean
-});
-import { onMounted, onBeforeUnmount, onUnmounted, ref, nextTick } from 'vue';
+import { onMounted, onBeforeUnmount, onUnmounted, ref, nextTick, watch } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import Lenis from 'lenis';
 import { playback } from '../api/playback.js';
-import { getTopTracks } from '../api/getTopTracks.js';
-import { getTopArtists } from '../api/getTopArtists.js';
 import { getArtist } from '../api/getArtist.js';
-import { getUserInfo } from '../api/user.js';
-import { getWrappedPlaylists } from '../api/getWrappedPlaylists.js';
-import { getRecentlyPlayed } from '@/api/getRecentlyPlayed.js';
 
 import BubbleComponent from './BubbleComponent.vue';
+import StickyTimeline from './StickyTimeline.vue';
 import ShareComponent from './ShareComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 import YearComponent from './YearComponent.vue';
 import PopupComponent from './PopupComponent.vue';
+
+const props = defineProps({
+  playerReady: Boolean,
+  years: Array,
+  userName: String,
+});
 
 gsap.registerPlugin(ScrollTrigger);
 const main = ref();
 let updateInterval;
 let ctx;
 let panel_tl;
-const userName = ref('');
-const years = ref([
-  {
-    title: 'now',
-    recentTracks: [],
-  },
-  {
-    title: 'Last 4 Weeks',
-    topTracks: [],
-    topArtists: [],
-    topGenres: []
-  },
-  {
-    title: 'Last 6 Months',
-    topTracks: [],
-    topArtists: [],
-    topGenres: []
-  },
-  {
-    title: 'Last 12 Months',
-    topTracks: [],
-    topArtists: [],
-    topGenres: []
-  }
-]);
+
+const yearsTitles = ref();
+
 const currentTrack = ref({
   id: '',
   name: '',
@@ -128,7 +110,7 @@ async function getAudioAnalysis(name, artist) {
 }
 
 async function playTrack(track) {
-  const deviceId = getDeviceId();
+  const deviceId = localStorage.getItem('device_id');
   const isSameTrack = track.id === currentTrack.value.id;
 
   if (isSameTrack) {
@@ -163,144 +145,13 @@ function updateCurrentTrack(track) {
   console.log('Playing track:', currentTrack.value);
 }
 
-function getDeviceId() {
-  return localStorage.getItem('device_id');
-}
-
 function logOut() {
   window.location.href = '/';
 }
 
 onMounted(async () => {
 
-  async function fetchUserData() {
-    try {
-      const response = await getUserInfo();
-      userName.value = response.display_name;
-      console.log("User Name: ", userName);
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-    }
-  }
-
-  function analyseTopItems(topArtists, topTracks, index) {
-    // Fetch top genres for each time period
-    const genreCount = {};
-    topArtists.items.forEach(artist => {
-      if (artist.genres) {
-        artist.genres.forEach(genre => {
-          genreCount[genre] = (genreCount[genre] || 0) + 1;
-        });
-      }
-    });
-    years.value[index].topGenres = Object.keys(genreCount)
-      .sort((a, b) => genreCount[b] - genreCount[a])
-      .slice(0, 5);
-
-    // Fetch top 3 artists for each genre
-    const genreArtists = {};
-    for (const genre of years.value[index].topGenres) {
-      genreArtists[genre] = [];
-      for (const artist of topArtists.items) {
-        if (artist.genres.includes(genre) && genreArtists[genre].length < 3) {
-          genreArtists[genre].push(artist);
-        }
-      }
-    }
-    years.value[index].topGenres = years.value[index].topGenres.map(genre => ({
-      name: genre,
-      artists: genreArtists[genre]
-    }));
-
-    // Fetch top tracks for each artist
-    years.value[index].topArtists.forEach(async (_artist, i) => {
-      const artistTopTracks = topTracks.items.filter(track =>
-        track.artists.some(a => a.id === years.value[index].topArtists[i].id)
-      ).slice(0, 3);
-      years.value[index].topArtists[i].tracks = artistTopTracks;
-    });
-  }
-
-  async function fetchTopTracksAndArtists(term, index) {
-    try {
-      const tracksResponse = await getTopTracks(term);
-      years.value[index].topTracks = tracksResponse.items.slice(0, 5);
-
-      const artistsResponse = await getTopArtists(term);
-      years.value[index].topArtists = artistsResponse.items.slice(0, 5);
-
-      analyseTopItems(artistsResponse, tracksResponse, index);
-
-    } catch (error) {
-      console.error(`Error fetching top tracks and artists for ${term}:`, error);
-    }
-  }
-
-  async function fetchWrappedPlaylists() {
-    try {
-      const wrappedPlaylists = await getWrappedPlaylists(getDeviceId());
-
-      console.log('Wrapped Playlists:', wrappedPlaylists);
-
-      wrappedPlaylists.forEach(async (playlist) => {
-        if (playlist.year && playlist.tracks && playlist.tracks.length > 0) {
-
-          // get top artists for each playlist
-          const artistCount = {};
-          playlist.tracks.forEach(track => {
-            const artistId = track.artists[0].id;
-            artistCount[artistId] = (artistCount[artistId] || 0) + 1;
-          });
-
-          const sortedArtistIds = Object.keys(artistCount).sort((a, b) => artistCount[b] - artistCount[a]);
-
-          const topArtists = [];
-          for (const artistId of sortedArtistIds.slice(0, 5)) {
-            const artist = await getArtist(artistId);
-            topArtists.push(artist);
-          }
-
-          const topTracks = playlist.tracks;
-          years.value[playlist.index] = Object.assign({}, years.value[playlist.index], {
-            title: playlist.year,
-            topTracks: topTracks.slice(0, 5),
-            topArtists: topArtists.slice(0, 5),
-            topGenres: []
-          });
-
-          analyseTopItems({ items: topArtists }, { items: topTracks }, playlist.index);
-        }
-      });
-    } catch (error) {
-      console.error("Error fetching wrapped playlists:", error);
-    }
-  }
-
-  async function fetchRecentlyPlayed() {
-    try {
-      const response = await getRecentlyPlayed();
-      const recentTracks = response.items.map(item => item.track);
-
-      years.value[0].recentTracks = recentTracks.slice(0, 5);
-    } catch (error) {
-      console.error('Error fetching recently played:', error);
-    }
-  }
-
-  await fetchUserData();
-
-  await fetchRecentlyPlayed();
-
-  await fetchTopTracksAndArtists('short_term', 1);
-  await fetchTopTracksAndArtists('medium_term', 2);
-  await fetchTopTracksAndArtists('long_term', 3);
-
-  await fetchWrappedPlaylists();
-
-  console.log('Years:', years.value);
-
   await nextTick();
-  //fetchWrappedPlaylists();
 
   const bubble = document.querySelector('.bubble');
 
@@ -325,6 +176,19 @@ onMounted(async () => {
       markers: false,
       onEnter: () => gsap.to(bubble, { opacity: 0 }),
       onLeaveBack: () => gsap.to(bubble, { opacity: 1 }),
+    },
+  });
+
+  const timeline = document.querySelector('.timeline');
+
+  gsap.to(timeline, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top 70%',
+      end: 'top 20%',
+      scrub: true,
+      markers: false,
     },
   });
 
@@ -392,10 +256,10 @@ onMounted(() => {
 
     if (isVisible) {
       // Play the first track
-      if (years.value[0]?.topTracks?.length > 0) {
-        playTrack(years.value[0].topTracks[0]);
-      } else if (years.value[0]?.recentTracks?.length > 0) {
-        playTrack(years.value[0].recentTracks[0]);
+      if (props.years[0]?.topTracks?.length > 0) {
+        playTrack(props.years[0].topTracks[0]);
+      } else if (props.years[0]?.recentTracks?.length > 0) {
+        playTrack(props.years[0].recentTracks[0]);
       }
       window.removeEventListener("scroll", handleScroll);
     }
@@ -482,6 +346,10 @@ h2 {
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  opacity: 0;
+}
+
+.timeline {
   opacity: 0;
 }
 

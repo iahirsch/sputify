@@ -3,17 +3,18 @@ export async function getWrappedPlaylists(device_id) {
 
     let wrappedPlaylists = [];
 
-    const playlist2024 = await getPlaylistTracks('37i9dQZF1FoH7WYtu8FGYL');
-    wrappedPlaylists.push({ year: 2024, tracks: playlist2024, index: 4 });
+    // Spotify says no
+    // const playlist2024 = await getPlaylistTracks('37i9dQZF1FoH7WYtu8FGYL');
+    // wrappedPlaylists.push({ year: '2024', tracks: playlist2024, index: 4 });
 
     const playlist2023 = await getPlaylistTracks('37i9dQZF1Fa1IIVtEpGUcU');
-    wrappedPlaylists.push({ year: 2023, tracks: playlist2023, index: 5 });
+    wrappedPlaylists.push({ year: '2023', tracks: playlist2023, index: 4 });
 
     const playlist2022 = await getPlaylistTracks('37i9dQZF1F0sijgNaJdgit');
-    wrappedPlaylists.push({ year: 2022, tracks: playlist2022, index: 6 });
+    wrappedPlaylists.push({ year: '2022', tracks: playlist2022, index: 5 });
 
     const playlist2021 = await getPlaylistTracks('37i9dQZF1EUMDoJuT8yJsl');
-    wrappedPlaylists.push({ year: 2021, tracks: playlist2021, index: 7 });
+    wrappedPlaylists.push({ year: '2021', tracks: playlist2021, index: 6 });
 
     return wrappedPlaylists;
 

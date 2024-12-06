@@ -1,32 +1,34 @@
 <template>
-    <h2>Share Templates</h2>
-    <div class="container text-center">
-        <div class="canvas-container">
-            <button @click.prevent="previousCanvas" class="arrow left-arrow">
-                <span class="material-symbols-rounded">keyboard_double_arrow_left</span>
-            </button>
-            <div class="portrait-container">
-                <div v-for="(canvas, index) in canvases" :key="index"
-                    :class="['portrait', { selected: selectedCanvas === index }]"
-                    :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103 + 100}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
-                    @click="selectCanvas(index)">
-                    <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
+    <div class="journey-sections" :id="shareIndex">
+        <h2>Share Templates</h2>
+        <div class="container text-center">
+            <div class="canvas-container">
+                <button @click.prevent="previousCanvas" class="arrow left-arrow">
+                    <span class="material-symbols-rounded">keyboard_double_arrow_left</span>
+                </button>
+                <div class="portrait-container">
+                    <div v-for="(canvas, index) in canvases" :key="index"
+                        :class="['portrait', { selected: selectedCanvas === index }]"
+                        :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103 + 100}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
+                        @click="selectCanvas(index)" data-year="Share Journey">
+                        <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
+                    </div>
                 </div>
+                <button @click.prevent="nextCanvas" class="arrow right-arrow">
+                    <span class="material-symbols-rounded">keyboard_double_arrow_right</span>
+                </button>
             </div>
-            <button @click.prevent="nextCanvas" class="arrow right-arrow">
-                <span class="material-symbols-rounded">keyboard_double_arrow_right</span>
-            </button>
-        </div>
 
-        <div class="button-container">
-            <button class="share-button" @click.prevent="shareCanvas">
-                <span class="material-symbols-rounded share">share</span>
-                <p>Share</p>
-            </button>
-            <button class="share-button" @click.prevent="downloadCanvas">
-                <span class="material-symbols-rounded">download</span>
-                <p>Download</p>
-            </button>
+            <div class="button-container">
+                <button class="share-button" @click.prevent="shareCanvas">
+                    <span class="material-symbols-rounded share">share</span>
+                    <p>Share</p>
+                </button>
+                <button class="share-button" @click.prevent="downloadCanvas">
+                    <span class="material-symbols-rounded">download</span>
+                    <p>Download</p>
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -42,6 +44,10 @@ export default {
         },
         years: {
             type: Array,
+            required: true
+        },
+        shareIndex: {
+            type: Number,
             required: true
         }
     },
@@ -326,6 +332,7 @@ canvas {
     border: none;
     cursor: pointer;
     z-index: 4;
+
     .material-symbols-rounded {
         font-size: 3rem !important;
     }
