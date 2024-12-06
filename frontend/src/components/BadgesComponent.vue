@@ -65,7 +65,7 @@ h2 {
 .container-badge {
     display: flex;
     align-items: center;
-    margin-left: 5vh;
+    margin-left: 5vw;
     cursor: default;
 }
 

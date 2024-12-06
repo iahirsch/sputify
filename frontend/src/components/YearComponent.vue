@@ -56,15 +56,6 @@
                 <div v-else>
                     <p class="loading">Loading Top Artists...</p>
                 </div>
-                <div class="container-badge">
-                    <span class="material-symbols-rounded badge ">Favorite</span>
-                    <h5 class="badge-text">
-                        You're obsessed with
-                        <span style="color: #1DB954;" v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
-                        <span v-else>loading...</span>
-                        lately
-                    </h5>
-                </div>
             </div>
             <div class="content-center" ref="genre">
                 <h3 class="top-genre-text">Your Top Genres</h3>
