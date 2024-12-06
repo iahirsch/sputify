@@ -20,8 +20,11 @@
         <YearComponent v-for="(year, index) in years" :key="index" :yearIndex="index" :year="year"
           :currentTrack="currentTrack" :playing="playing" :playTrack="playTrack" />
       </div>
+      <div class="badge-page">
+        <BadgesComponent :badges="badges" :badgeIndex="years.length"/>
+      </div>
       <div class="share">
-        <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length" />
+        <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length+1" />
       </div>
       <footer class="footergradient-black">
         <button @click="scrollTo" class="totop">
@@ -47,6 +50,7 @@ import ShareComponent from './ShareComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 import YearComponent from './YearComponent.vue';
 import PopupComponent from './PopupComponent.vue';
+import BadgesComponent from './BadgesComponent.vue';
 
 const props = defineProps({
   playerReady: Boolean,
@@ -59,6 +63,8 @@ const main = ref();
 let updateInterval;
 let ctx;
 let panel_tl;
+
+const badges = ref();
 
 const currentTrack = ref({
   id: '',
@@ -144,6 +150,21 @@ function updateCurrentTrack(track) {
 
 function logOut() {
   window.location.href = '/';
+}
+
+function getBadges() {
+  const badges = [];
+  props.years.forEach((year, index) => {
+    console.log(year);
+    if (year.topArtists?.length > 0) {
+      badges.push({
+        id: index,
+        icon: 'Favorite',
+        text: `You were obsessed with ${year.topArtists[0].name} in ${year.title}`,
+      });
+    }
+  });
+  return badges;
 }
 
 onMounted(async () => {
@@ -263,6 +284,8 @@ onMounted(() => {
   };
 
   window.addEventListener("scroll", handleScroll);
+
+  badges.value = getBadges();
 });
 
 </script>

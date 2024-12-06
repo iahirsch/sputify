@@ -23,7 +23,7 @@ const route = useRoute();
 
 const years = ref([
     {
-        title: 'now',
+        title: 'Now',
         recentTracks: [],
     },
     {
