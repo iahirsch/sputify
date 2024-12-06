@@ -150,31 +150,34 @@ onMounted(async () => {
 
   await nextTick();
 
-  const bubble = document.querySelector('.bubble');
+const bubble = document.querySelector('.bubble');
 
-  gsap.to(bubble, {
-    opacity: 1,
-    scrollTrigger: {
-      trigger: '.year-title',
-      start: 'top 70%',
-      end: 'top 20%',
-      scrub: true,
-      markers: false,
-    },
-  });
+const bubbleTimeline = gsap.timeline();
 
-  gsap.to(bubble, {
-    opacity: 0,
-    scrollTrigger: {
-      trigger: 'footer',
-      start: 'top 50%',
-      end: 'top 50%',
-      scrub: true,
-      markers: false,
-      onEnter: () => gsap.to(bubble, { opacity: 0 }),
-      onLeaveBack: () => gsap.to(bubble, { opacity: 1 }),
-    },
-  });
+bubbleTimeline.to(bubble, {
+  opacity: 1,
+  scrollTrigger: {
+    trigger: '.year-title',
+    start: 'top bottom',
+    end: 'top top',
+    scrub: true,
+    markers: true,
+  },
+  immediateRender: false
+});
+
+bubbleTimeline.to(bubble, {
+  opacity: 0,
+  scrollTrigger: {
+    trigger: '.share',
+    start: 'top bottom',
+    end: 'top top',
+    scrub: true,
+    markers: false,
+  },
+  immediateRender: false
+});
+
 
   const timeline = document.querySelector('.timeline');
 
