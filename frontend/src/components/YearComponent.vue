@@ -1,6 +1,6 @@
 <template>
     <div class="journey-sections" :id="yearIndex">
-        <div class="year" v-if="year && year.topTracks">
+        <div class="year" ref="year" v-if="year && year.topTracks">
             <div class="year-title" :data-year="year.title"></div>
             <div class="content-leftside">
                 <h2>Your Top Songs</h2>
@@ -60,13 +60,13 @@
                     <span class="material-symbols-rounded badge ">Favorite</span>
                     <h5 class="badge-text">
                         You're obsessed with
-                        <span v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
+                        <span style="color: #1DB954;" v-if="year.topArtists.length > 0">{{ year.topArtists[0].name }}</span>
                         <span v-else>loading...</span>
                         lately
                     </h5>
                 </div>
             </div>
-            <div class="content-center">
+            <div class="content-center" ref="genre">
                 <h3 class="top-genre-text">Your Top Genres</h3>
                 <div v-if="year.topGenres.length > 0" class="genre-container">
                     <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
@@ -102,8 +102,6 @@
                     <p class="loading">Loading Recently Played Tracks...</p>
                 </div>
             </div>
-            <div class="content-center">
-            </div>
             <div class="content-rightside">
             </div>
         </div>
@@ -112,10 +110,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {onMounted, useTemplateRef, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
+const genreRef = useTemplateRef('genre');
+const yearRef = useTemplateRef('year');
 
 defineProps({
     yearIndex: Number,
@@ -135,20 +135,21 @@ function open(artist) {
     }
 }
 
-const genre = document.querySelector('.content-center');
+onMounted(async () => {
+    console.log(genreRef.value)
+    console.log(yearRef.value)
+    if (genreRef.value && yearRef.value) {
 
-gsap.to(genre, { // Set initial opacity to 1
-    opacity: 1,
-    scrollTrigger: {
-        trigger: '.year-title',
-        start: 'bottom top',
-        end: 'top 20%',
-        scrub: true,
-        markers: false,
-        //onEnter: () => console.log('Genre Trigger Entered'), // Log for debugging
-        //onLeave: () => console.log('Genre Trigger Left'),  // Log for debugging
-    },
+        ScrollTrigger.create({
+            trigger: yearRef.value,
+            pin: genreRef.value,
+            start: "top top", // when the top of the trigger hits the top of the viewport
+            end: 'bottom bottom',
+            markers: true
+        });
+    }
 });
+
 </script>
 
 

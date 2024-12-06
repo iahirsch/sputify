@@ -174,7 +174,7 @@ bubbleTimeline.to(bubble, {
     start: 'top bottom',
     end: 'top top',
     scrub: true,
-    markers: true,
+    markers: false,
   },
   immediateRender: false
 });
