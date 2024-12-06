@@ -6,11 +6,11 @@
                 <button @click.prevent="previousCanvas" class="arrow left-arrow">
                     <span class="material-symbols-rounded">keyboard_double_arrow_left</span>
                 </button>
-                <div class="portrait-container">
+                <div class="portrait-container" data-year="Share Journey">
                     <div v-for="(canvas, index) in canvases" :key="index"
                         :class="['portrait', { selected: selectedCanvas === index }]"
                         :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103 + 100}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
-                        @click="selectCanvas(index)" data-year="Share Journey">
+                        @click="selectCanvas(index)">
                         <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                     </div>
                 </div>

@@ -3,7 +3,10 @@
         <div class="timeline-content">
             <TimelineDatapoint v-for="(year, index) in years" :key="index" :positionStyle="getCirclePosition(index + 1)"
                 :active="activeId === index.toString()" :title="year?.title || ''" />
-            <TimelineDatapoint :positionStyle="getCirclePosition(years.length + 1)" :active="activeId === years.length.toString()" :title="'Share Journey'" />
+            <TimelineDatapoint :positionStyle="getCirclePosition(years.length + 1)"
+                :active="activeId === years.length.toString()" :title="'Your Badges'" />
+            <TimelineDatapoint :positionStyle="getCirclePosition(years.length + 2)"
+                :active="activeId === (years.length + 1).toString()" :title="'Share Journey'" />
         </div>
         <span class="timeline"></span>
     </div>
