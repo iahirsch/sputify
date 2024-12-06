@@ -27,7 +27,7 @@ onMounted(() => {
         scrollTrigger: {
             trigger: "#section2",
             start: "top top",
-            markers: true,
+            markers: false,
         },
     });
     gsap.from("#center", {
@@ -36,7 +36,7 @@ onMounted(() => {
         scrollTrigger: {
             trigger: "#section2",
             start: "top top",
-            markers: true,
+            markers: false,
         },
     });
 });

@@ -145,7 +145,7 @@ onMounted(async () => {
             pin: genreRef.value,
             start: "top top", // when the top of the trigger hits the top of the viewport
             end: 'bottom bottom',
-            markers: true
+            markers: false
         });
     }
 });
@@ -275,6 +275,7 @@ onMounted(async () => {
 
 .artistCover {
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .currently-playing.song {

@@ -34,6 +34,7 @@ onMounted(() => {
 .title {
     text-align: center;
     max-width: 90vw;
+    margin: 10% 0;
 }
 
 .name {
@@ -56,7 +57,7 @@ onMounted(() => {
 
 
 .arrow-icon {
-    font-size: 3rem;
+    font-size: 4rem;
     animation: arrow-bounce 2s infinite;
     display: flex;
     flex-direction: column;

@@ -334,7 +334,7 @@ div.step {
 }
 
 .box-a {
-  height: 120vh;
+  height: 100vh;
 }
 
 .box-b {
@@ -449,7 +449,7 @@ p {
 }
 
 .totop {
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-weight: 300;
   margin-top: 10vh;
   background-color: transparent;
@@ -466,7 +466,7 @@ p {
 }
 
 .totop-icon {
-  font-size: 3rem;
+  font-size: 2.5rem !important;
 }
 
 .pin-spacer {
