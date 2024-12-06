@@ -57,19 +57,13 @@ export default {
             canvases: [1, 2, 3],
         };
     },
-    watch: {
-        userName: 'drawCanvases',
-        years: {
-            handler: 'drawCanvases',
-            deep: true
-        }
-    },
     mounted() {
-        this.drawCanvases();
+        setTimeout(() => {
+            this.drawCanvases();
+        }, 1000);
     },
     methods: {
         drawCanvases() {
-            // Clear and redraw all canvases
             this.drawOnCanvas1(this.$refs.portraitCanvas1[0]);
             this.drawOnCanvas2(this.$refs.portraitCanvas2[0]);
             this.drawOnCanvas3(this.$refs.portraitCanvas3[0]);
@@ -111,7 +105,7 @@ export default {
                 ctx.fillText(line, 50, 470 + index * 40);
             });
 
-            const topGenresText = `Top Genres: \n${topGenres.join("\n")}`;
+            const topGenresText = `Top Genres: \n${topGenres.map(genre => genre.name).join("\n")}`;
             const topGenresLines = topGenresText.split('\n');
             topGenresLines.forEach((line, index) => {
                 if (index === 0) {
@@ -199,7 +193,7 @@ export default {
             ctx.fillStyle = "#000";
             ctx.fillRect(0, 0, 1080 / scaleFactor, 1920 / scaleFactor);
             ctx.fillStyle = "#f1f1f1";
-            ctx.font = "36px Arial";
+            ctx.font = "36px Familjen Grotesk, sans-serif";
         },
 
         downloadCanvas() {

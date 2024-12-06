@@ -240,6 +240,8 @@ onMounted(async () => {
     await fetchTopTracksAndArtists('long_term', 3);
 
     await fetchWrappedPlaylists();
+
+    console.log('Years:', years.value);
     
     isReady.value = true;
 });
