@@ -1,11 +1,12 @@
 <template>
-    <JourneyPage v-if="accessToken && isReady" :player-ready="playerReady" :years="years" :userName="userName"></JourneyPage>
+    <JourneyPage v-if="accessToken && isReady" :player-ready="playerReady" :years="years" :userName="userName">
+    </JourneyPage>
     <LoadingPage v-else></LoadingPage>
 </template>
 
 <script setup>
 import JourneyPage from './JourneyPage.vue';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import LoadingPage from './LoadingPage.vue';
 
@@ -49,8 +50,8 @@ const userName = ref('');
 const isReady = ref(false);
 
 onMounted(async () => {
-    const state = route.query.state;
-    const code = route.query.code;
+    // const state = route.query.state;
+    // const code = route.query.code;
     let currentTime = Math.floor(new Date().getTime() / 1000);
 
     console.log(isNaN(localStorage.getItem('tokenExpirationTime')), currentTime, localStorage.getItem('tokenExpirationTime'));
@@ -186,7 +187,7 @@ onMounted(async () => {
 
             console.log('Wrapped Playlists:', wrappedPlaylists);
 
-            for(const playlist of wrappedPlaylists) {
+            for (const playlist of wrappedPlaylists) {
                 if (playlist.year && playlist.tracks && playlist.tracks.length > 0) {
 
                     // get top artists for each playlist
@@ -214,7 +215,7 @@ onMounted(async () => {
 
                     analyseTopItems({ items: topArtists }, { items: topTracks }, playlist.index);
                 }
-            };
+            }
         } catch (error) {
             console.error("Error fetching wrapped playlists:", error);
         }
@@ -242,7 +243,7 @@ onMounted(async () => {
     await fetchWrappedPlaylists();
 
     console.log('Years:', years.value);
-    
+
     isReady.value = true;
 });
 </script>

@@ -117,7 +117,7 @@ import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
-const props = defineProps({
+defineProps({
     yearIndex: Number,
     year: Object,
     currentTrack: Object,

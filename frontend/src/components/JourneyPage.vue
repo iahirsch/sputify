@@ -17,8 +17,8 @@
         <WelcomeComponent :user-name="userName" />
       </div>
       <div class="box box-b gradient-black">
-        <YearComponent v-for="(year, index) in years" :yearIndex="index" :year="year" :currentTrack="currentTrack"
-          :playing="playing" :playTrack="playTrack" />
+        <YearComponent v-for="(year, index) in years" :key="index" :yearIndex="index" :year="year"
+          :currentTrack="currentTrack" :playing="playing" :playTrack="playTrack" />
       </div>
       <div class="share">
         <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length" />
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, onUnmounted, ref, nextTick, watch } from 'vue';
+import { onMounted, onBeforeUnmount, onUnmounted, ref, nextTick } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import Lenis from 'lenis';
@@ -59,8 +59,6 @@ const main = ref();
 let updateInterval;
 let ctx;
 let panel_tl;
-
-const yearsTitles = ref();
 
 const currentTrack = ref({
   id: '',
