@@ -171,6 +171,7 @@ onMounted(async () => {
 
 .content-center {
     margin-top: 25%;
+    height: fit-content;
 }
 
 .content-rightside {

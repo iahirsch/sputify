@@ -279,7 +279,7 @@ function getBadges() {
           gem = {
             icon: 'diamond',
             title: 'Hidden Gem',
-            text: `You listened to ${artist.name} a lot in ${year.title}, an artist with a popularity of only ${artist.popularity}%.`,
+            text: `You were listening to ${artist.name} a lot in ${year.title} with a popularity of only ${artist.popularity}%.`,
           };
           popularity = artist.popularity;
         }

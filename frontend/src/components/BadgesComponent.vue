@@ -16,6 +16,7 @@
                 <h5 class="badge-title">
                     {{ badge.title }}
                 </h5>
+                <span class="material-symbols-rounded more">chevron_left</span>
                 <p class="badge-text">
                     {{ badge.text }}
                 </p>
@@ -76,26 +77,37 @@ h2 {
     margin-left: 5vw;
     cursor: default;
     height: 7rem;
+    max-width: 50vw;
+    width: fit-content;
+    padding-right: 1rem;
+    border-radius: 2rem;
 }
 
 .badge-title {
     font-size: 1.5rem;
     color: rgba(255, 255, 255, 0.8);
-    margin-left: 2vh;
+    margin-left: 3vw;
     justify-content: center;
     width: fit-content;
     max-width: 20vw;
 }
 
+.more {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: 1rem;
+    visibility: hidden;
+}
+
 .badge-text {
     visibility: hidden;
     font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-left: 2vh;
+    color: rgba(255, 255, 255, 0.4);
     justify-content: center;
     width: 20vw;
-    position: absolute;
+    max-height: 7rem;
     left: 25vw;
+    overflow: hidden;
 }
 
 .zigzag {
@@ -105,7 +117,7 @@ h2 {
     align-items: center;
     justify-content: center;
     position: absolute;
-    left: 4vw;
+    transform: translate(-0.7rem, 0);
     overflow: visible;
     filter: drop-shadow(0 0 0.5rem #35bd69);
 }
@@ -125,11 +137,18 @@ h2 {
 }
 
 .container-badge:hover {
+
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+
     .badge {
         animation: glow 2s ease-in-out infinite alternate;
     }
 
     .badge-text {
+        visibility: visible;
+    }
+
+    .more {
         visibility: visible;
     }
 }
