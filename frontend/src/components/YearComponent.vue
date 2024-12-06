@@ -60,10 +60,14 @@
             <div class="content-center" ref="genre">
                 <h3 class="top-genre-text">Your Top Genres</h3>
                 <div v-if="year.topGenres.length > 0" class="genre-container">
-                    <p v-for="(genre, index) in year.topGenres" :key="index" class="genre"
+                    <div v-for="(genre, index) in year.topGenres" :key="index" class="genre"
                         :class="{ 'current-genre': currentTrack.genres.includes(genre.name) }">
                         {{ genre.name }}
-                    </p>
+                        <div class="genre-artists">
+                            <img v-for="(artist, index) in genre.artists" :key="index" class="genre-artist"
+                                :style="{ '--index': index }" :src="artist.images[0].url" :title="artist.name">
+                        </div>
+                    </div>
                 </div>
                 <div v-else>
                     <p class="loading">Loading top genres...</p>
@@ -101,7 +105,7 @@
 </template>
 
 <script setup>
-import {onMounted, useTemplateRef, ref } from 'vue';
+import { onMounted, useTemplateRef, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
@@ -302,7 +306,6 @@ onMounted(async () => {
 
 .top-genre-text {
     color: rgba(255, 255, 255, 0.6);
-    /* color: white; */
     margin-top: 4rem;
     text-align: center;
 }
@@ -315,11 +318,15 @@ onMounted(async () => {
     text-overflow: ellipsis;
     font-size: 1.2rem;
     margin: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 1rem 0.5rem;
     color: rgba(255, 255, 255, 0.6);
     border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 2rem;
     cursor: default;
+    display: flex;
+}
+.genre:hover {
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .current-genre {
@@ -327,6 +334,35 @@ onMounted(async () => {
     background-color: rgba(255, 255, 255, 0.6);
     color: rgba(0, 0, 0, 1);
     font-weight: 700;
+}
+.current-genre:hover {
+    background-color: rgba(255, 255, 255, 0.45);
+}
+
+.genre-artists {
+    display: none;
+    position: fixed;
+    width: 8rem;
+    height: 2rem;
+    transform: translate(0, -2rem);
+}
+
+.genre-artist {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    margin-left: 0.5rem;
+    position: absolute;
+    transform: translate(calc(0.5rem + 2.5rem * var(--index)), 0);
+    box-shadow: 0 0 1rem 0 black;
+    display: block;
+}
+
+.genre:hover,
+.genre-artists:hover {
+    .genre-artists {
+        display: flex;
+    }
 }
 
 .loading {
