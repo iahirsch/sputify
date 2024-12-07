@@ -41,6 +41,7 @@ onMounted(() => {
     padding-top: 1rem;
     background: -webkit-linear-gradient(180deg, #4DD4AC 0%, #1DB954 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 

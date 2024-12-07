@@ -3,10 +3,12 @@
         <h2>Share Templates</h2>
         <div class="container text-center">
             <div class="canvas-container">
+                <span class="material-symbols-rounded swipe">swipe_left</span>
                 <button @click.prevent="previousCanvas" class="arrow left-arrow">
                     <span class="material-symbols-rounded">keyboard_double_arrow_left</span>
                 </button>
-                <div class="portrait-container" data-year="Share Journey">
+                <div class="portrait-container" data-year="Share Journey" @touchstart="onTouchStart"
+                    @touchmove="onTouchMove" @touchend="onTouchEnd">
                     <div v-for="(canvas, index) in canvases" :key="index"
                         :class="['portrait', { selected: selectedCanvas === index }]"
                         :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 104}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
@@ -55,6 +57,9 @@ export default {
         return {
             selectedCanvas: 0,
             canvases: [1, 2, 3],
+            touchStartX: 0,
+            touchEndX: 0,
+            shown: false
         };
     },
     mounted() {
@@ -116,7 +121,6 @@ export default {
                 ctx.fillText(line, 50, 740 + index * 40);
             });
         },
-
         drawOnCanvas2(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
@@ -143,8 +147,6 @@ export default {
                 }
             });
         },
-
-
         drawOnCanvas3(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
@@ -236,6 +238,37 @@ export default {
 
         selectCanvas(index) {
             this.selectedCanvas = index;
+        },
+        onTouchStart(event) {
+            this.touchStartX = event.changedTouches[0].clientX;
+            if (!this.shown) {
+                this.shown = true;
+                this.showSwipeInfo();
+            }
+        },
+        onTouchMove(event) {
+            this.touchEndX = event.changedTouches[0].clientX;
+        },
+        onTouchEnd() {
+            const swipeDistance = this.touchStartX - this.touchEndX;
+            const swipeThreshold = 50; // Minimum distance to detect a swipe
+
+            if (swipeDistance > swipeThreshold) {
+                // Swipe left
+                this.nextCanvas();
+            } else if (swipeDistance < -swipeThreshold) {
+                // Swipe right
+                this.previousCanvas();
+            }
+        },
+        showSwipeInfo() {
+            const swipeElement = document.querySelector('.swipe');
+            if (swipeElement) {
+                swipeElement.style.opacity = '0.8';
+                setTimeout(() => {
+                    swipeElement.style.opacity = '0';
+                }, 2000);
+            }
         }
     }
 };
@@ -256,6 +289,7 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
 }
 
 .button-container {
@@ -264,6 +298,7 @@ h2 {
     justify-content: center;
     flex-wrap: wrap;
     gap: 2rem;
+    margin-bottom: 2rem;
 }
 
 .share-button {
@@ -347,5 +382,26 @@ canvas {
 
 .share {
     transform: scale(0.9);
+}
+
+.swipe {
+    position: absolute;
+    z-index: 99;
+    transform: translate(45vw, 25vh);
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.8);
+    background: #333;
+    opacity: 0;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem 1rem rgba(0, 0, 0, 0.8);
+    transition: opacity 0.5s;
+}
+
+@media screen and (max-width: 1000px) {
+    .arrow {
+        display: none;
+    }
+
 }
 </style>
