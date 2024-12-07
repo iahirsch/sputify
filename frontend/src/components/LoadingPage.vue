@@ -70,7 +70,6 @@ export default {
     justify-content: center;
     height: 100vh;
     width: 100%;
-    padding: 20px;
 }
 
 .text-container {
