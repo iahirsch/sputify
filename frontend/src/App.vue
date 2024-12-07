@@ -75,4 +75,17 @@ button {
   }
 }
 
+@media screen and (max-width: 1000px) {
+  h2 {
+      font-size: 1.5rem;
+      width: 90vw;
+    }
+  
+    h3 {
+      font-size: 1.3rem;
+      width: 90vw;
+    }
+  
+}
+
 </style>

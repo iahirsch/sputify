@@ -21,10 +21,10 @@
           :currentTrack="currentTrack" :playing="playing" :playTrack="playTrack" />
       </div>
       <div class="badge-page">
-        <BadgesComponent :badges="badges" :badgeIndex="years.length"/>
+        <BadgesComponent :badges="badges" :badgeIndex="years.length" />
       </div>
       <div class="share">
-        <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length+1" />
+        <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length + 1" />
       </div>
       <footer class="footergradient-black">
         <button @click="scrollTo" class="totop">
@@ -247,7 +247,7 @@ function getBadges() {
       ]
     },
   ];
-  
+
   //const years = testYears;
   const years = props.years;
 
@@ -392,33 +392,33 @@ onMounted(async () => {
 
   await nextTick();
 
-const bubble = document.querySelector('.bubble');
+  const bubble = document.querySelector('.bubble');
 
-const bubbleTimeline = gsap.timeline();
+  const bubbleTimeline = gsap.timeline();
 
-bubbleTimeline.to(bubble, {
-  opacity: 1,
-  scrollTrigger: {
-    trigger: '.year-title',
-    start: 'top bottom',
-    end: 'top top',
-    scrub: true,
-    markers: false,
-  },
-  immediateRender: false
-});
+  bubbleTimeline.to(bubble, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top bottom',
+      end: 'top top',
+      scrub: true,
+      markers: false,
+    },
+    immediateRender: false
+  });
 
-bubbleTimeline.to(bubble, {
-  opacity: 0,
-  scrollTrigger: {
-    trigger: '.share',
-    start: 'top bottom',
-    end: 'top top',
-    scrub: true,
-    markers: false,
-  },
-  immediateRender: false
-});
+  bubbleTimeline.to(bubble, {
+    opacity: 0,
+    scrollTrigger: {
+      trigger: '.share',
+      start: 'top bottom',
+      end: 'top top',
+      scrub: true,
+      markers: false,
+    },
+    immediateRender: false
+  });
 
 
   const timeline = document.querySelector('.timeline');
@@ -495,7 +495,7 @@ onMounted(() => {
   yearTitles.forEach((yearTitle, index) => {
     const handleYearScroll = () => {
       const rect = yearTitle.getBoundingClientRect();
-      const isVisible = rect.top < window.innerHeight/2 && rect.bottom > 0;
+      const isVisible = rect.top < window.innerHeight / 2 && rect.bottom > 0;
 
       if (isVisible) {
         const year = props.years[index];
@@ -713,5 +713,21 @@ p {
   z-index: 10;
   -webkit-filter: drop-shadow(0 0 0.5rem black);
   filter: drop-shadow(0 0 0.5rem black);
+}
+
+@media screen and (max-width: 1000px) {
+  .logoJourney {
+    width: 7rem;
+  }
+  .timeline {
+    display: none;
+  }
+  .logout {
+    display: none;
+  }
+  .totop {
+    font-size: 1rem;
+    margin-top: 5vh;
+  }
 }
 </style>

@@ -325,6 +325,7 @@ onMounted(async () => {
     cursor: default;
     display: flex;
 }
+
 .genre:hover {
     background-color: rgba(255, 255, 255, 0.15);
 }
@@ -335,6 +336,7 @@ onMounted(async () => {
     color: rgba(0, 0, 0, 1);
     font-weight: 700;
 }
+
 .current-genre:hover {
     background-color: rgba(255, 255, 255, 0.45);
 }
@@ -372,5 +374,20 @@ onMounted(async () => {
 .line {
     height: 250px;
     background: none;
+}
+
+@media screen and (max-width: 1000px) {
+    .year {
+        flex-direction: column;
+    }
+    .content-leftside {
+        width: 90vw;
+    }
+    .content-rightside {
+        display: none;
+    }
+    .content-center {
+        display: none;
+    }
 }
 </style>

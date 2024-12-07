@@ -64,6 +64,8 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     opacity: 0.3;
+    position: absolute;
+    top: 90vh;
 }
 
 @keyframes arrow-bounce {
@@ -77,6 +79,15 @@ onMounted(() => {
 
     100% {
         transform: translateY(0);
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .title {
+        font-size: 10vw !important;
+    }
+    .arrow-icon {
+        font-size: 2.5rem;
     }
 }
 </style>

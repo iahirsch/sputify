@@ -114,4 +114,11 @@ body {
     padding-top: 10vh;
     padding-bottom: 5vh;
 }
+
+@media screen and (max-width: 1000px) {
+    h2 {
+        width: 80vw;
+    }
+    
+}
 </style>

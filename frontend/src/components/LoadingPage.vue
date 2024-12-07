@@ -94,5 +94,6 @@ export default {
 
 .bar {
     transition: height 0.1s linear;
+    max-height: 25vh;
 }
 </style>
