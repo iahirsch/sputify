@@ -20,6 +20,7 @@
   font-family: 'FranieBlack';
   src: url('assets/FranieFontFamily/FranieVariableTest-Black.otf') format('opentype');
 }
+
 @font-face {
   font-family: 'FranieSemiBold';
   src: url('assets/FranieFontFamily/FranieVariableTest-SemiBold.otf') format('opentype');
@@ -39,12 +40,13 @@ body {
   }
 
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  
+
 }
 
 h1 {
   font-family: "FranieBlack", sans-serif;
 }
+
 h2 {
   font-family: "FranieSemiBold", sans-serif;
 }
@@ -71,6 +73,7 @@ button {
     margin: 0;
     padding-bottom: 0.15rem;
   }
+
   .material-symbols-rounded {
     font-size: 2rem !important;
     margin-right: 0.5rem;
@@ -79,15 +82,14 @@ button {
 
 @media screen and (max-width: 1000px) {
   h2 {
-      font-size: 1.5rem;
-      width: 90vw;
-    }
-  
-    h3 {
-      font-size: 1.3rem;
-      width: 90vw;
-    }
-  
-}
+    font-size: 1.5rem;
+    width: 90vw;
+  }
 
+  h3 {
+    font-size: 1.3rem;
+    width: 90vw;
+  }
+
+}
 </style>

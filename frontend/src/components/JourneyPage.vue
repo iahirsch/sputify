@@ -6,6 +6,9 @@
   <div class="timeline">
     <StickyTimeline :years="years" :active="false" />
   </div>
+  <div class="mobile-timeline">
+    <MobileTimeline :years="years" :active="false" :user-name="userName" :user-img="userImg" />
+  </div>
   <div id="smooth-wrapper" ref="main">
     <!-- TODO: clear spotify authentication on logout -->
     <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
@@ -46,6 +49,7 @@ import { getArtist } from '../api/getArtist.js';
 
 import BubbleComponent from './BubbleComponent.vue';
 import StickyTimeline from './StickyTimeline.vue';
+import MobileTimeline from './MobileTimeline.vue';
 import ShareComponent from './ShareComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 import YearComponent from './YearComponent.vue';
@@ -56,6 +60,7 @@ const props = defineProps({
   playerReady: Boolean,
   years: Array,
   userName: String,
+  userImg: String,
 });
 
 gsap.registerPlugin(ScrollTrigger);
@@ -147,12 +152,6 @@ function updateCurrentTrack(track) {
   });
 
   console.log('Playing track:', currentTrack.value);
-}
-
-function logOut() {
-  window.location.href = '/';
-  localStorage.removeItem('showPopup');
-  console.log(localStorage);
 }
 
 function handleShowPopup() {
@@ -434,6 +433,19 @@ onMounted(async () => {
     },
   });
 
+  const mobileTimeline = document.querySelector('.mobile-timeline');
+
+  gsap.to(mobileTimeline, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top 70%',
+      end: 'top 20%',
+      scrub: true,
+      markers: false,
+    },
+  });
+
 }, main.value);
 
 
@@ -514,6 +526,15 @@ onMounted(() => {
   badges.value = getBadges();
 });
 
+</script>
+
+<script>
+function logOut() {
+  window.location.href = '/';
+  localStorage.removeItem('showPopup');
+  console.log(localStorage);
+}
+export { logOut };
 </script>
 
 <style scoped>
@@ -629,8 +650,7 @@ h2 {
 
 .logout {
   left: 1rem;
-  left: 0;
-  top: 91%;
+  bottom: 1rem;
   transform: scaleX(-1);
 }
 
@@ -682,7 +702,7 @@ p {
 }
 
 .totop {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 300;
   margin-top: 10vh;
   background-color: transparent;
@@ -715,19 +735,32 @@ p {
   filter: drop-shadow(0 0 0.5rem black);
 }
 
+.mobile-timeline {
+  display: none;
+  opacity: 0;
+}
+
 @media screen and (max-width: 1000px) {
   .logoJourney {
+    right: 0;
     width: 7rem;
   }
+
   .timeline {
     display: none;
   }
+
   .logout {
     display: none;
   }
+
   .totop {
     font-size: 1rem;
     margin-top: 5vh;
+  }
+
+  .mobile-timeline {
+    display: block;
   }
 }
 </style>
