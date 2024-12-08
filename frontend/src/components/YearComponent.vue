@@ -380,12 +380,15 @@ onMounted(async () => {
     .year {
         flex-direction: column;
     }
+
     .content-leftside {
-        width: 90vw;
+        width: 85vw;
     }
+
     .content-rightside {
         display: none;
     }
+
     .content-center {
         display: none;
     }

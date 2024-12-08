@@ -285,7 +285,6 @@ h2 {
 }
 
 .container {
-    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -387,7 +386,7 @@ canvas {
 .swipe {
     position: absolute;
     z-index: 99;
-    transform: translate(45vw, 25vh);
+    transform: translate(calc(50vw - 50%), 25vh);
     font-size: 4rem;
     color: rgba(255, 255, 255, 0.8);
     background: #333;

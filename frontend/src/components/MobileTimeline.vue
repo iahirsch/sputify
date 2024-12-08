@@ -4,16 +4,18 @@
         <h2>{{ yearTitles[activeId] }}</h2>
     </div>
     <div :class="['sidebar', { open: sidebarVisible }]">
-        <div class="sidebar-header">
-            <span class="material-symbols-rounded close" @click="toggleSidebar">close</span>
-            <img :src="userImg" alt="User Image" class="user-image" />
-            <h2 class="user-name">{{ userName }}</h2>
-        </div>
-        <div class="sidebar-content">
-            <MobileDatapoint v-for="(year, index) in years" :key="index" :active="activeId === index"
-                :title="year.title" />
-            <MobileDatapoint :active="activeId === years.length" :title="'Your Badges'" />
-            <MobileDatapoint :active="activeId === years.length + 1" :title="'Share Journey'" />
+        <div class="sidebar-top">
+            <div class="sidebar-header">
+                <span class="material-symbols-rounded close" @click="toggleSidebar">close</span>
+                <img :src="userImg" alt="User Image" class="user-image" />
+                <h2 class="user-name">{{ userName }}</h2>
+            </div>
+            <div class="sidebar-content">
+                <MobileDatapoint v-for="(year, index) in years" :key="index" :active="activeId === index"
+                    :title="year.title" />
+                <MobileDatapoint :active="activeId === years.length" :title="'Your Badges'" />
+                <MobileDatapoint :active="activeId === years.length + 1" :title="'Share Journey'" />
+            </div>
         </div>
         <div class="sidebar-footer">
             <button @click="logOut" class="logout-button">
@@ -27,7 +29,14 @@
 <script>
 const sidebarVisible = ref(false);
 const toggleSidebar = () => {
-    sidebarVisible.value = !sidebarVisible.value;
+    if (document.querySelector('.mobile-timeline').style.opacity == 1) {
+        sidebarVisible.value = !sidebarVisible.value;
+        if (sidebarVisible.value) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }
 };
 export { toggleSidebar };
 </script>
@@ -99,8 +108,8 @@ onUnmounted(() => {
     box-shadow: 0 0 1rem 1rem rgba(0, 0, 0, 0.5);
     border-radius: 0 1rem 1rem 0;
     cursor: pointer;
-    transform: translateX(-100%);
-    transition: width 0.3s ease, transform 0.3s ease;
+    transform: translateX(-110%);
+    transition: transform 0.3s ease;
 }
 
 .timeline-container.open {
@@ -121,22 +130,34 @@ h2 {
 .sidebar {
     position: fixed;
     top: 5vh;
-    left: -80vw;
-    width: 80vw;
+    width: fit-content;
     height: 90vh;
     background-color: #222;
     box-shadow: 0 0 1rem 1rem rgba(0, 0, 0, 0.5);
     border-radius: 0 1rem 1rem 0;
     transition: transform 0.3s ease;
-    transform: translateX(0%);
-    z-index: 99;
+    transform: translateX(-110%);
+    z-index: 100;
     overflow-x: hidden;
     overflow-y: auto;
     scrollbar-width: none;
+    -ms-overflow-style: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 .sidebar.open {
-    transform: translateX(100%);
+    transform: translateX(0%);
+}
+
+.sidebar-top {
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-header {
@@ -175,14 +196,15 @@ h2 {
 
 .sidebar-content {
     padding: 1rem;
+    width: 20rem;
     max-width: calc(80vw - 4rem);
-
 }
 
 .sidebar-footer {
     display: flex;
-    padding: 2rem;
-    bottom: 1rem;
+    justify-content: center;
+    padding: 1rem;
+    margin-bottom: 1rem
 }
 
 .logout-button {

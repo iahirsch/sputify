@@ -458,12 +458,10 @@ onUnmounted(() => {
   ctx.revert();
 });
 
-// Scroll to top button jetzt mit lenis
 function scrollTo() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-//Lenis smooth scrolling
 const lenis = new Lenis({
   autoRaf: false,
 });
@@ -475,12 +473,12 @@ function raf(time) {
 
 requestAnimationFrame(raf)
 
-lenis.on('scroll', ScrollTrigger.update);// Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
+lenis.on('scroll', ScrollTrigger.update);
 gsap.ticker.add((time) => {
   lenis.raf(time * 1000);
 });
 
-gsap.ticker.lagSmoothing(0); // Disable GSAP's lag smoothing
+gsap.ticker.lagSmoothing(0);
 
 
 window.onload = function () {
@@ -738,6 +736,8 @@ p {
 .mobile-timeline {
   display: none;
   opacity: 0;
+  position: fixed;
+  z-index: 99;
 }
 
 @media screen and (max-width: 1000px) {
