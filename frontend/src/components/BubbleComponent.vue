@@ -24,13 +24,9 @@ export default {
     let detail = 20;
     const radius = 100;
     const svgRef = ref(null);
-    let currentSection = 0;
     let toZero = false;
     const data = ref(generateData());
-    //let updateTimeout;
     let updateInterval;
-    let startTime;
-    let remainingTime;
 
     let color = getColor();
     const bubbleConfigs = [
@@ -42,6 +38,7 @@ export default {
 
     function generateData() {
       let data;
+      //detail = Math.floor(props.analysis.energy * props.analysis.energy * 25 + 10);
       if (toZero || !props.analysis.energy) {
         data = Array.from({ length: detail }, () => ({ value: 0 }));
       } else {
@@ -53,32 +50,10 @@ export default {
       return data;
     }
 
-    function clearAll() {
-      clearInterval(updateInterval);
-      //clearTimeout(updateTimeout);
-    }
-
-    // gemini sections are not usable (yet)
-    function nextSection() {
-      clearAll();
-      currentSection += 1;
-      if (currentSection < props.analysis.segments.length) {
-        console.log("Next Section: ", currentSection);
-        remainingTime = props.analysis.segments[currentSection].duration * 1000;
-        updateInterval = setInterval(updateVisualizer, getTempoTimeout());
-        //updateTimeout = setTimeout(nextSection, remainingTime);
-        startTime = Date.now();
-      }
-    }
-
     function initializeVisualizer() {
-      clearAll();
-      currentSection = 0;
+      clearInterval(updateInterval);
       if (props.playing) {
-        remainingTime = props.analysis.segments[currentSection].duration * 1000;
         updateInterval = setInterval(updateVisualizer, getTempoTimeout());
-        //updateTimeout = setTimeout(nextSection, remainingTime);
-        startTime = Date.now();
       }
       updateBubbleColor();
     }
@@ -131,7 +106,7 @@ export default {
 
         const bubbleGroup = svg.append("g")
           .attr("class", `bubble bubble-${index}`)
-          .attr("transform", `translate(${window.innerWidth / 2}, ${window.innerHeight / 2}) scale(${config.scale})`)
+          .attr("transform", props.analysis.login ? `translate(${window.innerWidth / 2}, ${window.innerHeight * 0.9}) scale(${config.scale})` : `translate(${window.innerWidth / 2}, ${window.innerHeight / 2}) scale(${config.scale})`)
           .style("z-index", config.zIndex);
 
         const angleScale = d3.scaleLinear().domain([0, data.value.length]).range([0, 2 * Math.PI]);
@@ -167,8 +142,8 @@ export default {
 
     function getColor() {
       const { valence, energy, danceability } = props.analysis;
-      if (valence === 0 && energy === 0) {
-        return `rgba(200, 200, 200, 1)`; // Gray
+      if ((valence === 0 && energy === 0 && danceability === 0) || props.analysis.login) {
+        return `rgba(100, 100, 100, 1)`; // Gray
       } else {
         const red = Math.min(255, Math.floor(energy * 200) + Math.floor(danceability * 50)); // Higher energy and danceability boost red.
         const green = Math.max(0, Math.floor((1 - danceability) * 255) + Math.floor((1 - energy) * 55) + Math.floor((1 - valence) * 55)); // Less danceability boosts green.
@@ -201,40 +176,40 @@ export default {
         bubbleGroup.select('path')
           .transition()
           .duration(getTempoTimeout() * (1 / props.analysis.energy)) // Adjust duration based on energy
+          //.duration(getTempoTimeout())
           .ease(d3.easeLinear)
+          //.ease(d3.easeQuadInOut)
           .attr('d', pathData);
       });
     }
 
     function getTempoTimeout() {
-      if (props.analysis.segments[currentSection].tempo && props.analysis.segments[currentSection].tempo != 0) {
-        return 30000 / props.analysis.segments[currentSection].tempo;
-      } else if (props.analysis.tempo != 0) {
-        return 30000 / props.analysis.tempo;
+      if (props.analysis.tempo != 0) {
+        if (props.analysis.energy < 0.5) {
+          return 30000 / props.analysis.tempo * 2;
+        } else {
+          return 30000 / props.analysis.tempo;
+        }
       } else {
         return 30000;
       }
     }
 
     watch(
-      () => [props.analysis.segments, props.analysis],
+      () => [props.analysis],
       () => { initializeVisualizer() },
       { deep: true, immediate: true }
     );
 
     watch(() => props.playing, () => {
-      clearAll();
+      clearInterval(updateInterval);
       if (props.playing) {
         updateInterval = setInterval(updateVisualizer, getTempoTimeout());
-        //updateTimeout = setTimeout(nextSection, remainingTime);
-        startTime = Date.now();
-      } else {
-        remainingTime -= (Date.now() - startTime);
       }
     });
 
     onBeforeUnmount(() => {
-      clearAll();
+      clearInterval(updateInterval);
     });
 
     onMounted(() => {
@@ -260,7 +235,7 @@ export default {
 }
 
 .bubble-svg {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
 }
 </style>

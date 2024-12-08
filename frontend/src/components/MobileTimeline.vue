@@ -113,7 +113,6 @@ onUnmounted(() => {
 }
 
 h2 {
-    font-family: 'FranieBlack', sans-serif;
     margin: 0;
     padding-top: 0.2rem;
     width: fit-content;

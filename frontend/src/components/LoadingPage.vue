@@ -2,7 +2,7 @@
     <div id="app">
         <div class="container">
             <div class="text-container">
-                <h2>Your musical bubble floats through your Spotify history...</h2>
+                <h2>A musical bubble floats through your Spotify history...</h2>
             </div>
             <div class="soundwave-container">
                 <div v-for="(bar, index) in bars" :key="index" class="bar" :style="barStyle(index)">

@@ -1,5 +1,5 @@
 <template>
-    <div :style="positionStyle" class="container" @click="scrollToPoint">
+    <div class="container" @click="scrollToPoint">
         <div :class="['datapoint', { active }]"></div>
         <div :class="['yearTitle', { active }]">{{ title }}</div>
     </div>
@@ -13,10 +13,6 @@ const props = defineProps({
     title: {
         type: String,
         required: true
-    },
-    positionStyle: {
-        type: Object,
-        required: true,
     },
     active: {
         type: Boolean,
