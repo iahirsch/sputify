@@ -776,6 +776,10 @@ p {
     opacity: 1;
   }
 
+  .logout::after {
+    margin-left: -1rem;
+  }
+
   .totop {
     font-size: 1rem;
     margin-top: 5vh;
