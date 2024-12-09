@@ -130,7 +130,7 @@ h2 {
 .sidebar {
     position: fixed;
     top: 5vh;
-    width: fit-content;
+    width: 20rem;
     height: 90vh;
     background-color: #222;
     box-shadow: 0 0 1rem 1rem rgba(0, 0, 0, 0.5);
@@ -196,8 +196,8 @@ h2 {
 
 .sidebar-content {
     padding: 1rem;
-    width: 20rem;
     max-width: calc(80vw - 4rem);
+    min-width: fit-content;
 }
 
 .sidebar-footer {

@@ -215,6 +215,10 @@ export default {
     onMounted(() => {
       nextTick(() => {
         createBubbles();
+        window.addEventListener('resize', () => {
+          d3.select(svgRef.value).selectAll('.bubble').remove();
+          createBubbles();
+        });
       });
     });
 

@@ -206,24 +206,28 @@ h2 {
         max-width: 80vw;
         width: 80vw;
     }
+
     .badges {
         height: 50rem;
     }
+
     .badge-title {
         margin-left: 2rem;
         font-size: 1.2rem;
         max-width: 30vw;
         width: fit-content;
     }
+
     .badge-text {
         width: fit-content;
         font-size: 1rem;
         max-height: 6.5rem;
     }
+
     .more {
         margin-left: 2vw;
         font-size: 2rem;
     }
-    
+
 }
 </style>
