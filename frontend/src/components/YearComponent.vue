@@ -414,7 +414,7 @@ onMounted(async () => {
         width: 85vw;
         position: absolute;
         margin: 0;
-        top: 45vh;
+        top: 27rem;
     }
 
     .top-genre-text {

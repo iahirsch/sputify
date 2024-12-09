@@ -446,6 +446,19 @@ onMounted(async () => {
     },
   });
 
+  const logoutButton = document.querySelector('span.logout.menu-button');
+
+  gsap.to(logoutButton, {
+    opacity: 0,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top 90%',
+      end: 'top 70%',
+      scrub: true,
+      markers: false,
+    },
+  });
+
 }, main.value);
 
 
@@ -528,9 +541,11 @@ onMounted(() => {
 
 <script>
 function logOut() {
-  window.location.href = '/';
-  localStorage.removeItem('showPopup');
-  console.log(localStorage);
+  if (document.querySelector('span.logout.menu-button').style.opacity == 1) {
+    window.location.href = '/';
+    localStorage.removeItem('showPopup');
+    console.log(localStorage);
+  }
 }
 export { logOut };
 </script>
@@ -650,6 +665,7 @@ h2 {
   left: 1rem;
   bottom: 1rem;
   transform: scaleX(-1);
+  opacity: 1;
 }
 
 .menu-button:hover {
@@ -725,7 +741,7 @@ p {
 }
 
 .logoJourney {
-  width: 10rem;
+  height: 3rem;
   margin: 1rem;
   position: fixed;
   z-index: 10;
@@ -743,7 +759,8 @@ p {
 @media screen and (max-width: 1000px) {
   .logoJourney {
     right: 0;
-    width: 7rem;
+    height: 1.8rem;
+    margin: 0.8rem;
   }
 
   .timeline {
@@ -751,7 +768,12 @@ p {
   }
 
   .logout {
-    display: none;
+    font-size: 1.8rem;
+    margin: 0.8rem;
+    bottom: unset;
+    left: 0;
+    top: 0;
+    opacity: 1;
   }
 
   .totop {

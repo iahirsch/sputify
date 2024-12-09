@@ -13,6 +13,7 @@
                         :class="['portrait', { selected: selectedCanvas === index }]"
                         :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 104}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
                         @click="selectCanvas(index)">
+                        <!-- :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 208 / canvases.length}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }" -->
                         <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                     </div>
                 </div>
@@ -36,7 +37,8 @@
 </template>
 
 <script>
-import imageSrc from '@/assets/image1.png';
+import birdoSrc from '@/assets/image1.png';
+import bubbleSrc from '@/assets/bubble.png';
 export default {
     name: 'PrintComponent',
     props: {
@@ -72,6 +74,7 @@ export default {
             this.drawOnCanvas1(this.$refs.portraitCanvas1[0]);
             this.drawOnCanvas2(this.$refs.portraitCanvas2[0]);
             this.drawOnCanvas3(this.$refs.portraitCanvas3[0]);
+            //this.drawOnCanvas4(this.$refs.portraitCanvas4[0]);
         },
 
         drawOnCanvas1(canvas) {
@@ -168,13 +171,47 @@ export default {
 
             // Load and draw the local image
             const image = new Image();
-            image.src = imageSrc;
+            image.src = birdoSrc;
             image.onload = () => {
-                ctx.drawImage(image, 0, 300, 600, 500);
+                ctx.drawImage(image, 0, 300, 600, 500); // Draw the image at (0, 300) with size 600x500
             };
             image.onerror = () => {
                 console.error("Error loading image for canvas3.");
             };
+
+            ctx.font = "bold 36px Familjen Grotesk, sans-serif";
+            ctx.fillText(`www.sputify.com`, 50, 900);
+        },
+        drawOnCanvas4(canvas) {
+            const ctx = canvas.getContext("2d");
+            this.clearCanvas(ctx);
+            this.setCanvasStyle(ctx);
+
+            // Load and draw the local image
+            const image = new Image();
+            image.src = bubbleSrc;
+            image.onload = () => {
+                ctx.drawImage(image, 0, 612, 612, 612);
+            };
+            image.onerror = () => {
+                console.error("Error loading image for canvas3.");
+            };
+
+            ctx.fillStyle = "#FFA0AB";
+            ctx.font = "bold 42px FranieBlack, sans-serif";
+            const lines = 'Create Your Own\nMusic Journey'.split('\n');
+            lines.forEach((line, index) => {
+                ctx.fillText(line, 50, 80 + index * 50);
+            });
+
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            ctx.font = "36px Familjen Grotesk, sans-serif";
+            const visitLines = 'Visit Spütify and\nstart your journey!'.split('\n');
+            visitLines.forEach((line, index) => {
+                ctx.fillText(line, 50, 200 + index * 40);
+            });
+
+
 
             ctx.font = "bold 36px Familjen Grotesk, sans-serif";
             ctx.fillText(`www.sputify.com`, 50, 900);

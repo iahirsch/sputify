@@ -96,7 +96,7 @@ onUnmounted(() => {
 <style scoped>
 .timeline-container {
     position: fixed;
-    top: 3rem;
+    top: 3.5rem;
     left: 0;
     display: flex;
     align-items: center;
