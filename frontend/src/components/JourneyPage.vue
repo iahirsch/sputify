@@ -12,6 +12,7 @@
   <div id="smooth-wrapper" ref="main">
     <!-- TODO: clear spotify authentication on logout -->
     <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
+    <span class="material-symbols-rounded logout-mobile menu-button" @click="logOut()">logout</span>
     <div id="smooth-content">
       <div>
         <img class="logoJourney" src="../assets/spütify_logo.png" @click="scrollTo" />
@@ -446,8 +447,7 @@ onMounted(async () => {
     },
   });
 
-  const logoutButton = document.querySelector('span.logout.menu-button');
-
+  const logoutButton = document.querySelector('span.logout-mobile.menu-button');
   gsap.to(logoutButton, {
     opacity: 0,
     scrollTrigger: {
@@ -662,10 +662,17 @@ h2 {
 }
 
 .logout {
-  left: 1rem;
   bottom: 1rem;
-  transform: scaleX(-1);
   opacity: 1;
+  transform: scaleX(-1);
+}
+
+.logout-mobile {
+  font-size: 1.8rem;
+  margin: 0.8rem;
+  opacity: 1;
+  transform: scaleX(-1);
+  display: none;
 }
 
 .menu-button:hover {
@@ -691,13 +698,19 @@ h2 {
   opacity: 1;
 }
 
-.logout::after {
+.logout::after,
+.logout-mobile::after {
   content: "Log out";
   top: -30%;
   left: -280%;
 }
 
-.logout:hover::after {
+.logout-mobile::after {
+  margin-left: -1rem;
+}
+
+.logout:hover::after,
+.logout-mobile:hover::after {
   visibility: visible;
   opacity: 1;
   transform: scaleX(-1);
@@ -768,16 +781,11 @@ p {
   }
 
   .logout {
-    font-size: 1.8rem;
-    margin: 0.8rem;
-    bottom: unset;
-    left: 0;
-    top: 0;
-    opacity: 1;
+    display: none;
   }
 
-  .logout::after {
-    margin-left: -1rem;
+  .logout-mobile {
+    display: block;
   }
 
   .totop {
