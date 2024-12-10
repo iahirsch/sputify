@@ -541,7 +541,11 @@ onMounted(() => {
 
 <script>
 function logOut() {
-  if (document.querySelector('span.logout.menu-button').style.opacity == 1) {
+  if (
+    document.querySelector('span.logout-mobile.menu-button').style.opacity == 1 ||
+    document.querySelector('span.logout.menu-button').style.display != 'none' ||
+    document.querySelector('.sidebar.open')
+  ) {
     window.location.href = '/';
     localStorage.removeItem('showPopup');
     console.log(localStorage);
