@@ -6,9 +6,13 @@
   <div class="timeline">
     <StickyTimeline :years="years" :active="false" />
   </div>
+  <div class="mobile-timeline">
+    <MobileTimeline :years="years" :active="false" :user-name="userName" :user-img="userImg" />
+  </div>
   <div id="smooth-wrapper" ref="main">
     <!-- TODO: clear spotify authentication on logout -->
     <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
+    <span class="material-symbols-rounded logout-mobile menu-button" @click="logOut()">logout</span>
     <div id="smooth-content">
       <div>
         <img class="logoJourney" src="../assets/spütify_logo.png" @click="scrollTo" />
@@ -21,10 +25,10 @@
           :currentTrack="currentTrack" :playing="playing" :playTrack="playTrack" />
       </div>
       <div class="badge-page">
-        <BadgesComponent :badges="badges" :badgeIndex="years.length"/>
+        <BadgesComponent :badges="badges" :badgeIndex="years.length" />
       </div>
       <div class="share">
-        <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length+1" />
+        <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length + 1" />
       </div>
       <footer class="footergradient-black">
         <button @click="scrollTo" class="totop">
@@ -46,6 +50,7 @@ import { getArtist } from '../api/getArtist.js';
 
 import BubbleComponent from './BubbleComponent.vue';
 import StickyTimeline from './StickyTimeline.vue';
+import MobileTimeline from './MobileTimeline.vue';
 import ShareComponent from './ShareComponent.vue';
 import WelcomeComponent from './WelcomeComponent.vue';
 import YearComponent from './YearComponent.vue';
@@ -56,6 +61,7 @@ const props = defineProps({
   playerReady: Boolean,
   years: Array,
   userName: String,
+  userImg: String,
 });
 
 gsap.registerPlugin(ScrollTrigger);
@@ -147,12 +153,6 @@ function updateCurrentTrack(track) {
   });
 
   console.log('Playing track:', currentTrack.value);
-}
-
-function logOut() {
-  window.location.href = '/';
-  localStorage.removeItem('showPopup');
-  console.log(localStorage);
 }
 
 function handleShowPopup() {
@@ -247,7 +247,7 @@ function getBadges() {
       ]
     },
   ];
-  
+
   //const years = testYears;
   const years = props.years;
 
@@ -308,7 +308,7 @@ function getBadges() {
           fan = {
             icon: 'mode_fan',
             title: 'Super Fan',
-            text: `You were obsessed with ${artist.name}, ${count} of your top 5 songs in ${year.title} are from them.`,
+            text: `You were obsessed with ${artist.name} in ${year.title}, ${count} of your top 5 songs were from them.`,
           };
           highCount = count;
         }
@@ -392,33 +392,33 @@ onMounted(async () => {
 
   await nextTick();
 
-const bubble = document.querySelector('.bubble');
+  const bubble = document.querySelector('.bubble');
 
-const bubbleTimeline = gsap.timeline();
+  const bubbleTimeline = gsap.timeline();
 
-bubbleTimeline.to(bubble, {
-  opacity: 1,
-  scrollTrigger: {
-    trigger: '.year-title',
-    start: 'top bottom',
-    end: 'top top',
-    scrub: true,
-    markers: false,
-  },
-  immediateRender: false
-});
+  bubbleTimeline.to(bubble, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top bottom',
+      end: 'top top',
+      scrub: true,
+      markers: false,
+    },
+    immediateRender: false
+  });
 
-bubbleTimeline.to(bubble, {
-  opacity: 0,
-  scrollTrigger: {
-    trigger: '.share',
-    start: 'top bottom',
-    end: 'top top',
-    scrub: true,
-    markers: false,
-  },
-  immediateRender: false
-});
+  bubbleTimeline.to(bubble, {
+    opacity: 0,
+    scrollTrigger: {
+      trigger: '.share',
+      start: 'top bottom',
+      end: 'top top',
+      scrub: true,
+      markers: false,
+    },
+    immediateRender: false
+  });
 
 
   const timeline = document.querySelector('.timeline');
@@ -429,6 +429,31 @@ bubbleTimeline.to(bubble, {
       trigger: '.year-title',
       start: 'top 70%',
       end: 'top 20%',
+      scrub: true,
+      markers: false,
+    },
+  });
+
+  const mobileTimeline = document.querySelector('.mobile-timeline');
+
+  gsap.to(mobileTimeline, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top 70%',
+      end: 'top 20%',
+      scrub: true,
+      markers: false,
+    },
+  });
+
+  const logoutButton = document.querySelector('span.logout-mobile.menu-button');
+  gsap.to(logoutButton, {
+    opacity: 0,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top 90%',
+      end: 'top 70%',
       scrub: true,
       markers: false,
     },
@@ -446,12 +471,10 @@ onUnmounted(() => {
   ctx.revert();
 });
 
-// Scroll to top button jetzt mit lenis
 function scrollTo() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-//Lenis smooth scrolling
 const lenis = new Lenis({
   autoRaf: false,
 });
@@ -463,12 +486,12 @@ function raf(time) {
 
 requestAnimationFrame(raf)
 
-lenis.on('scroll', ScrollTrigger.update);// Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
+lenis.on('scroll', ScrollTrigger.update);
 gsap.ticker.add((time) => {
   lenis.raf(time * 1000);
 });
 
-gsap.ticker.lagSmoothing(0); // Disable GSAP's lag smoothing
+gsap.ticker.lagSmoothing(0);
 
 
 window.onload = function () {
@@ -495,7 +518,7 @@ onMounted(() => {
   yearTitles.forEach((yearTitle, index) => {
     const handleYearScroll = () => {
       const rect = yearTitle.getBoundingClientRect();
-      const isVisible = rect.top < window.innerHeight/2 && rect.bottom > 0;
+      const isVisible = rect.top < window.innerHeight / 2 && rect.bottom > 0;
 
       if (isVisible) {
         const year = props.years[index];
@@ -514,6 +537,21 @@ onMounted(() => {
   badges.value = getBadges();
 });
 
+</script>
+
+<script>
+function logOut() {
+  if (
+    document.querySelector('span.logout-mobile.menu-button').style.opacity == 1 ||
+    document.querySelector('span.logout.menu-button').style.display != 'none' ||
+    document.querySelector('.sidebar.open')
+  ) {
+    window.location.href = '/';
+    localStorage.removeItem('showPopup');
+    console.log(localStorage);
+  }
+}
+export { logOut };
 </script>
 
 <style scoped>
@@ -628,10 +666,17 @@ h2 {
 }
 
 .logout {
-  left: 1rem;
-  left: 0;
-  top: 91%;
+  bottom: 1rem;
+  opacity: 1;
   transform: scaleX(-1);
+}
+
+.logout-mobile {
+  font-size: 1.8rem;
+  margin: 0.8rem;
+  opacity: 1;
+  transform: scaleX(-1);
+  display: none;
 }
 
 .menu-button:hover {
@@ -657,13 +702,19 @@ h2 {
   opacity: 1;
 }
 
-.logout::after {
+.logout::after,
+.logout-mobile::after {
   content: "Log out";
   top: -30%;
   left: -280%;
 }
 
-.logout:hover::after {
+.logout-mobile::after {
+  margin-left: -1rem;
+}
+
+.logout:hover::after,
+.logout-mobile:hover::after {
   visibility: visible;
   opacity: 1;
   transform: scaleX(-1);
@@ -682,7 +733,7 @@ p {
 }
 
 .totop {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 300;
   margin-top: 10vh;
   background-color: transparent;
@@ -707,11 +758,47 @@ p {
 }
 
 .logoJourney {
-  width: 10rem;
+  height: 3rem;
   margin: 1rem;
   position: fixed;
   z-index: 10;
   -webkit-filter: drop-shadow(0 0 0.5rem black);
   filter: drop-shadow(0 0 0.5rem black);
+}
+
+.mobile-timeline {
+  display: none;
+  opacity: 0;
+  position: fixed;
+  z-index: 99;
+}
+
+@media screen and (max-width: 1000px) {
+  .logoJourney {
+    right: 0;
+    height: 1.8rem;
+    margin: 0.8rem;
+  }
+
+  .timeline {
+    display: none;
+  }
+
+  .logout {
+    display: none;
+  }
+
+  .logout-mobile {
+    display: block;
+  }
+
+  .totop {
+    font-size: 1rem;
+    margin-top: 5vh;
+  }
+
+  .mobile-timeline {
+    display: block;
+  }
 }
 </style>

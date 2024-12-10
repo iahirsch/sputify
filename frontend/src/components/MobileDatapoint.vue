@@ -1,20 +1,18 @@
 <template>
-    <div :style="positionStyle" class="container" @click="scrollToPoint">
-        <div :class="['yearTitle', { active }]">{{ title }}</div>
+    <div class="container" @click="scrollToPoint">
         <div :class="['datapoint', { active }]"></div>
+        <div :class="['yearTitle', { active }]">{{ title }}</div>
     </div>
 </template>
 
 <script setup>
 
+import { toggleSidebar } from './MobileTimeline.vue';
+
 const props = defineProps({
     title: {
         type: String,
         required: true
-    },
-    positionStyle: {
-        type: Object,
-        required: true,
     },
     active: {
         type: Boolean,
@@ -33,6 +31,9 @@ const scrollToPoint = () => {
             behavior: 'smooth'
         });
     }
+    setTimeout(() => {
+        toggleSidebar();
+    }, 1000);
 };
 </script>
 
@@ -41,6 +42,7 @@ const scrollToPoint = () => {
     display: flex;
     align-items: center;
     cursor: pointer;
+    margin: 1rem;
 }
 
 .yearTitle {
@@ -48,22 +50,24 @@ const scrollToPoint = () => {
     white-space: nowrap;
     transition: font-size 0.3s ease;
     font-family: 'FranieSemiBold', sans-serif;
-    font-size: 0.8em;
+    font-size: 1rem;
     color: rgba(255, 255, 255, 0.8);
+    padding-top: 0.3rem;
 }
 
 .yearTitle.active {
     font-family: 'FranieBlack', sans-serif;
+    font-size: 1.5rem;
     color: white;
-    font-size: 1.5em;
 }
 
 .datapoint {
-    width: 20px;
-    height: 20px;
+    min-width: 1rem;
+    height: 1rem;
     background-color: #333333;
     border: 0.8px solid white;
     border-radius: 50%;
+    margin-right: 0.5rem;
 }
 
 .datapoint.active {

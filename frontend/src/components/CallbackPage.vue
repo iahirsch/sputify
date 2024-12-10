@@ -1,5 +1,5 @@
 <template>
-    <JourneyPage v-if="accessToken && isReady" :player-ready="playerReady" :years="years" :userName="userName">
+    <JourneyPage v-if="accessToken && isReady" :player-ready="playerReady" :years="years" :userName="userName" :userImg="userImg">
     </JourneyPage>
     <LoadingPage v-else></LoadingPage>
 </template>
@@ -46,6 +46,7 @@ const years = ref([
     }
 ]);
 const userName = ref('');
+const userImg = ref('');
 const isReady = ref(false);
 
 onMounted(async () => {
@@ -120,10 +121,12 @@ onMounted(async () => {
 
     // Retrieve data from sessionStorage
     const sessionUserName = sessionStorage.getItem('userName');
+    const sessionUserImg = sessionStorage.getItem('userImg');
     const sessionYears = JSON.parse(sessionStorage.getItem('years'));
 
-    if (sessionUserName && sessionYears) {
+    if (sessionUserName && sessionUserImg && sessionYears) {
         userName.value = sessionUserName;
+        userImg.value = sessionUserImg;
         years.value = sessionYears;
         await fetchRecentlyPlayed();
         console.log("now:", years.value);
@@ -135,6 +138,11 @@ onMounted(async () => {
         try {
             const response = await getUserInfo();
             userName.value = response.display_name;
+            if (response.images.length > 0) {
+                userImg.value = response.images[0].url;
+            }else{
+                userImg.value = "../assets/user.png";
+            }
         } catch (error) {
             console.error("Error fetching user info:", error);
         }
@@ -258,6 +266,7 @@ onMounted(async () => {
 
     // Store data in sessionStorage
     sessionStorage.setItem('userName', userName.value);
+    sessionStorage.setItem('userImg', userImg.value);
     sessionStorage.setItem('years', JSON.stringify(years.value));
 
     isReady.value = true;

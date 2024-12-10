@@ -17,7 +17,7 @@
                     {{ badge.title }}
                 </h5>
                 <span class="material-symbols-rounded more">chevron_left</span>
-                <p class="badge-text">
+                <p class="badge-text" :title="badge.text">
                     {{ badge.text }}
                 </p>
             </div>
@@ -95,7 +95,7 @@ h2 {
     justify-content: center;
     align-items: center;
     padding: 2rem;
-    padding: 1vh;
+    padding: 0.6rem;
     color: white;
     font-size: 2.5rem;
     z-index: 2;
@@ -104,7 +104,7 @@ h2 {
 .container-badge {
     display: flex;
     align-items: center;
-    margin-left: 5vw;
+    margin-left: 10vw;
     cursor: default;
     height: 7rem;
     max-width: 50vw;
@@ -148,7 +148,7 @@ h2 {
     color: rgba(255, 255, 255, 0.4);
     justify-content: center;
     width: 20vw;
-    max-height: 7rem;
+    max-height: 6rem;
     left: 25vw;
     overflow: hidden;
 }
@@ -181,7 +181,7 @@ h2 {
 
 .container-badge:hover {
 
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, 0.8) 50%);
 
     .badge {
         animation: glow 2s ease-in-out infinite alternate;
@@ -199,5 +199,35 @@ h2 {
 .line {
     height: 250px;
     background: none;
+}
+
+@media screen and (max-width: 1000px) {
+    .container-badge {
+        max-width: 80vw;
+        width: 80vw;
+    }
+
+    .badges {
+        height: 50rem;
+    }
+
+    .badge-title {
+        margin-left: 2rem;
+        font-size: 1.2rem;
+        max-width: 30vw;
+        width: fit-content;
+    }
+
+    .badge-text {
+        width: fit-content;
+        font-size: 1rem;
+        max-height: 6.5rem;
+    }
+
+    .more {
+        margin-left: 2vw;
+        font-size: 2rem;
+    }
+
 }
 </style>

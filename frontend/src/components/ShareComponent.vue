@@ -3,14 +3,17 @@
         <h2>Share Templates</h2>
         <div class="container text-center">
             <div class="canvas-container">
+                <span class="material-symbols-rounded swipe">swipe_left</span>
                 <button @click.prevent="previousCanvas" class="arrow left-arrow">
                     <span class="material-symbols-rounded">keyboard_double_arrow_left</span>
                 </button>
-                <div class="portrait-container" data-year="Share Journey">
+                <div class="portrait-container" data-year="Share Journey" @touchstart="onTouchStart"
+                    @touchmove="onTouchMove" @touchend="onTouchEnd">
                     <div v-for="(canvas, index) in canvases" :key="index"
                         :class="['portrait', { selected: selectedCanvas === index }]"
-                        :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103 + 100}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
+                        :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 104}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
                         @click="selectCanvas(index)">
+                        <!-- :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 208 / canvases.length}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }" -->
                         <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                     </div>
                 </div>
@@ -34,7 +37,8 @@
 </template>
 
 <script>
-import imageSrc from '@/assets/image1.png';
+import birdoSrc from '@/assets/image1.png';
+import bubbleSrc from '@/assets/bubble.png';
 export default {
     name: 'PrintComponent',
     props: {
@@ -55,6 +59,9 @@ export default {
         return {
             selectedCanvas: 0,
             canvases: [1, 2, 3],
+            touchStartX: 0,
+            touchEndX: 0,
+            shown: false
         };
     },
     mounted() {
@@ -67,6 +74,7 @@ export default {
             this.drawOnCanvas1(this.$refs.portraitCanvas1[0]);
             this.drawOnCanvas2(this.$refs.portraitCanvas2[0]);
             this.drawOnCanvas3(this.$refs.portraitCanvas3[0]);
+            //this.drawOnCanvas4(this.$refs.portraitCanvas4[0]);
         },
 
         drawOnCanvas1(canvas) {
@@ -116,7 +124,6 @@ export default {
                 ctx.fillText(line, 50, 740 + index * 40);
             });
         },
-
         drawOnCanvas2(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
@@ -143,8 +150,6 @@ export default {
                 }
             });
         },
-
-
         drawOnCanvas3(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
@@ -166,13 +171,47 @@ export default {
 
             // Load and draw the local image
             const image = new Image();
-            image.src = imageSrc;
+            image.src = birdoSrc;
             image.onload = () => {
-                ctx.drawImage(image, 0, 300, 600, 500);
+                ctx.drawImage(image, 0, 300, 600, 500); // Draw the image at (0, 300) with size 600x500
             };
             image.onerror = () => {
                 console.error("Error loading image for canvas3.");
             };
+
+            ctx.font = "bold 36px Familjen Grotesk, sans-serif";
+            ctx.fillText(`www.sputify.com`, 50, 900);
+        },
+        drawOnCanvas4(canvas) {
+            const ctx = canvas.getContext("2d");
+            this.clearCanvas(ctx);
+            this.setCanvasStyle(ctx);
+
+            // Load and draw the local image
+            const image = new Image();
+            image.src = bubbleSrc;
+            image.onload = () => {
+                ctx.drawImage(image, 0, 612, 612, 612);
+            };
+            image.onerror = () => {
+                console.error("Error loading image for canvas3.");
+            };
+
+            ctx.fillStyle = "#FFA0AB";
+            ctx.font = "bold 42px FranieBlack, sans-serif";
+            const lines = 'Create Your Own\nMusic Journey'.split('\n');
+            lines.forEach((line, index) => {
+                ctx.fillText(line, 50, 80 + index * 50);
+            });
+
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            ctx.font = "36px Familjen Grotesk, sans-serif";
+            const visitLines = 'Visit Spütify and\nstart your journey!'.split('\n');
+            visitLines.forEach((line, index) => {
+                ctx.fillText(line, 50, 200 + index * 40);
+            });
+
+
 
             ctx.font = "bold 36px Familjen Grotesk, sans-serif";
             ctx.fillText(`www.sputify.com`, 50, 900);
@@ -236,6 +275,37 @@ export default {
 
         selectCanvas(index) {
             this.selectedCanvas = index;
+        },
+        onTouchStart(event) {
+            this.touchStartX = event.changedTouches[0].clientX;
+            if (!this.shown) {
+                this.shown = true;
+                this.showSwipeInfo();
+            }
+        },
+        onTouchMove(event) {
+            this.touchEndX = event.changedTouches[0].clientX;
+        },
+        onTouchEnd() {
+            const swipeDistance = this.touchStartX - this.touchEndX;
+            const swipeThreshold = 50; // Minimum distance to detect a swipe
+
+            if (swipeDistance > swipeThreshold) {
+                // Swipe left
+                this.nextCanvas();
+            } else if (swipeDistance < -swipeThreshold) {
+                // Swipe right
+                this.previousCanvas();
+            }
+        },
+        showSwipeInfo() {
+            const swipeElement = document.querySelector('.swipe');
+            if (swipeElement) {
+                swipeElement.style.opacity = '0.8';
+                setTimeout(() => {
+                    swipeElement.style.opacity = '0';
+                }, 2000);
+            }
         }
     }
 };
@@ -252,10 +322,10 @@ h2 {
 }
 
 .container {
-    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
 }
 
 .button-container {
@@ -264,6 +334,7 @@ h2 {
     justify-content: center;
     flex-wrap: wrap;
     gap: 2rem;
+    margin-bottom: 2rem;
 }
 
 .share-button {
@@ -334,7 +405,7 @@ canvas {
 }
 
 .arrow.left-arrow {
-    left: 40vw;
+    left: 38vw;
 }
 
 .arrow.right-arrow {
@@ -347,5 +418,26 @@ canvas {
 
 .share {
     transform: scale(0.9);
+}
+
+.swipe {
+    position: absolute;
+    z-index: 99;
+    transform: translate(calc(50vw - 50%), 25vh);
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.8);
+    background: #333;
+    opacity: 0;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem 1rem rgba(0, 0, 0, 0.8);
+    transition: opacity 0.5s;
+}
+
+@media screen and (max-width: 1000px) {
+    .arrow {
+        display: none;
+    }
+
 }
 </style>

@@ -13,26 +13,37 @@
             <div class="intro">
                 <h2>Discover Your Music Journey.</h2>
                 <p>Let your Spotify data speak for you and get unique visualizations of your favorite songs.
-                <br>See how your taste has evolved over the years.</p>
+                    <br>See how your taste has evolved over the years.
+                </p>
             </div>
-            <div>
+            <div style="z-index: 1;">
                 <button @click="authorize" class="button">
                     <p>Connect to Spotify</p>
                 </button>
             </div>
-            <div>
-                <img src="../assets/bubble_dark.png" alt="bubble-black-and-white" class="bubbleBlackWhite" />
-            </div>
         </div>
+        <BubbleComponent :analysis="analysis" :playing="playing" class="bubble" />
     </body>
 
 </template>
 
 <script>
+import BubbleComponent from './BubbleComponent.vue';
 export default {
+    components: {
+        BubbleComponent
+    },
     data() {
         return {
-            message: ''
+            message: '',
+            playing: true,
+            analysis: {
+                danceability: 0.5,
+                energy: 0.6,
+                valence: 0.5,
+                tempo: 20,
+                login: true
+            }
         };
     },
     methods: {
@@ -86,10 +97,11 @@ body {
     padding-bottom: 5vh;
 }
 
-.bubbleBlackWhite {
+.bubble {
     padding-top: 10vh;
     width: auto;
     height: 70vh;
+    z-index: 0;
 }
 
 .button {
@@ -100,6 +112,7 @@ body {
     border-radius: 5rem;
     border: none;
     transition-duration: 0.4s;
+    z-index: 1;
 }
 
 .button:hover {
@@ -113,5 +126,12 @@ body {
     max-width: 80vw;
     padding-top: 10vh;
     padding-bottom: 5vh;
+}
+
+@media screen and (max-width: 1000px) {
+    h2 {
+        width: 80vw;
+    }
+
 }
 </style>

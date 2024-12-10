@@ -105,7 +105,7 @@
 </template>
 
 <script setup>
-import { onMounted, useTemplateRef, ref } from 'vue';
+import { onMounted, onUnmounted, useTemplateRef, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
@@ -131,17 +131,38 @@ function open(artist) {
 }
 
 onMounted(async () => {
-    console.log(genreRef.value)
-    console.log(yearRef.value)
-    if (genreRef.value && yearRef.value) {
-        ScrollTrigger.create({
-            trigger: yearRef.value,
-            pin: genreRef.value,
-            start: "top top", // when the top of the trigger hits the top of the viewport
-            end: 'bottom bottom',
-            markers: false
-        });
-    }
+    let scrollTriggerInstance = null;
+
+    const createScrollTrigger = () => {
+        if (window.innerWidth > 1000 && genreRef.value && yearRef.value) {
+            scrollTriggerInstance = ScrollTrigger.create({
+                trigger: yearRef.value,
+                pin: genreRef.value,
+                start: "top 30%",
+                end: 'bottom 80%',
+                markers: false
+            });
+        }
+    };
+
+    const handleResize = () => {
+        if (scrollTriggerInstance) {
+            scrollTriggerInstance.kill();
+            scrollTriggerInstance = null;
+        }
+        createScrollTrigger();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    createScrollTrigger();
+
+    onUnmounted(() => {
+        window.removeEventListener('resize', handleResize);
+        if (scrollTriggerInstance) {
+            scrollTriggerInstance.kill();
+        }
+    });
 });
 
 </script>
@@ -325,6 +346,7 @@ onMounted(async () => {
     cursor: default;
     display: flex;
 }
+
 .genre:hover {
     background-color: rgba(255, 255, 255, 0.15);
 }
@@ -335,6 +357,7 @@ onMounted(async () => {
     color: rgba(0, 0, 0, 1);
     font-weight: 700;
 }
+
 .current-genre:hover {
     background-color: rgba(255, 255, 255, 0.45);
 }
@@ -372,5 +395,57 @@ onMounted(async () => {
 .line {
     height: 250px;
     background: none;
+}
+
+@media screen and (max-width: 1000px) {
+    .year {
+        flex-direction: column;
+    }
+
+    .content-leftside {
+        width: 85vw;
+    }
+
+    .content-rightside {
+        display: none;
+    }
+
+    .content-center {
+        width: 85vw;
+        position: absolute;
+        margin: 0;
+        top: 27rem;
+    }
+
+    .top-genre-text {
+        width: 85vw;
+    }
+
+    .genre-container {
+        max-height: 6rem;
+    }
+
+    .genre {
+        max-width: 70vw;
+        font-size: 1rem;
+        padding: 0.2rem 0.7rem 0.4rem;
+        margin: 0.4rem;
+    }
+
+    .genre-artists {
+        width: 6rem;
+        height: 1.5rem;
+        position: absolute;
+    }
+
+    .genre-artist {
+        width: 1.8rem;
+        height: 1.8rem;
+        transform: translate(calc(2.2rem * var(--index)), 0.4rem);
+    }
+
+    .end {
+        height: 0;
+    }
 }
 </style>

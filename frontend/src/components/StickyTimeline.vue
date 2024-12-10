@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, toRefs, watch } from 'vue';
+import { ref, onMounted, onUnmounted, toRefs } from 'vue';
 import TimelineDatapoint from './TimelineDatapoint.vue';
 
 const props = defineProps({
