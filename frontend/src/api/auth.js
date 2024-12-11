@@ -5,27 +5,32 @@ export function logOut() {
         document.querySelector('.sidebar.open')
     ) {
         localStorage.removeItem('showPopup');
-        //window.location.href = '/';
         // Clear cookies on the server side
         fetch('http://localhost:3000/logout', { credentials: 'include' })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = 'http://localhost:5173';
+                    const logoutUrl = 'https://accounts.spotify.com/en/logout';
+                    // Clear localStorage and sessionStorage
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('device_id');
+                    sessionStorage.removeItem('userName');
+                    sessionStorage.removeItem('years');
+
+                    // Redirect to Spotify logout and then to localhost
+                    const spotifyLogoutWindow = window.open(logoutUrl, 'Spotify Logout', 'width=1,height=1');
+                    setTimeout(() => {
+                        spotifyLogoutWindow.close();
+                        window.location.href = 'http://localhost:5173';
+                    }, 500);
                 }
             })
             .catch(error => console.error('Error logging out:', error));
 
-        // Clear localStorage and sessionStorage
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('device_id');
-        sessionStorage.removeItem('userName');
-        sessionStorage.removeItem('years');
-
         // Clear cookies
-        document.cookie.split(";").forEach((c) => {
-            document.cookie = c
-                .replace(/^ +/, "")
-                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-        });
+        // document.cookie.split(";").forEach((c) => {
+        //     document.cookie = c
+        //         .replace(/^ +/, "")
+        //         .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        // });
     }
 }

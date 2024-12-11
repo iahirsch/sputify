@@ -308,7 +308,7 @@ function getBadges() {
           fan = {
             icon: 'mode_fan',
             title: 'Super Fan',
-            text: `You were obsessed with ${artist.name} in ${year.title}, ${count} of your top 5 songs were from them.`,
+            text: `You were obsessed with ${artist} in ${year.title}, ${count} of your top 5 songs were from them.`,
           };
           highCount = count;
         }
