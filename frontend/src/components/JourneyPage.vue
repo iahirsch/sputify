@@ -325,7 +325,7 @@ function getBadges() {
           gem = {
             icon: 'diamond',
             title: 'Hidden Gem',
-            text: `You listened to ${artist.name} a lot in ${year.title} with a popularity of only ${artist.popularity}%.`,
+            text: `You listened to ${artist.name} a lot in ${index === 1 || index === 2 || index === 3 ? 'the ' + year.title.toLowerCase() : year.title} with a popularity of only ${artist.popularity}%.`,
           };
           popularity = artist.popularity;
         }
@@ -354,7 +354,7 @@ function getBadges() {
           fan = {
             icon: 'mode_fan',
             title: 'Super Fan',
-            text: `You were obsessed with ${artist} in ${year.title}, ${count} of your top 5 songs were from them.`,
+            text: `You were obsessed with ${artist} in ${index === 1 || index === 2 || index === 3 ? 'the ' + year.title.toLowerCase() : year.title}, ${count} of your top 5 songs were from them.`,
           };
           highCount = count;
         }
@@ -384,7 +384,7 @@ function getBadges() {
           newMe = {
             icon: 'switch_account',
             title: 'New Me',
-            text: `Your top artists completely switched up from ${year.title} to ${previousYear.title}.`,
+            text: `Your top artists completely switched up from ${index === 1 || index === 2 || index === 3 ? 'the ' + year.title.toLowerCase() : year.title} to ${index === 2 || index === 3 || index === 4 ? 'the ' + previousYear.title.toLowerCase() : previousYear.title}.`,
           };
         }
       }
