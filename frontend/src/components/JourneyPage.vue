@@ -10,7 +10,6 @@
     <MobileTimeline :years="years" :active="false" :user-name="userName" :user-img="userImg" />
   </div>
   <div id="smooth-wrapper" ref="main">
-    <!-- TODO: clear spotify authentication on logout -->
     <span class="material-symbols-rounded logout menu-button" @click="logOut()">logout</span>
     <span class="material-symbols-rounded logout-mobile menu-button" @click="logOut()">logout</span>
     <div id="smooth-content">
@@ -47,6 +46,7 @@ import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import Lenis from 'lenis';
 import { playback } from '../api/playback.js';
 import { getArtist } from '../api/getArtist.js';
+import { logOut } from '../api/auth.js';
 
 import BubbleComponent from './BubbleComponent.vue';
 import StickyTimeline from './StickyTimeline.vue';
@@ -537,21 +537,6 @@ onMounted(() => {
   badges.value = getBadges();
 });
 
-</script>
-
-<script>
-function logOut() {
-  if (
-    document.querySelector('span.logout-mobile.menu-button').style.opacity == 1 ||
-    document.querySelector('span.logout.menu-button').style.display != 'none' ||
-    document.querySelector('.sidebar.open')
-  ) {
-    window.location.href = '/';
-    localStorage.removeItem('showPopup');
-    console.log(localStorage);
-  }
-}
-export { logOut };
 </script>
 
 <style scoped>

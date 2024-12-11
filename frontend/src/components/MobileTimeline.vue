@@ -45,7 +45,7 @@ export { toggleSidebar };
 import { ref, toRefs, onMounted, onUnmounted } from 'vue';
 import MobileDatapoint from './MobileDatapoint.vue';
 
-import { logOut } from './JourneyPage.vue';
+import { logOut } from '../api/auth.js';
 
 const props = defineProps({
     years: {

@@ -28,7 +28,7 @@ router.get('/', async function (req, res) {
                 error: 'state_mismatch'
             }));
     } else {
-        //res.clearCookie('spotify_auth_state');
+        res.clearCookie('spotify_auth_state');
         const authOptions = {
             method: 'POST',
             url: 'https://accounts.spotify.com/api/token',
