@@ -28,7 +28,7 @@
         <BadgesComponent :badges="badges" :badgeIndex="years.length" />
       </div>
       <div class="share">
-        <ShareComponent :user-name="userName" :years="years" :shareIndex="years.length + 1" />
+        <ShareComponent :user-name="userName" :years="years" :badges="badges" :shareIndex="years.length + 1" />
       </div>
       <footer class="footergradient-black">
         <button @click="scrollTo" class="totop">
@@ -170,11 +170,11 @@ function getBadges() {
     {
       title: '0000',
       recentTracks: [
-        { name: 'Song 0', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 2', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 3', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 4', artists: [{ name: 'Artist B' }] },
-        { name: 'Song 5', artists: [{ name: 'Artist C' }] },
+        { name: 'Song 0', artists: ['Artist A'] },
+        { name: 'Song 2', artists: ['Artist A'] },
+        { name: 'Song 3', artists: ['Artist A'] },
+        { name: 'Song 4', artists: ['Artist B'] },
+        { name: 'Song 5', artists: ['Artist C'] },
       ],
     },
     {
@@ -186,11 +186,11 @@ function getBadges() {
         }
       ],
       topTracks: [
-        { name: 'Song 0', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 2', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 3', artists: [{ name: 'Artist B' }] },
-        { name: 'Song 4', artists: [{ name: 'Artist B' }] },
-        { name: 'Song 5', artists: [{ name: 'Artist C' }] },
+        { name: 'Song 0', artists: ['Artist A'] },
+        { name: 'Song 2', artists: ['Artist A'] },
+        { name: 'Song 3', artists: ['Artist B'] },
+        { name: 'Song 4', artists: ['Artist B'] },
+        { name: 'Song 5', artists: ['Artist C'] },
       ],
       topGenres: [
         { name: 'Pop' },
@@ -209,11 +209,11 @@ function getBadges() {
         },
       ],
       topTracks: [
-        { name: 'Song 1', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 2', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 3', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 4', artists: [{ name: 'Artist B' }] },
-        { name: 'Song 5', artists: [{ name: 'Artist C' }] },
+        { name: 'Song 1', artists: ['Artist A'] },
+        { name: 'Song 2', artists: ['Artist A'] },
+        { name: 'Song 3', artists: ['Artist A'] },
+        { name: 'Song 4', artists: ['Artist B'] },
+        { name: 'Song 5', artists: ['Artist C'] },
       ],
       topGenres: [
         { name: 'Electronic' },
@@ -232,11 +232,11 @@ function getBadges() {
         },
       ],
       topTracks: [
-        { name: 'Song 1', artists: [{ name: 'Artist A' }] },
-        { name: 'Song 2', artists: [{ name: 'Artist B' }] },
-        { name: 'Song 3', artists: [{ name: 'Artist B' }] },
-        { name: 'Song 4', artists: [{ name: 'Artist B' }] },
-        { name: 'Song 5', artists: [{ name: 'Artist B' }] },
+        { name: 'Song 1', artists: ['Artist A'] },
+        { name: 'Song 2', artists: ['Artist B'] },
+        { name: 'Song 3', artists: ['Artist B'] },
+        { name: 'Song 4', artists: ['Artist B'] },
+        { name: 'Song 5', artists: ['Artist B'] },
       ],
       topGenres: [
         { name: 'R&B' },
@@ -246,6 +246,52 @@ function getBadges() {
         { name: 'Ska' }
       ]
     },
+    {
+      title: '2020',
+      topArtists: [
+        {
+          name: 'Consistent Artist',
+          popularity: 100,
+        },
+      ],
+      topTracks: [
+        { name: 'Song 1', artists: ['Artist A'] },
+        { name: 'Song 2', artists: ['Artist B'] },
+        { name: 'Song 3', artists: ['Artist B'] },
+        { name: 'Song 4', artists: ['Artist B'] },
+        { name: 'Song 5', artists: ['Artist B'] },
+      ],
+      topGenres: [
+        { name: 'Metal' },
+        { name: 'Folk' },
+        { name: 'Indie' },
+        { name: 'Reggaeton' },
+        { name: 'Funk' }
+      ]
+    },
+    {
+      title: '2019',
+      topArtists: [
+        {
+          name: 'Consistent Artist',
+          popularity: 100,
+        },
+      ],
+      topTracks: [
+        { name: 'Song 1', artists: ['Artist A'] },
+        { name: 'Song 2', artists: ['Artist B'] },
+        { name: 'Song 3', artists: ['Artist B'] },
+        { name: 'Song 4', artists: ['Artist B'] },
+        { name: 'Song 5', artists: ['Artist B'] },
+      ],
+      topGenres: [
+        { name: 'Disco' },
+        { name: 'Techno' },
+        { name: 'House' },
+        { name: 'Trance' },
+        { name: 'Dubstep' }
+      ]
+    }
   ];
 
   //const years = testYears;
@@ -308,7 +354,7 @@ function getBadges() {
           fan = {
             icon: 'mode_fan',
             title: 'Super Fan',
-            text: `You were obsessed with ${artist.name} in ${year.title}, ${count} of your top 5 songs were from them.`,
+            text: `You were obsessed with ${artist} in ${year.title}, ${count} of your top 5 songs were from them.`,
           };
           highCount = count;
         }
@@ -354,11 +400,13 @@ function getBadges() {
   for (const [trackName, count] of Object.entries(trackAppearances)) {
     if (count > maxAppearances) {
       maxAppearances = count;
-      repeat = {
-        icon: 'repeat',
-        title: 'On Repeat',
-        text: `You can't stop listening to "${trackName}", it appears in your top tracks ${maxAppearances} times.`,
-      };
+      if (maxAppearances >= 3) {
+        repeat = {
+          icon: 'repeat',
+          title: 'On Repeat',
+          text: `You can't stop listening to "${trackName}", it appears in your top tracks ${maxAppearances} times.`,
+        };
+      }
     }
   }
 
@@ -371,10 +419,10 @@ function getBadges() {
   if (Object.keys(repeat).length !== 0) {
     badges.push(repeat);
   }
-  if (uniqueGenres.size > 10) {
+  if (uniqueGenres.size > 20) {
     diverse = {
-      icon: 'category',
-      title: 'Diverse Taste',
+      icon: 'explore',
+      title: 'Genre Explorer',
       text: `Across all years ${uniqueGenres.size} unique genres appeared in your top genres.`,
     };
     badges.push(diverse);

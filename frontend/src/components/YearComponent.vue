@@ -373,6 +373,7 @@ onMounted(async () => {
 .genre-artist {
     width: 2rem;
     height: 2rem;
+    object-fit: cover;
     border-radius: 50%;
     margin-left: 0.5rem;
     position: absolute;

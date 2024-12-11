@@ -10,10 +10,12 @@
                 <div class="portrait-container" data-year="Share Journey" @touchstart="onTouchStart"
                     @touchmove="onTouchMove" @touchend="onTouchEnd">
                     <div v-for="(canvas, index) in canvases" :key="index"
-                        :class="['portrait', { selected: selectedCanvas === index }]"
-                        :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 104}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
-                        @click="selectCanvas(index)">
-                        <!-- :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 208 / canvases.length}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }" -->
+                        :class="['portrait', { selected: selectedCanvas === index }]" :style="{
+                            transform: `
+                            translateX(calc(-${(selectedCanvas) * 103.5}% + 
+                            ${9.4 * (canvases.length - 1)}rem)) 
+                            scale(${selectedCanvas === index ? 1 : 0.8})
+                        `}" @click=" selectCanvas(index)">
                         <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                     </div>
                 </div>
@@ -38,7 +40,11 @@
 
 <script>
 import birdoSrc from '@/assets/image1.png';
-import bubbleSrc from '@/assets/bubble.png';
+import fadeSrc from '@/assets/fade.png';
+import bgSrc from '@/assets/share_bg_1.png';
+import bg2Src from '@/assets/share_bg_2.png';
+import logoSrc from '@/assets/spütify_logo.png';
+
 export default {
     name: 'PrintComponent',
     props: {
@@ -50,6 +56,10 @@ export default {
             type: Array,
             required: true
         },
+        badges: {
+            type: Array,
+            required: true
+        },
         shareIndex: {
             type: Number,
             required: true
@@ -58,7 +68,7 @@ export default {
     data() {
         return {
             selectedCanvas: 0,
-            canvases: [1, 2, 3],
+            canvases: [1, 2, 3, 4, 5],
             touchStartX: 0,
             touchEndX: 0,
             shown: false
@@ -74,159 +84,576 @@ export default {
             this.drawOnCanvas1(this.$refs.portraitCanvas1[0]);
             this.drawOnCanvas2(this.$refs.portraitCanvas2[0]);
             this.drawOnCanvas3(this.$refs.portraitCanvas3[0]);
-            //this.drawOnCanvas4(this.$refs.portraitCanvas4[0]);
+            this.drawOnCanvas4(this.$refs.portraitCanvas4[0]);
+            this.drawOnCanvas5(this.$refs.portraitCanvas5[0]);
         },
+        drawTextWithHyphenation(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+            const words = text.split(' ');
+            let line = '';
+            let yOffset = 0;
+            let lines = 0;
 
+            words.forEach((word) => {
+                let testLine = line + word + ' ';
+                let metrics = ctx.measureText(testLine);
+                let testWidth = metrics.width;
+
+                if (testWidth > maxWidth && line !== '') {
+                    ctx.fillText(line, x, y + yOffset);
+                    lines++;
+                    if (lines >= maxLines) {
+                        return;
+                    }
+                    line = '';
+                    yOffset += lineHeight;
+                }
+
+                while (ctx.measureText(word).width > maxWidth) {
+                    let i = 1;
+                    while (ctx.measureText(word.slice(0, i) + '-').width <= maxWidth && i < word.length) {
+                        i++;
+                    }
+                    i--;
+                    ctx.fillText(word.slice(0, i) + '-', x, y + yOffset);
+                    lines++;
+                    if (lines >= maxLines) {
+                        return;
+                    }
+                    word = word.slice(i);
+                    yOffset += lineHeight;
+                }
+
+                line += word + ' ';
+            });
+            ctx.fillText(line, x, y + yOffset);
+        },
         drawOnCanvas1(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
-            ctx.fillStyle = "#1DB954";
 
-            const lines = `${this.userName}'s \ncurrent favorites`.split('\n');
-            lines.forEach((line, index) => {
-                ctx.font = "bold 42px FranieBlack, sans-serif";
-                ctx.fillText(line, 50, 80 + index * 50);
-            });
 
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            const { topTracks = [], topArtists = [], topGenres = [] } = this.years[1] || {};
-            const topTracksText = `Top Tracks: \n${topTracks.map(track => track.name).join("\n")}`;
-            const topTracksLines = topTracksText.split('\n');
-            topTracksLines.forEach((line, index) => {
-                if (index === 0) {
-                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
-                } else {
-                    ctx.font = "36px Familjen Grotesk, sans-serif";
-                }
-                ctx.fillText(line, 50, 200 + index * 40);
-            });
+            const image = new Image();
+            image.src = bgSrc;
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0, 540, 960);
+                drawText();
+            };
+            image.onerror = () => {
+                console.error("Error loading image for canvas1.");
+                drawText();
+            };
 
-            const topArtistsText = `Top Artists: \n${topArtists.map(artist => artist.name).join("\n")}`;
-            const topArtistsLines = topArtistsText.split('\n');
-            topArtistsLines.forEach((line, index) => {
-                if (index === 0) {
-                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
-                } else {
-                    ctx.font = "36px Familjen Grotesk, sans-serif";
-                }
-                ctx.fillText(line, 50, 470 + index * 40);
-            });
+            const drawText = () => {
+                const gradient = ctx.createLinearGradient(50, 0, canvas.width / 2, 0);
+                gradient.addColorStop(0, "#1DB954");
+                gradient.addColorStop(1, "#4DD4AC");
+                ctx.fillStyle = gradient;
+                ctx.font = "36px FranieBlack, sans-serif";
+                const lines = `${this.userName}'s \nmusic journey`.split('\n');
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, 50, 80 + index * 45);
+                });
 
-            const topGenresText = `Top Genres: \n${topGenres.map(genre => genre.name).join("\n")}`;
-            const topGenresLines = topGenresText.split('\n');
-            topGenresLines.forEach((line, index) => {
-                if (index === 0) {
-                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
-                } else {
-                    ctx.font = "36px Familjen Grotesk, sans-serif";
-                }
-                ctx.fillText(line, 50, 740 + index * 40);
-            });
+                const filteredYears = this.years.filter((year, index) => {
+                    if (index === 0) return false;
+                    if (index === 2 && this.years.length > 6) return false;
+                    return true;
+                }).slice(0, 6);
+
+                filteredYears.forEach((year, index) => {
+                    const yearText = `${year.title}`;
+                    const topTrackText = `music_note ${year.topTracks[0]?.name || "No data"}`;
+                    const topArtistText = `artist ${year.topArtists[0]?.name || "No data"}`;
+
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.font = "28px FranieSemiBold, sans-serif";
+                    ctx.fillText(yearText, 50, 200 + index * 150);
+
+                    let maxWidth = 200;
+                    let x = 80;
+                    let y = 240 + index * 150;
+                    const lineHeight = 30;
+                    let line = '';
+                    let yOffset = 0;
+                    let lines = 0;
+
+                    const [icon, ...songName] = topTrackText.split(' ');
+                    ctx.font = "30px Material Symbols Rounded, sans-serif";
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.fillText(icon, x - 35, y + 6);
+
+                    ctx.font = "28px Familjen Grotesk, sans-serif";
+                    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                    songName.join(' ').split(' ').forEach(word => {
+                        let testLine = line + word + ' ';
+                        let metrics = ctx.measureText(testLine);
+                        let testWidth = metrics.width;
+
+                        if (testWidth > maxWidth && line !== '') {
+                            ctx.fillText(line, x, y + yOffset);
+                            lines++;
+                            if (lines >= 3) {
+                                return;
+                            }
+                            line = '';
+                            yOffset += lineHeight;
+                        }
+
+                        while (ctx.measureText(word).width > maxWidth) {
+                            let i = 1;
+                            while (ctx.measureText(word.slice(0, i) + '-').width <= maxWidth && i < word.length) {
+                                i++;
+                            }
+                            i--;
+                            ctx.fillText(word.slice(0, i) + '-', x, y + yOffset);
+                            lines++;
+                            if (lines >= 3) {
+                                return;
+                            }
+                            word = word.slice(i);
+                            yOffset += lineHeight;
+                        }
+
+                        line += word + ' ';
+                    });
+                    ctx.fillText(line, x, y + yOffset);
+
+                    maxWidth = 150;
+                    let line2 = '';
+                    let yOffset2 = 0;
+                    x = 340;
+                    lines = 0;
+
+                    const [icon2, ...artistName] = topArtistText.split(' ');
+                    ctx.font = "36px Material Symbols Rounded, sans-serif";
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.fillText(icon2, x - 42, y + 8);
+
+                    ctx.font = "28px Familjen Grotesk, sans-serif";
+                    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                    artistName.join(' ').split(' ').forEach(word => {
+                        let testLine = line2 + word + ' ';
+                        let metrics = ctx.measureText(testLine);
+                        let testWidth = metrics.width;
+
+                        if (testWidth > maxWidth && line2 !== '') {
+                            ctx.fillText(line2, x, y + yOffset2);
+                            lines++;
+                            if (lines >= 3) {
+                                return;
+                            }
+                            line2 = '';
+                            yOffset2 += lineHeight;
+                        }
+
+                        while (ctx.measureText(word).width > maxWidth) {
+                            let i = 1;
+                            while (ctx.measureText(word.slice(0, i) + '-').width <= maxWidth && i < word.length) {
+                                i++;
+                            }
+                            i--;
+                            ctx.fillText(word.slice(0, i) + '-', x, y + yOffset2);
+                            lines++;
+                            if (lines >= 3) {
+                                return;
+                            }
+                            word = word.slice(i);
+                            yOffset2 += lineHeight;
+                        }
+
+                        line2 += word + ' ';
+                    });
+                    ctx.fillText(line2, x, y + yOffset2);
+                });
+
+                const image2 = new Image();
+                image2.src = fadeSrc;
+                image2.onload = () => {
+                    ctx.drawImage(image2, 490, 0, 50, 960);
+                    const image3 = new Image();
+                    image3.src = fadeSrc;
+                    image3.onload = () => {
+                        ctx.save();
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(image3, -50, 0, 50, 960);
+                        ctx.restore();
+                        const logoImage = new Image();
+                        logoImage.src = logoSrc;
+                        logoImage.onload = () => {
+                            ctx.drawImage(logoImage, 340, 910, 176.32, 35.52);
+                        };
+                        logoImage.onerror = () => {
+                            console.error("Error loading Spütify logo.");
+                        };
+                    };
+                    image3.onerror = () => {
+                        console.error("Error loading image for canvas1.");
+                    };
+                };
+                image2.onerror = () => {
+                    console.error("Error loading image for canvas1.");
+                };
+            }
         },
         drawOnCanvas2(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
-            ctx.fillStyle = "#4DD4AC";
 
-            ctx.font = "bold 42px FranieBlack, sans-serif";
-            const lines = `${this.userName}'s \ntaste evolution \nover the years`.split('\n');
-            lines.forEach((line, index) => {
-                ctx.fillText(line, 50, 80 + index * 50);
-            });
+            const image = new Image();
+            image.src = bg2Src;
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0, 540, 960);
+                drawText();
+            };
+            image.onerror = () => {
+                console.error("Error loading image for canvas1.");
+                drawText();
+            };
 
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            this.years.forEach((year, index) => {
-                if (index < 7 && index !== 0) {
-                    const yearText = `${year.title}`;
-                    const topTrackText = `Top Track: ${year.topTracks[0]?.name || "No data"}`;
+            const drawText = () => {
+                const gradient = ctx.createLinearGradient(50, 0, canvas.width / 2, 0);
+                gradient.addColorStop(0, "#1DB954");
+                gradient.addColorStop(1, "#4DD4AC");
+                ctx.fillStyle = gradient;
+                const lines = `${this.userName}'s \ncurrent favorites`.split('\n');
+                lines.forEach((line, index) => {
+                    ctx.font = "bold 36px FranieBlack, sans-serif";
+                    ctx.fillText(line, 50, 80 + index * 45);
+                    ctx.fillStyle = gradient;
+                });
 
-                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
-                    ctx.fillText(yearText, 50, 260 + index * 100);
+                ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                const { topTracks = [], topArtists = [], topGenres = [] } = this.years[1] || {};
+                const topTracksText = `Top Songs\n${topTracks.map((track, index) => `${index + 1} ${track.name}`).join("\n")}`;
+                const topTracksLines = topTracksText.split('\n');
+                topTracksLines.forEach((line, index) => {
+                    if (index === 0) {
+                        ctx.font = "28px FranieSemiBold, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                        ctx.fillText(line, 50, 200);
+                    } else {
+                        const [number, ...trackName] = line.split(' ');
+                        ctx.font = "bold 28px Familjen Grotesk, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                        ctx.fillText(number, 50, 240 + (index - 1) * 35);
+                        ctx.font = "28px Familjen Grotesk, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                        this.drawTextWithHyphenation(ctx, trackName.join(' '), 80, 240 + (index - 1) * 35, 400, 35, 3);
+                    }
+                });
 
-                    ctx.font = "36px Familjen Grotesk, sans-serif";
-                    ctx.fillText(topTrackText, 50, 300 + index * 100);
-                }
-            });
+                const topArtistsText = `Top Artists\n${topArtists.map((artist, index) => `${index + 1} ${artist.name}`).join("\n")}`;
+                const topArtistsLines = topArtistsText.split('\n');
+                topArtistsLines.forEach((line, index) => {
+                    if (index === 0) {
+                        ctx.font = "28px FranieSemiBold, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                        ctx.fillText(line, 50, 450);
+                    } else {
+                        const [number, ...artistName] = line.split(' ');
+                        ctx.font = "bold 28px Familjen Grotesk, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                        ctx.fillText(number, 50, 490 + (index - 1) * 35);
+                        ctx.font = "28px Familjen Grotesk, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                        this.drawTextWithHyphenation(ctx, artistName.join(' '), 80, 490 + (index - 1) * 35, 400, 35, 3);
+                    }
+                });
+
+                const topGenresText = `Top Genres\n${topGenres.map((genre, index) => `${index + 1} ${genre.name}`).join("\n")}`;
+                const topGenresLines = topGenresText.split('\n');
+                topGenresLines.forEach((line, index) => {
+                    if (index === 0) {
+                        ctx.font = "28px FranieSemiBold, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                        ctx.fillText(line, 50, 700);
+                    } else {
+                        const [number, ...trackName] = line.split(' ');
+                        ctx.font = "bold 28px Familjen Grotesk, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                        ctx.fillText(number, 50, 740 + (index - 1) * 35);
+                        ctx.font = "28px Familjen Grotesk, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                        this.drawTextWithHyphenation(ctx, trackName.join(' '), 80, 740 + (index - 1) * 35, 400, 35, 3);
+                    }
+                });
+
+                const image2 = new Image();
+                image2.src = fadeSrc;
+                image2.onload = () => {
+                    ctx.drawImage(image2, 490, 0, 50, 960);
+                    const image3 = new Image();
+                    image3.src = fadeSrc;
+                    image3.onload = () => {
+                        ctx.save();
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(image3, -50, 0, 50, 960);
+                        ctx.restore();
+                        const logoImage = new Image();
+                        logoImage.src = logoSrc;
+                        logoImage.onload = () => {
+                            ctx.drawImage(logoImage, 340, 910, 176.32, 35.52);
+                        };
+                        logoImage.onerror = () => {
+                            console.error("Error loading Spütify logo.");
+                        };
+                    };
+                    image3.onerror = () => {
+                        console.error("Error loading image for canvas1.");
+                    };
+                };
+                image2.onerror = () => {
+                    console.error("Error loading image for canvas1.");
+                };
+            };
         },
         drawOnCanvas3(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
-            ctx.fillStyle = "#FFA0AB";
 
-            ctx.font = "bold 42px FranieBlack, sans-serif";
-            const lines = 'Create Your Own\nMusic Journey'.split('\n');
-            lines.forEach((line, index) => {
-                ctx.fillText(line, 50, 80 + index * 50);
-            });
 
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            ctx.font = "36px Familjen Grotesk, sans-serif";
-            const visitLines = 'Visit Spütify and\nstart your journey!'.split('\n');
-            visitLines.forEach((line, index) => {
-                ctx.fillText(line, 50, 200 + index * 40);
-            });
-
-            // Load and draw the local image
             const image = new Image();
-            image.src = birdoSrc;
+            image.src = bgSrc;
             image.onload = () => {
-                ctx.drawImage(image, 0, 300, 600, 500); // Draw the image at (0, 300) with size 600x500
+                ctx.drawImage(image, 0, 0, 540, 960);
+                drawText();
             };
             image.onerror = () => {
-                console.error("Error loading image for canvas3.");
+                console.error("Error loading image for canvas1.");
+                drawText();
             };
 
-            ctx.font = "bold 36px Familjen Grotesk, sans-serif";
-            ctx.fillText(`www.sputify.com`, 50, 900);
+            const drawText = () => {
+                const gradient = ctx.createLinearGradient(50, 0, canvas.width / 2, 0);
+                gradient.addColorStop(0, "#1DB954");
+                gradient.addColorStop(1, "#4DD4AC");
+                ctx.fillStyle = gradient;
+                ctx.font = "bold 36px FranieBlack, sans-serif";
+                const lines = `${this.userName}'s \ntop artists\nover the years`.split('\n');
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, 50, 80 + index * 45);
+                });
+
+                this.years.forEach((year, index) => {
+                    if (index !== 0 && index < 7) {
+                        const yearText = `${year.title}`;
+                        const topArtistText = `${year.topArtists[0]?.name || "No data"}`;
+
+                        const artistImage = new Image();
+                        artistImage.src = year.topArtists[0]?.images[0].url || '@/assets/user.png';
+                        artistImage.onload = () => {
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.arc(90, 151 + index * 110, 40, 0, Math.PI * 2, true);
+                            ctx.closePath();
+                            ctx.clip();
+                            ctx.drawImage(artistImage, 50, 111 + index * 110, 80, 80);
+                            ctx.restore();
+                        };
+                        artistImage.onerror = () => {
+                            console.error("Error loading artist image.");
+                        };
+
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                        ctx.font = "28px FranieSemiBold, sans-serif";
+                        ctx.fillText(yearText, 150, 145 + index * 110);
+
+                        ctx.font = "28px Familjen Grotesk, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                        this.drawTextWithHyphenation(ctx, topArtistText, 150, 180 + index * 110, 340, 35, 3);
+                    }
+                });
+
+                const image2 = new Image();
+                image2.src = fadeSrc;
+                image2.onload = () => {
+                    ctx.drawImage(image2, 490, 0, 50, 960);
+                    const image3 = new Image();
+                    image3.src = fadeSrc;
+                    image3.onload = () => {
+                        ctx.save();
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(image3, -50, 0, 50, 960);
+                        ctx.restore();
+                        const logoImage = new Image();
+                        logoImage.src = logoSrc;
+                        logoImage.onload = () => {
+                            ctx.drawImage(logoImage, 340, 910, 176.32, 35.52);
+                        };
+                        logoImage.onerror = () => {
+                            console.error("Error loading Spütify logo.");
+                        };
+                    };
+                    image3.onerror = () => {
+                        console.error("Error loading image for canvas1.");
+                    };
+                };
+                image2.onerror = () => {
+                    console.error("Error loading image for canvas1.");
+                };
+            }
         },
         drawOnCanvas4(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
 
-            // Load and draw the local image
+
             const image = new Image();
-            image.src = bubbleSrc;
+            image.src = bg2Src;
             image.onload = () => {
-                ctx.drawImage(image, 0, 612, 612, 612);
+                ctx.drawImage(image, 0, 0, 540, 960);
+                drawText();
             };
             image.onerror = () => {
-                console.error("Error loading image for canvas3.");
+                console.error("Error loading image for canvas1.");
+                drawText();
             };
 
-            ctx.fillStyle = "#FFA0AB";
-            ctx.font = "bold 42px FranieBlack, sans-serif";
-            const lines = 'Create Your Own\nMusic Journey'.split('\n');
-            lines.forEach((line, index) => {
-                ctx.fillText(line, 50, 80 + index * 50);
-            });
+            const drawText = () => {
+                const gradient = ctx.createLinearGradient(50, 0, canvas.width / 2, 0);
+                gradient.addColorStop(0, "#1DB954");
+                gradient.addColorStop(1, "#4DD4AC");
+                ctx.fillStyle = gradient;
+                ctx.font = "bold 36px FranieBlack, sans-serif";
+                const lines = `${this.userName}'s \ntop songs\nover the years`.split('\n');
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, 50, 80 + index * 45);
+                });
 
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            ctx.font = "36px Familjen Grotesk, sans-serif";
-            const visitLines = 'Visit Spütify and\nstart your journey!'.split('\n');
-            visitLines.forEach((line, index) => {
-                ctx.fillText(line, 50, 200 + index * 40);
-            });
+                this.years.forEach((year, index) => {
+                    if (index !== 0 && index < 7) {
+                        const yearText = `${year.title}`;
+                        const topTrackText = `${year.topTracks[0]?.name || "No data"}`;
 
+                        const trackImage = new Image();
+                        trackImage.src = year.topTracks[0]?.album?.images[0].url || '@/assets/user.png';
+                        trackImage.onload = () => {
+                            ctx.save();
+                            ctx.drawImage(trackImage, 50, 111 + index * 110, 80, 80);
+                            ctx.restore();
+                        };
+                        trackImage.onerror = () => {
+                            console.error("Error loading track image.");
+                        };
 
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                        ctx.font = "28px FranieSemiBold, sans-serif";
+                        ctx.fillText(yearText, 150, 145 + index * 110);
 
-            ctx.font = "bold 36px Familjen Grotesk, sans-serif";
-            ctx.fillText(`www.sputify.com`, 50, 900);
+                        ctx.font = "28px Familjen Grotesk, sans-serif";
+                        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                        ctx.fillText(topTrackText, 150, 180 + index * 110);
+                    }
+                });
+
+                const image2 = new Image();
+                image2.src = fadeSrc;
+                image2.onload = () => {
+                    ctx.drawImage(image2, 490, 0, 50, 960);
+                    const image3 = new Image();
+                    image3.src = fadeSrc;
+                    image3.onload = () => {
+                        ctx.save();
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(image3, -50, 0, 50, 960);
+                        ctx.restore();
+                        const logoImage = new Image();
+                        logoImage.src = logoSrc;
+                        logoImage.onload = () => {
+                            ctx.drawImage(logoImage, 340, 910, 176.32, 35.52);
+                        };
+                        logoImage.onerror = () => {
+                            console.error("Error loading Spütify logo.");
+                        };
+                    };
+                    image3.onerror = () => {
+                        console.error("Error loading image for canvas1.");
+                    };
+                };
+                image2.onerror = () => {
+                    console.error("Error loading image for canvas1.");
+                };
+            }
         },
+        drawOnCanvas5(canvas) {
+            const ctx = canvas.getContext("2d");
+            this.clearCanvas(ctx);
+            this.setCanvasStyle(ctx);
 
+            const image = new Image();
+            image.src = bgSrc;
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0, 540, 960);
+                drawText();
+            };
+            image.onerror = () => {
+                console.error("Error loading image for canvas5.");
+                drawText();
+            };
+
+            const drawText = () => {
+                const gradient = ctx.createLinearGradient(50, 0, canvas.width / 2, 0);
+                gradient.addColorStop(0, "#1DB954");
+                gradient.addColorStop(1, "#4DD4AC");
+                ctx.fillStyle = gradient;
+                ctx.font = "36px FranieBlack, sans-serif";
+                const lines = `${this.userName}'s \nbadges`.split('\n');
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, 50, 80 + index * 45);
+                });
+
+                this.badges.forEach((badge, index) => {
+                    ctx.font = "40px Material Symbols Rounded, sans-serif";
+                    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                    ctx.fillText(badge.icon, 50, 210 + index * 135);
+                    ctx.font = "32px Familjen Grotesk, sans-serif";
+                    ctx.fillText(badge.title, 100, 200 + index * 135);
+                    ctx.font = "24px Familjen Grotesk, sans-serif";
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    this.drawTextWithHyphenation(ctx, badge.text, 50, 235 + index * 135, 450, 25, 3);
+                });
+
+                const image2 = new Image();
+                image2.src = fadeSrc;
+                image2.onload = () => {
+                    ctx.drawImage(image2, 490, 0, 50, 960);
+                    const image3 = new Image();
+                    image3.src = fadeSrc;
+                    image3.onload = () => {
+                        ctx.save();
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(image3, -50, 0, 50, 960);
+                        ctx.restore();
+                        const logoImage = new Image();
+                        logoImage.src = logoSrc;
+                        logoImage.onload = () => {
+                            ctx.drawImage(logoImage, 340, 910, 176.32, 35.52);
+                        };
+                        logoImage.onerror = () => {
+                            console.error("Error loading Spütify logo.");
+                        };
+                    };
+                    image3.onerror = () => {
+                        console.error("Error loading image for canvas5.");
+                    };
+                };
+                image2.onerror = () => {
+                    console.error("Error loading image for canvas5.");
+                };
+            };
+        },
 
         clearCanvas(ctx) {
             ctx.clearRect(0, 0, 1080, 1920);
         },
 
         setCanvasStyle(ctx) {
-            // Reset transformations
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-            // Common Style Setup for High Resolution
             const scaleFactor = 2;
             ctx.scale(scaleFactor, scaleFactor);
             ctx.fillStyle = "#000";
