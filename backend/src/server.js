@@ -8,17 +8,25 @@ dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors(({ credentials: true, origin: 'http://localhost:5173' })));
 app.use(cookieParser());
+
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Define Routes
 var authorizeRouter = require('./routes/authorize');
 var callbackRouter = require('./routes/callback');
 var analyzeRouter = require('./routes/analyze');
+var logoutRouter = require('./routes/logout');
 
 app.use('/authorize', authorizeRouter);
 app.use('/callback', callbackRouter);
 app.use('/analyze', analyzeRouter);
+app.use('/logout', logoutRouter);
 
 const port = process.env.PORT || 3000;
 
