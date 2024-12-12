@@ -272,13 +272,12 @@ export default {
             ctx.fillText(title, 50, startY);
 
             items.forEach((item, index) => {
-                const itemText = `${index + 1} ${item.name}`;
                 ctx.font = "bold 28px Familjen Grotesk, sans-serif";
                 ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
                 ctx.fillText(`${index + 1}`, 50, startY + 40 + index * 35);
                 ctx.font = "28px Familjen Grotesk, sans-serif";
                 ctx.fillStyle = "rgba(255, 255, 255, 1)";
-                this.drawTextWithHyphenation(ctx, item.name, 80, startY + 40 + index * 35, 400, 35, 3);
+                ctx.fillText(item.name, 80, startY + 40 + index * 35);
             });
         },
 
