@@ -60,7 +60,7 @@ const props = defineProps({
     userImg: {
         type: String,
         required: true,
-    },
+    }
 });
 
 const { years } = toRefs(props);

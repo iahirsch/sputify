@@ -38,7 +38,6 @@ export default {
 
     function generateData() {
       let data;
-      //detail = Math.floor(props.analysis.energy * props.analysis.energy * 25 + 10);
       if (toZero || !props.analysis.energy) {
         data = Array.from({ length: detail }, () => ({ value: 0 }));
       } else {
@@ -68,6 +67,7 @@ export default {
         .angle((d, i) => angleScale(i))
         .radius(d => radius + radiusScale(d.value))
         .curve(d3.curveCardinalClosed);
+      //.curve(d3.curveCardinalClosed.tension(props.analysis.energy * props.analysis.energy));
 
       const pathData = lineGenerator(data);
 
@@ -145,28 +145,12 @@ export default {
       if ((valence === 0 && energy === 0 && danceability === 0) || props.analysis.login) {
         return `rgba(100, 100, 100, 1)`; // Gray
       } else {
-        // switch (index) {
-        //   case 1: {
-        //     const red = Math.min(255, Math.floor(energy * 200) + Math.floor(danceability * 50));
-        //     return `rgba(${red}, 255, 255, 1)`;
-        //   }
-        //   case 2: {
-        //     const green = Math.max(0, Math.floor((1 - danceability) * 255) + Math.floor((1 - energy) * 55) + Math.floor((1 - valence) * 55));
-        //     return `rgba(0, ${green}, 0, 1)`;
-        //   }
-        //   case 3: {
-        //     const blue = Math.min(255, Math.floor((1 - valence) * 300 * (1 - energy)) + Math.floor(danceability * 100));
-        //     return `rgba(255, 255, ${blue}, 1)`;
-        //   }
-        //   default: {
-        // const red = Math.min(255, Math.floor(energy * 200) + Math.floor(danceability * 50)); // Higher energy and danceability boost red.
-        // const green = Math.max(0, Math.floor((1 - danceability) * 255) + Math.floor((1 - energy) * 55) + Math.floor((1 - valence) * 55)); // Less danceability boosts green.
-        // const blue = Math.min(255, Math.floor((1 - valence) * 300 * (1 - energy)) + Math.floor(danceability * 100)); // Danceability adds blue for pink tones.
-
-        // return `rgba(${red}, ${green}, ${blue}, 1)`;
-        // }
+        /* const red = Math.min(255, Math.floor(energy * 200) + Math.floor(danceability * 50)); // Higher energy and danceability boost red.
+        const green = Math.max(0, Math.floor((1 - danceability) * 255) + Math.floor((1 - energy) * 55) + Math.floor((1 - valence) * 55)); // Less danceability boosts green.
+        const blue = Math.min(255, Math.floor((1 - valence) * 300 * (1 - energy)) + Math.floor(danceability * 100)); // Danceability adds blue for pink tone
+        return `rgba(${red}, ${green}, ${blue}, 1)`; */
       }
-      const rgb = props.analysis.segments[0].color.match(/\d+/g);
+      const rgb = props.analysis.color.match(/\d+/g);
       return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`;
     }
 
@@ -184,16 +168,15 @@ export default {
         const lineGenerator = d3.lineRadial()
           .angle((d, i) => angleScale(i))
           .radius(d => radius + radiusScale(d.value))
-          .curve(d3.curveCardinal.tension(0.1));
+          .curve(d3.curveCardinalClosed);
+        //.curve(d3.curveCardinalClosed.tension(props.analysis.energy * props.analysis.energy));
 
         const pathData = lineGenerator(data.value);
 
         bubbleGroup.select('path')
           .transition()
           .duration(getTempoTimeout() * (1 / props.analysis.energy)) // Adjust duration based on energy
-          //.duration(getTempoTimeout())
           .ease(d3.easeLinear)
-          //.ease(d3.easeQuadInOut)
           .attr('d', pathData);
       });
     }

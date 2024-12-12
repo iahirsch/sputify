@@ -7,7 +7,20 @@
     <StickyTimeline :years="years" :active="false" />
   </div>
   <div class="mobile-timeline">
-    <MobileTimeline :years="years" :active="false" :user-name="userName" :user-img="userImg" />
+    <MobileTimeline :years="years" :user-name="userName" :user-img="userImg" />
+  </div>
+  <span class="material-symbols-rounded focus-view menu-button" @click="toggleFocusView()">expand_content</span>
+  <div class="focus-player">
+    <div class="song" @click="playTrack(currentTrack)">
+      <span class="material-symbols-rounded play-icon">
+        {{ playing ? 'pause' : 'play_arrow' }}
+      </span>
+      <img class="cover" :src="currentTrack.image" alt="album cover" />
+      <p class="song-name">
+        {{ currentTrack.name }}<br>
+        <span class="song-artist">{{ currentTrack.artist }}</span>
+      </p>
+    </div>
   </div>
   <div id="smooth-wrapper" ref="main">
     <!-- TODO: clear spotify authentication on logout -->
@@ -84,18 +97,69 @@ const currentTrack = ref({
     energy: 0,
     valence: 0,
     danceability: 0,
-    segments: [
-      {
-        start: 0,
-        duration: 100,
-        frequency_spectrum: []
-      }
-    ],
     color: 'rgb(255, 255, 255)',
   }
 });
 const playing = ref(false);
 let showPopup = handleShowPopup();
+
+let focusView = false;
+function toggleFocusView() {
+  document.removeEventListener('touchstart', toggleFocusView);
+
+  const smoothWrapper = document.getElementById('smooth-wrapper');
+  const mobileTimeline = document.querySelector('.mobile-timeline');
+  const focusviewButton = document.querySelector('.focus-view');
+  const focusPlayer = document.querySelector('.focus-player');
+
+  if (focusviewButton.style.opacity == 1) {
+    if (!focusView) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+      }
+      document.documentElement.style.overflow = 'hidden';
+      smoothWrapper.style.opacity = 0;
+      smoothWrapper.style.pointerEvents = 'none';
+      mobileTimeline.style.opacity = 0;
+      focusPlayer.style.opacity = 1;
+      focusviewButton.textContent = 'collapse_content';
+      focusviewButton.style.transform = 'translate(0, -1rem)';
+      setTimeout(() => {
+        focusView = true;
+        document.addEventListener('touchstart', (event) => {
+          const target = event.target;
+          if (!target.closest('.focus-player') && !target.closest('.focus-view')) {
+            toggleFocusView();
+          }
+        }, { once: true });
+      }, 500);
+    } else {
+      if (document.exitFullscreen) {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+      document.documentElement.style.overflow = 'auto';
+      smoothWrapper.style.opacity = 1;
+      mobileTimeline.style.opacity = 'unset';
+      focusPlayer.style.opacity = 0;
+      focusviewButton.textContent = 'expand_content';
+      focusviewButton.style.transform = 'translate(0, 0)';
+      setTimeout(() => {
+        smoothWrapper.style.pointerEvents = 'auto';
+        focusView = false;
+      }, 500);
+    }
+  }
+}
 
 async function getAudioAnalysis(name, artist) {
   try {
@@ -112,7 +176,6 @@ async function getAudioAnalysis(name, artist) {
       })
     });
     const json = await response.json();
-    console.log(json);
     return json.analysisResults;
   } catch (error) {
     console.error('Error fetching audio analysis:', error);
@@ -151,8 +214,6 @@ function updateCurrentTrack(track) {
   getAudioAnalysis(track.name, track.artists[0].name).then((analysis) => {
     currentTrack.value.analysis = analysis;
   });
-
-  console.log('Playing track:', currentTrack.value);
 }
 
 function handleShowPopup() {
@@ -383,8 +444,6 @@ function getBadges() {
     badges.push(newMe);
   }
 
-  console.log('Badges:', badges);
-
   return badges.slice(0, 5);
 }
 
@@ -435,8 +494,19 @@ onMounted(async () => {
   });
 
   const mobileTimeline = document.querySelector('.mobile-timeline');
-
   gsap.to(mobileTimeline, {
+    opacity: 1,
+    scrollTrigger: {
+      trigger: '.year-title',
+      start: 'top 70%',
+      end: 'top 20%',
+      scrub: true,
+      markers: false,
+    },
+  });
+
+  const focusviewButton = document.querySelector('span.focus-view.menu-button');
+  gsap.to(focusviewButton, {
     opacity: 1,
     scrollTrigger: {
       trigger: '.year-title',
@@ -535,6 +605,12 @@ onMounted(() => {
   });
 
   badges.value = getBadges();
+
+  window.addEventListener('resize', () => {
+    if (focusView) {
+      toggleFocusView();
+    }
+  });
 });
 
 </script>
@@ -548,7 +624,6 @@ function logOut() {
   ) {
     window.location.href = '/';
     localStorage.removeItem('showPopup');
-    console.log(localStorage);
   }
 }
 export { logOut };
@@ -677,6 +752,7 @@ h2 {
   opacity: 1;
   transform: scaleX(-1);
   display: none;
+  top: 0;
 }
 
 .menu-button:hover {
@@ -720,6 +796,11 @@ h2 {
   transform: scaleX(-1);
 }
 
+.focus-view,
+.focus-player {
+  display: none;
+}
+
 footer {
   display: flex;
   flex-direction: column;
@@ -761,6 +842,7 @@ p {
   height: 3rem;
   margin: 1rem;
   position: fixed;
+  top: 0;
   z-index: 10;
   -webkit-filter: drop-shadow(0 0 0.5rem black);
   filter: drop-shadow(0 0 0.5rem black);
@@ -799,6 +881,82 @@ p {
 
   .mobile-timeline {
     display: block;
+    transition: transform 0.5s;
+  }
+
+  .focus-view {
+    display: block;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    font-size: 2.2rem;
+    opacity: 0;
+    transform: translate(0, 0);
+    transition: transform 0.5s;
+  }
+
+  .focus-player {
+    display: block;
+    opacity: 0;
+    transition: opacity 0.5s;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    margin: 1rem;
+    width: calc(100vw - 5.5rem);
+  }
+
+  .song {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    margin: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .song:hover {
+    cursor: pointer;
+  }
+
+  .play-icon {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-right: 0.25rem;
+  }
+
+  .play-icon:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  .cover {
+    width: 3rem;
+    height: 3rem;
+    margin-right: 1rem;
+  }
+
+  .song-name {
+    font-size: 1.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .song-artist {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* .full-screen::after {
+    content: "Focus View";
+    top: -30%;
+    left: -400%;
+  } */
+
+  #smooth-wrapper {
+    opacity: 1;
+    transition: opacity 0.5s;
   }
 }
 </style>

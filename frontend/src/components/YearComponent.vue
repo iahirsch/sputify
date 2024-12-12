@@ -10,7 +10,7 @@
                         <span class="material-symbols-rounded play-icon">
                             {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
                         </span>
-                        <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
+                        <img class="cover" :src="track.album.images[0].url" alt="album cover" />
                         <p class="song-name">
                             {{ track.name }}<br>
                             <span class="song-artist">{{ track.artists[0].name }}</span>
@@ -44,7 +44,7 @@
                                 <span class="material-symbols-rounded play-icon">
                                     {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
                                 </span>
-                                <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
+                                <img class="cover" :src="track.album.images[0].url" alt="album cover" />
                                 <p class="song-name">
                                     {{ track.name }}<br />
                                 </p>
@@ -86,7 +86,7 @@
                         <span class="material-symbols-rounded play-icon">
                             {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
                         </span>
-                        <img class="albumCover cover" :src="track.album.images[0].url" alt="album cover" />
+                        <img class="cover" :src="track.album.images[0].url" alt="album cover" />
                         <p class="song-name">
                             {{ track.name }}<br>
                             <span class="song-artist">{{ track.artists[0].name }}</span>

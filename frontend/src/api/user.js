@@ -1,7 +1,6 @@
 export async function getUserInfo() {
     const url = "https://api.spotify.com/v1/me";
     const accessToken = localStorage.getItem('access_token');
-    console.log('Access Token:', accessToken);
 
     if (!accessToken) {
         console.error('Access token is undefined');
@@ -21,7 +20,6 @@ export async function getUserInfo() {
             return null;
         }
         const profile = await response.json();
-        console.log('User Profile:', profile);
         return profile;
     } catch (error) {
         console.error('Error fetching user profile:', error);

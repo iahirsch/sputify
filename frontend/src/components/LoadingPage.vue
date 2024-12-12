@@ -14,6 +14,7 @@
 
 <script>
 export default {
+    props: {},
     data() {
         return {
             bars: Array(25).fill(0),

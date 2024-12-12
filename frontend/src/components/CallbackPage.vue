@@ -1,5 +1,6 @@
 <template>
-    <JourneyPage v-if="accessToken && isReady" :player-ready="playerReady" :years="years" :userName="userName" :userImg="userImg">
+    <JourneyPage v-if="accessToken && isReady" :player-ready="playerReady" :years="years" :userName="userName"
+        :userImg="userImg">
     </JourneyPage>
     <LoadingPage v-else></LoadingPage>
 </template>
@@ -52,9 +53,8 @@ const isReady = ref(false);
 onMounted(async () => {
     // const state = route.query.state;
     // const code = route.query.code;
-    let currentTime = Math.floor(new Date().getTime() / 1000);
-
-    console.log(isNaN(localStorage.getItem('tokenExpirationTime')), currentTime, localStorage.getItem('tokenExpirationTime'));
+    //let currentTime = Math.floor(new Date().getTime() / 1000);
+    //console.log(isNaN(localStorage.getItem('tokenExpirationTime')), currentTime, localStorage.getItem('tokenExpirationTime'));
 
     accessToken.value = route.query.access_token;
     localStorage.setItem('access_token', route.query.access_token);
@@ -82,7 +82,6 @@ onMounted(async () => {
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-        console.log('Spotify Web Playback SDK is ready');
         const token = localStorage.getItem('access_token');
         const player = new Spotify.Player({
             name: 'Spütify',
@@ -90,14 +89,11 @@ onMounted(async () => {
             volume: 0.5
         });
 
-        // Ready
         player.addListener('ready', ({ device_id }) => {
             playerReady.value = true;
             localStorage.setItem('device_id', device_id);
-            console.log('Ready with Device ID', device_id);
         });
 
-        // Not Ready
         player.addListener('not_ready', ({ device_id }) => {
             playerReady.value = false;
             console.log('Device ID has gone offline', device_id);
@@ -129,7 +125,6 @@ onMounted(async () => {
         userImg.value = sessionUserImg;
         years.value = sessionYears;
         await fetchRecentlyPlayed();
-        console.log("now:", years.value);
         isReady.value = true;
         return;
     }
@@ -140,7 +135,7 @@ onMounted(async () => {
             userName.value = response.display_name;
             if (response.images.length > 0) {
                 userImg.value = response.images[0].url;
-            }else{
+            } else {
                 userImg.value = "../assets/user.png";
             }
         } catch (error) {
@@ -205,8 +200,6 @@ onMounted(async () => {
         try {
             const wrappedPlaylists = await getWrappedPlaylists(localStorage.getItem('device_id'));
 
-            console.log('Wrapped Playlists:', wrappedPlaylists);
-
             for (const playlist of wrappedPlaylists) {
                 if (playlist.year && playlist.tracks && playlist.tracks.length > 0) {
 
@@ -261,8 +254,6 @@ onMounted(async () => {
     await fetchTopTracksAndArtists('long_term', 3);
 
     await fetchWrappedPlaylists();
-
-    console.log('Years:', years.value);
 
     // Store data in sessionStorage
     sessionStorage.setItem('userName', userName.value);
