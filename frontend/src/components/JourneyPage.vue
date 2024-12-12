@@ -99,7 +99,7 @@ let showPopup = handleShowPopup();
 
 async function getAudioAnalysis(name, artist) {
   try {
-    const response = await fetch('https://astonishing-llama-76e306.netlify.app/analyze', {
+    const response = await fetch('https://spuetify.netlify.app/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

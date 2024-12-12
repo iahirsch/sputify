@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'https://astonishing-llama-76e306.netlify.app'
+      '/api': 'https://spuetify.netlify.app'
     }
   },
   resolve: {
