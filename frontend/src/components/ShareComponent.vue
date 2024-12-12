@@ -10,10 +10,12 @@
                 <div class="portrait-container" data-year="Share Journey" @touchstart="onTouchStart"
                     @touchmove="onTouchMove" @touchend="onTouchEnd">
                     <div v-for="(canvas, index) in canvases" :key="index"
-                        :class="['portrait', { selected: selectedCanvas === index }]"
-                        :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 104}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }"
-                        @click="selectCanvas(index)">
-                        <!-- :style="{ transform: `translateX(calc(-${(selectedCanvas) * 103.5 + 208 / canvases.length}% + 600px)) scale(${selectedCanvas === index ? 1 : 0.8})` }" -->
+                        :class="['portrait', { selected: selectedCanvas === index }]" :style="{
+                            transform: `
+                            translateX(calc(-${(selectedCanvas) * 103.5}% + 
+                            ${9.4 * (canvases.length - 1)}rem)) 
+                            scale(${selectedCanvas === index ? 1 : 0.8})
+                        `}" @click=" selectCanvas(index)">
                         <canvas :ref="'portraitCanvas' + (index + 1)" width="1080" height="1920"></canvas>
                     </div>
                 </div>
@@ -38,7 +40,12 @@
 
 <script>
 import birdoSrc from '@/assets/image1.png';
-import bubbleSrc from '@/assets/bubble.png';
+import fadeSrc from '@/assets/fade.png';
+import bgSrc from '@/assets/share_bg_1.png';
+import bg2Src from '@/assets/share_bg_2.png';
+import logoSrc from '@/assets/spütify_logo.png';
+import userSrc from '@/assets/user.png';
+
 export default {
     name: 'PrintComponent',
     props: {
@@ -50,6 +57,10 @@ export default {
             type: Array,
             required: true
         },
+        badges: {
+            type: Array,
+            required: true
+        },
         shareIndex: {
             type: Number,
             required: true
@@ -58,7 +69,7 @@ export default {
     data() {
         return {
             selectedCanvas: 0,
-            canvases: [1, 2, 3],
+            canvases: [1, 2, 3, 4, 5],
             touchStartX: 0,
             touchEndX: 0,
             shown: false
@@ -74,159 +85,365 @@ export default {
             this.drawOnCanvas1(this.$refs.portraitCanvas1[0]);
             this.drawOnCanvas2(this.$refs.portraitCanvas2[0]);
             this.drawOnCanvas3(this.$refs.portraitCanvas3[0]);
-            //this.drawOnCanvas4(this.$refs.portraitCanvas4[0]);
+            this.drawOnCanvas4(this.$refs.portraitCanvas4[0]);
+            this.drawOnCanvas5(this.$refs.portraitCanvas5[0]);
+        },
+        clearCanvas(ctx) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        },
+
+        setCanvasStyle(ctx) {
+            ctx.textBaseline = "top";
+        },
+
+        loadImage(src, onSuccess, onError) {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => onSuccess(img);
+            img.onerror = onError;
+            return img;
+        },
+
+        drawGradientText(ctx, text, x, y, width, gradientStops, font) {
+            const gradient = ctx.createLinearGradient(x, 0, x + width, 0);
+            gradientStops.forEach(([stop, color]) => gradient.addColorStop(stop, color));
+            ctx.fillStyle = gradient;
+            ctx.font = font;
+            const lines = text.split('\n');
+            lines.forEach((line, index) => {
+                ctx.fillText(line, x, y + index * 45);
+            });
+        },
+
+        drawClippedImage(ctx, img, x, y, size) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+
+            const aspectRatio = img.width / img.height;
+            let drawWidth, drawHeight;
+
+            if (aspectRatio > 1) {
+                drawWidth = size;
+                drawHeight = size / aspectRatio;
+            } else {
+                drawWidth = size * aspectRatio;
+                drawHeight = size;
+            }
+
+            const offsetX = (size - drawWidth) / 2;
+            const offsetY = (size - drawHeight) / 2;
+
+            ctx.drawImage(img, x + offsetX, y + offsetY, drawWidth, drawHeight);
+            ctx.restore();
+        },
+
+        drawTextWithHyphenation(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+            const words = text.split(' ');
+            let line = '';
+            let yOffset = 0;
+            let lines = 0;
+
+            for (let word of words) {
+                let testLine = line + word + ' ';
+                let testWidth = ctx.measureText(testLine).width;
+
+                if (testWidth > maxWidth && line !== '') {
+                    ctx.fillText(line, x, y + yOffset);
+                    lines++;
+                    if (lines >= maxLines) return;
+                    line = '';
+                    yOffset += lineHeight;
+                }
+
+                while (ctx.measureText(word).width > maxWidth) {
+                    let i = 1;
+                    while (ctx.measureText(word.slice(0, i) + '-').width <= maxWidth && i < word.length) {
+                        i++;
+                    }
+                    i--;
+                    ctx.fillText(word.slice(0, i) + '-', x, y + yOffset);
+                    lines++;
+                    if (lines >= maxLines) return;
+                    word = word.slice(i);
+                    yOffset += lineHeight;
+                }
+
+                line += word + ' ';
+            }
+            ctx.fillText(line, x, y + yOffset);
         },
 
         drawOnCanvas1(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
-            ctx.fillStyle = "#1DB954";
 
-            const lines = `${this.userName}'s \ncurrent favorites`.split('\n');
-            lines.forEach((line, index) => {
-                ctx.font = "bold 42px FranieBlack, sans-serif";
-                ctx.fillText(line, 50, 80 + index * 50);
-            });
-
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            const { topTracks = [], topArtists = [], topGenres = [] } = this.years[1] || {};
-            const topTracksText = `Top Tracks: \n${topTracks.map(track => track.name).join("\n")}`;
-            const topTracksLines = topTracksText.split('\n');
-            topTracksLines.forEach((line, index) => {
-                if (index === 0) {
-                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
-                } else {
-                    ctx.font = "36px Familjen Grotesk, sans-serif";
+            this.loadImage(
+                bgSrc,
+                (image) => {
+                    ctx.drawImage(image, 0, 0, 540, 960);
+                    this.drawMusicJourney(ctx);
+                },
+                () => {
+                    console.error("Error loading background image for canvas1.");
+                    this.drawMusicJourney(ctx);
                 }
-                ctx.fillText(line, 50, 200 + index * 40);
-            });
-
-            const topArtistsText = `Top Artists: \n${topArtists.map(artist => artist.name).join("\n")}`;
-            const topArtistsLines = topArtistsText.split('\n');
-            topArtistsLines.forEach((line, index) => {
-                if (index === 0) {
-                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
-                } else {
-                    ctx.font = "36px Familjen Grotesk, sans-serif";
-                }
-                ctx.fillText(line, 50, 470 + index * 40);
-            });
-
-            const topGenresText = `Top Genres: \n${topGenres.map(genre => genre.name).join("\n")}`;
-            const topGenresLines = topGenresText.split('\n');
-            topGenresLines.forEach((line, index) => {
-                if (index === 0) {
-                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
-                } else {
-                    ctx.font = "36px Familjen Grotesk, sans-serif";
-                }
-                ctx.fillText(line, 50, 740 + index * 40);
-            });
+            );
         },
+
+        drawMusicJourney(ctx) {
+            this.drawGradientText(ctx, `${this.userName}'s \nmusic journey`, 50, 80, 250, [
+                [0, "#1DB954"],
+                [1, "#4DD4AC"]
+            ], "36px FranieBlack, sans-serif");
+
+            const filteredYears = this.years.filter((year, index) => {
+                if (index === 0) return false;
+                if (index === 2 && this.years.length > 6) return false;
+                return true;
+            }).slice(0, 6);
+
+            filteredYears.forEach((year, index) => {
+                const yearText = `${year.title}`;
+                const topTrackText = `music_note ${year.topTracks[0]?.name || "No data"}`;
+                const topArtistText = `artist ${year.topArtists[0]?.name || "No data"}`;
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                ctx.font = "28px FranieSemiBold, sans-serif";
+                ctx.fillText(yearText, 50, 200 + index * 150);
+
+                this.drawTopItem(ctx, topTrackText, 80, 240 + index * 150, 200, 30, 3, 0);
+                this.drawTopItem(ctx, topArtistText, 340, 240 + index * 150, 150, 30, 3, 2);
+            });
+
+            this.drawFadeAndLogo(ctx);
+        },
+
+        drawTopItem(ctx, text, x, y, maxWidth, lineHeight, maxLines, iconOffset) {
+            const [icon, ...textParts] = text.split(' ');
+            ctx.font = "32px Material Symbols Rounded, sans-serif";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.fillText(icon, x - 35 - iconOffset, y + 7);
+
+            ctx.font = "28px Familjen Grotesk, sans-serif";
+            ctx.fillStyle = "rgba(255, 255, 255, 1)";
+            this.drawTextWithHyphenation(ctx, textParts.join(' '), x, y, maxWidth, lineHeight, maxLines);
+        },
+
         drawOnCanvas2(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
-            ctx.fillStyle = "#4DD4AC";
 
-            ctx.font = "bold 42px FranieBlack, sans-serif";
-            const lines = `${this.userName}'s \ntaste evolution \nover the years`.split('\n');
-            lines.forEach((line, index) => {
-                ctx.fillText(line, 50, 80 + index * 50);
-            });
-
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            this.years.forEach((year, index) => {
-                if (index < 7 && index !== 0) {
-                    const yearText = `${year.title}`;
-                    const topTrackText = `Top Track: ${year.topTracks[0]?.name || "No data"}`;
-
-                    ctx.font = "bold 42px Familjen Grotesk, sans-serif";
-                    ctx.fillText(yearText, 50, 260 + index * 100);
-
-                    ctx.font = "36px Familjen Grotesk, sans-serif";
-                    ctx.fillText(topTrackText, 50, 300 + index * 100);
+            this.loadImage(
+                bg2Src,
+                (image) => {
+                    ctx.drawImage(image, 0, 0, 540, 960);
+                    this.drawCurrentFavorites(ctx);
+                },
+                () => {
+                    console.error("Error loading background image for canvas2.");
+                    this.drawCurrentFavorites(ctx);
                 }
+            );
+        },
+
+        drawCurrentFavorites(ctx) {
+            this.drawGradientText(ctx, `${this.userName}'s \ncurrent favorites`, 50, 80, ctx.canvas.width / 2, [
+                [0, "#1DB954"],
+                [1, "#4DD4AC"]
+            ], "36px FranieBlack, sans-serif");
+
+            const { topTracks = [], topArtists = [], topGenres = [] } = this.years[1] || {};
+
+            this.drawTopItems(ctx, "Top Songs", topTracks, 200);
+            this.drawTopItems(ctx, "Top Artists", topArtists, 450);
+            this.drawTopItems(ctx, "Top Genres", topGenres, 700);
+
+            this.drawFadeAndLogo(ctx);
+        },
+
+        drawTopItems(ctx, title, items, startY) {
+            ctx.font = "28px FranieSemiBold, sans-serif";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.fillText(title, 50, startY);
+
+            items.forEach((item, index) => {
+                ctx.font = "bold 28px Familjen Grotesk, sans-serif";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                ctx.fillText(`${index + 1}`, 50, startY + 40 + index * 35);
+                ctx.font = "28px Familjen Grotesk, sans-serif";
+                ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                ctx.fillText(item.name, 80, startY + 40 + index * 35);
             });
         },
+
         drawOnCanvas3(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
-            ctx.fillStyle = "#FFA0AB";
 
-            ctx.font = "bold 42px FranieBlack, sans-serif";
-            const lines = 'Create Your Own\nMusic Journey'.split('\n');
-            lines.forEach((line, index) => {
-                ctx.fillText(line, 50, 80 + index * 50);
-            });
-
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            ctx.font = "36px Familjen Grotesk, sans-serif";
-            const visitLines = 'Visit Spütify and\nstart your journey!'.split('\n');
-            visitLines.forEach((line, index) => {
-                ctx.fillText(line, 50, 200 + index * 40);
-            });
-
-            // Load and draw the local image
-            const image = new Image();
-            image.src = birdoSrc;
-            image.onload = () => {
-                ctx.drawImage(image, 0, 300, 600, 500); // Draw the image at (0, 300) with size 600x500
-            };
-            image.onerror = () => {
-                console.error("Error loading image for canvas3.");
-            };
-
-            ctx.font = "bold 36px Familjen Grotesk, sans-serif";
-            ctx.fillText(`www.sputify.com`, 50, 900);
+            this.loadImage(
+                bgSrc,
+                (image) => {
+                    ctx.drawImage(image, 0, 0, 540, 960);
+                    this.drawTopArtists(ctx);
+                },
+                () => {
+                    console.error("Error loading background image for canvas3.");
+                    this.drawTopArtists(ctx);
+                }
+            );
         },
+
+        drawTopArtists(ctx) {
+            this.drawGradientText(ctx, `${this.userName}'s \ntop artists\nover the years`, 50, 80, 250, [
+                [0, "#1DB954"],
+                [1, "#4DD4AC"]
+            ], "bold 36px FranieBlack, sans-serif");
+
+            this.years.forEach((year, index) => {
+                if (index !== 0 && index < 7) {
+                    const yearText = `${year.title}`;
+                    const topArtistText = `${year.topArtists[0]?.name || "No data"}`;
+
+                    this.loadImage(
+                        year.topArtists[0]?.images[0]?.url || userSrc,
+                        (img) => this.drawClippedImage(ctx, img, 50, 111 + index * 110, 80),
+                        () => console.error("Error loading artist image.")
+                    );
+
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.font = "28px FranieSemiBold, sans-serif";
+                    ctx.fillText(yearText, 150, 145 + index * 110);
+
+                    ctx.font = "28px Familjen Grotesk, sans-serif";
+                    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                    ctx.fillText(topArtistText, 150, 180 + index * 110);
+                }
+            });
+
+            this.drawFadeAndLogo(ctx);
+        },
+
         drawOnCanvas4(canvas) {
             const ctx = canvas.getContext("2d");
             this.clearCanvas(ctx);
             this.setCanvasStyle(ctx);
 
-            // Load and draw the local image
-            const image = new Image();
-            image.src = bubbleSrc;
-            image.onload = () => {
-                ctx.drawImage(image, 0, 612, 612, 612);
-            };
-            image.onerror = () => {
-                console.error("Error loading image for canvas3.");
-            };
-
-            ctx.fillStyle = "#FFA0AB";
-            ctx.font = "bold 42px FranieBlack, sans-serif";
-            const lines = 'Create Your Own\nMusic Journey'.split('\n');
-            lines.forEach((line, index) => {
-                ctx.fillText(line, 50, 80 + index * 50);
-            });
-
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-            ctx.font = "36px Familjen Grotesk, sans-serif";
-            const visitLines = 'Visit Spütify and\nstart your journey!'.split('\n');
-            visitLines.forEach((line, index) => {
-                ctx.fillText(line, 50, 200 + index * 40);
-            });
-
-
-
-            ctx.font = "bold 36px Familjen Grotesk, sans-serif";
-            ctx.fillText(`www.sputify.com`, 50, 900);
+            this.loadImage(
+                bg2Src,
+                (image) => {
+                    ctx.drawImage(image, 0, 0, 540, 960);
+                    this.drawTopSongs(ctx);
+                },
+                () => {
+                    console.error("Error loading background image for canvas4.");
+                    this.drawTopSongs(ctx);
+                }
+            );
         },
 
+        drawTopSongs(ctx) {
+            this.drawGradientText(ctx, `${this.userName}'s \ntop songs\nover the years`, 50, 80, 250, [
+                [0, "#1DB954"],
+                [1, "#4DD4AC"]
+            ], "bold 36px FranieBlack, sans-serif");
+
+            this.years.forEach((year, index) => {
+                if (index !== 0 && index < 7) {
+                    const yearText = `${year.title}`;
+                    const topTrackText = `${year.topTracks[0]?.name || "No data"}`;
+
+                    this.loadImage(
+                        year.topTracks[0]?.album.images[0].url || userSrc,
+                        (img) => ctx.drawImage(img, 50, 111 + index * 110, 80, 80),
+                        () => console.error("Error loading track image.")
+                    );
+
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.font = "28px FranieSemiBold, sans-serif";
+                    ctx.fillText(yearText, 150, 145 + index * 110);
+
+                    ctx.font = "28px Familjen Grotesk, sans-serif";
+                    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                    ctx.fillText(topTrackText, 150, 180 + index * 110);
+                }
+            });
+
+            this.drawFadeAndLogo(ctx);
+        },
+
+        drawOnCanvas5(canvas) {
+            const ctx = canvas.getContext("2d");
+            this.clearCanvas(ctx);
+            this.setCanvasStyle(ctx);
+
+            this.loadImage(
+                bgSrc,
+                (image) => {
+                    ctx.drawImage(image, 0, 0, 540, 960);
+                    this.drawBadges(ctx);
+                },
+                () => {
+                    console.error("Error loading background image for canvas5.");
+                    this.drawBadges(ctx);
+                }
+            );
+        },
+
+        drawBadges(ctx) {
+            this.drawGradientText(ctx, `${this.userName}'s \nbadges`, 50, 80, 250, [
+                [0, "#1DB954"],
+                [1, "#4DD4AC"]
+            ], "36px FranieBlack, sans-serif");
+
+            this.badges.forEach((badge, index) => {
+                ctx.font = "40px Material Symbols Rounded, sans-serif";
+                ctx.fillStyle = "rgba(255, 255, 255, 1)";
+                ctx.fillText(badge.icon, 50, 210 + index * 135);
+
+                ctx.font = "32px Familjen Grotesk, sans-serif";
+                ctx.fillText(badge.title, 100, 200 + index * 135);
+
+                ctx.font = "24px Familjen Grotesk, sans-serif";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                this.drawTextWithHyphenation(ctx, badge.text, 50, 235 + index * 135, 450, 25, 3);
+            });
+
+            this.drawFadeAndLogo(ctx);
+        },
+
+        drawFadeAndLogo(ctx) {
+            this.loadImage(
+                fadeSrc,
+                (img) => {
+                    ctx.drawImage(img, 490, 0, 50, 960);
+                    ctx.save();
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, -50, 0, 50, 960);
+                    ctx.restore();
+
+                    this.loadImage(
+                        logoSrc,
+                        (logo) => ctx.drawImage(logo, 340, 910, 176.32, 35.52),
+                        () => console.error("Error loading logo image.")
+                    );
+                },
+                () => console.error("Error loading fade image.")
+            );
+        },
 
         clearCanvas(ctx) {
             ctx.clearRect(0, 0, 1080, 1920);
         },
 
         setCanvasStyle(ctx) {
-            // Reset transformations
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-            // Common Style Setup for High Resolution
             const scaleFactor = 2;
             ctx.scale(scaleFactor, scaleFactor);
             ctx.fillStyle = "#000";
@@ -288,13 +505,11 @@ export default {
         },
         onTouchEnd() {
             const swipeDistance = this.touchStartX - this.touchEndX;
-            const swipeThreshold = 50; // Minimum distance to detect a swipe
+            const swipeThreshold = 50;
 
             if (swipeDistance > swipeThreshold) {
-                // Swipe left
                 this.nextCanvas();
             } else if (swipeDistance < -swipeThreshold) {
-                // Swipe right
                 this.previousCanvas();
             }
         },

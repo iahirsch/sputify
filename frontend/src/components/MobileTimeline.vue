@@ -180,7 +180,7 @@ h2 {
     width: 5rem;
     height: 5rem;
     object-fit: cover;
-    border-radius: 50% 50% 0 0;
+    border-radius: 50%;
     padding: 1rem 2rem;
     margin-top: 2rem;
 }
