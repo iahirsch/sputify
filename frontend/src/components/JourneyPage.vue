@@ -97,9 +97,11 @@ const currentTrack = ref({
 const playing = ref(false);
 let showPopup = handleShowPopup();
 
+const backendUrl = import.meta.env.BACKEND_URL;
+
 async function getAudioAnalysis(name, artist) {
   try {
-    const response = await fetch('https://spuetify.netlify.app/analyze', {
+    const response = await fetch(`${backendUrl}/analyze`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

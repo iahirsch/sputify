@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'https://spuetify.netlify.app'
+      '/api': 'http://localhost:3000'
     }
   },
   resolve: {

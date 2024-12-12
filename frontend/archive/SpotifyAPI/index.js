@@ -27,7 +27,7 @@ const codeChallenge = base64encode(hashed);
 
 async function authorize() {
     const clientId = "003e413536ef443289571ec1bd987207";
-    const redirectUri = 'https://spuetify.netlify.app/SpotifyAPI/callback.html';
+    const redirectUri = 'http://localhost:3000/SpotifyAPI/callback.html';
 
     const scope = 'streaming user-read-private user-read-email user-top-read user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
     const authUrl = new URL("https://accounts.spotify.com/authorize")
