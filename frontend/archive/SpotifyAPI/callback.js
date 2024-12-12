@@ -1,5 +1,3 @@
-import { updateBubbleParameters } from './bubble.js';
-
 const urlParams = new URLSearchParams(window.location.search);
 console.log(urlParams)
 let code = urlParams.get('code');
@@ -48,7 +46,7 @@ const getToken = async (code) => {
             client_id: clientId,
             grant_type: 'authorization_code',
             code,
-            redirect_uri: 'http://localhost:3000/SpotifyAPI/callback.html',
+            redirect_uri: `/SpotifyAPI/callback.html`,
             code_verifier: codeVerifier,
         }),
     }

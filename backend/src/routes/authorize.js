@@ -5,6 +5,7 @@ var crypto = require('crypto');
 require("dotenv").config();
 
 const clientId = process.env.SPOTIFY_CLIENT_ID;
+const backendUrl = process.env.BACKEND_URL;
 
 const generateRandomString = (length) => {
     return crypto
@@ -29,7 +30,7 @@ router.get('/', function (req, res) {
                 response_type: 'code',
                 client_id: clientId,
                 scope: scope,
-                redirect_uri: "http://localhost:3000/callback",
+                redirect_uri: `${backendUrl}/callback`,
                 state: state
             })
     })

@@ -4,10 +4,10 @@ var axios = require('axios');
 var querystring = require('querystring');
 require("dotenv").config();
 
-const port = process.env.PORT || 3000;
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8080/callback';
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
 
 router.get('/', async function (req, res) {
     console.log('callback from spotify...');
@@ -34,7 +34,7 @@ router.get('/', async function (req, res) {
             url: 'https://accounts.spotify.com/api/token',
             data: new URLSearchParams({
                 code: code,
-                redirect_uri: 'http://localhost:3000/callback',
+                redirect_uri: `${backendUrl}/callback`,
                 grant_type: 'authorization_code'
             }).toString(),
             headers: {
