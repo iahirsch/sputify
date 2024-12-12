@@ -20,7 +20,9 @@ tempo: The tempo of the song in beats per minute (BPM) as a number.
 energy: A value between 0 and 1 indicating the song's energy level.
 valence: A value between 0 and 1 representing the emotional positivity of the song.
 danceability: A value between 0 and 1 representing how suitable the song is for dancing.
-color: A color that represents the mood of the song in rgb(r, g, b) format. Consider title, artist and genre of the song to determine the color too. Avoid using the same color for different songs.
+segments: An array of objects that represents different segments of a song (defined by mood, tempo, refrain etc.), each containing the following keys:
+    color: A color that represents the mood of the segment in rgb(r, g, b) format. If you want, you can use the color palette from the album cover. or the song title.
+    requency: An array of frequency bins, each containing a value representing the amplitude or intensity of that frequency within the segment between 0 and 1.
 
 Make sure the values are correct and the data is complete. Ensure the JSON is formatted correctly and provide realistic sample values.`;
 

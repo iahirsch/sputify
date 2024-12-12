@@ -121,12 +121,12 @@ export default {
       const svg = d3.select(svgRef.value);
       const bubbleGroups = svg.selectAll('.bubble')
 
-      const color = getColor();
+      const colors = getColor();
 
-      bubbleConfigs[0].baseColor = color.replace(/[\d.]+\)$/g, '0.1)');
-      bubbleConfigs[1].baseColor = color.replace(/[\d.]+\)$/g, '0.3)');
-      bubbleConfigs[2].baseColor = color.replace(/[\d.]+\)$/g, '0.6)');
-      bubbleConfigs[3].baseColor = color.replace(/[\d.]+\)$/g, '0.8)');
+      bubbleConfigs[0].baseColor = colors.replace(/[\d.]+\)$/g, '0.15)');
+      bubbleConfigs[1].baseColor = colors.replace(/[\d.]+\)$/g, '0.3)');
+      bubbleConfigs[2].baseColor = colors.replace(/[\d.]+\)$/g, '0.7)');
+      bubbleConfigs[3].baseColor = colors.replace(/[\d.]+\)$/g, '0.9)');
 
 
       bubbleGroups.each(function (_, index) {
@@ -145,14 +145,29 @@ export default {
       if ((valence === 0 && energy === 0 && danceability === 0) || props.analysis.login) {
         return `rgba(100, 100, 100, 1)`; // Gray
       } else {
-        const red = Math.min(255, Math.floor(energy * 200) + Math.floor(danceability * 50)); // Higher energy and danceability boost red.
-        const green = Math.max(0, Math.floor((1 - danceability) * 255) + Math.floor((1 - energy) * 55) + Math.floor((1 - valence) * 55)); // Less danceability boosts green.
-        const blue = Math.min(255, Math.floor((1 - valence) * 300 * (1 - energy)) + Math.floor(danceability * 100)); // Danceability adds blue for pink tones.
+        // switch (index) {
+        //   case 1: {
+        //     const red = Math.min(255, Math.floor(energy * 200) + Math.floor(danceability * 50));
+        //     return `rgba(${red}, 255, 255, 1)`;
+        //   }
+        //   case 2: {
+        //     const green = Math.max(0, Math.floor((1 - danceability) * 255) + Math.floor((1 - energy) * 55) + Math.floor((1 - valence) * 55));
+        //     return `rgba(0, ${green}, 0, 1)`;
+        //   }
+        //   case 3: {
+        //     const blue = Math.min(255, Math.floor((1 - valence) * 300 * (1 - energy)) + Math.floor(danceability * 100));
+        //     return `rgba(255, 255, ${blue}, 1)`;
+        //   }
+        //   default: {
+        // const red = Math.min(255, Math.floor(energy * 200) + Math.floor(danceability * 50)); // Higher energy and danceability boost red.
+        // const green = Math.max(0, Math.floor((1 - danceability) * 255) + Math.floor((1 - energy) * 55) + Math.floor((1 - valence) * 55)); // Less danceability boosts green.
+        // const blue = Math.min(255, Math.floor((1 - valence) * 300 * (1 - energy)) + Math.floor(danceability * 100)); // Danceability adds blue for pink tones.
 
-        return `rgba(${red}, ${green}, ${blue}, 1)`;
+        // return `rgba(${red}, ${green}, ${blue}, 1)`;
+        // }
       }
-      /* const rgb = props.analysis.color.match(/\d+/g);
-      return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`; */
+      const rgb = props.analysis.segments[0].color.match(/\d+/g);
+      return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`;
     }
 
     function updateVisualizer() {
@@ -164,12 +179,12 @@ export default {
         .domain([0, d3.max(data.value, d => Math.abs(d.value))])
         .range([0, radius]);
 
-      svg.selectAll('.bubble').each(function (_, index) {
+      svg.selectAll('.bubble').each(function () {
         const bubbleGroup = d3.select(this);
         const lineGenerator = d3.lineRadial()
           .angle((d, i) => angleScale(i))
           .radius(d => radius + radiusScale(d.value))
-          .curve(d3.curveCardinalClosed);
+          .curve(d3.curveCardinal.tension(0.1));
 
         const pathData = lineGenerator(data.value);
 
