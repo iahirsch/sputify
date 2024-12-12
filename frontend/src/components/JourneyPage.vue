@@ -166,7 +166,7 @@ function handleShowPopup() {
 }
 
 function getBadges() {
-  const testYears = [
+  /* const testYears = [
     {
       title: '0000',
       recentTracks: [
@@ -292,7 +292,9 @@ function getBadges() {
         { name: 'Dubstep' }
       ]
     }
-  ];
+  ]; */
+
+  const testYears = [];
 
   //const years = testYears;
   const years = props.years;
@@ -431,7 +433,14 @@ function getBadges() {
     badges.push(newMe);
   }
 
-  console.log('Badges:', badges);
+  // No Badges?
+  if (badges.length === 0) {
+    badges.push({
+      icon: 'sentiment_dissatisfied',
+      title: 'No Badges?',
+      text: `You haven't earned any badges... Here's one anyway!`,
+    });
+  }
 
   return badges.slice(0, 5);
 }

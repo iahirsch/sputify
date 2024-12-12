@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import birdoSrc from '@/assets/image1.png';
+import birdoSrc from '@/assets/birdo.png';
 import fadeSrc from '@/assets/fade.png';
 import bgSrc from '@/assets/share_bg_1.png';
 import bg2Src from '@/assets/share_bg_2.png';
@@ -413,6 +413,15 @@ export default {
                 ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
                 this.drawTextWithHyphenation(ctx, badge.text, 50, 235 + index * 135, 450, 25, 3);
             });
+
+            if (this.badges.length === 1 && this.badges[0].title === "No Badges?") {
+                console.log("Drawing birdo image");
+                this.loadImage(
+                    birdoSrc,
+                    (img) => ctx.drawImage(img, 160, 490, 259.5, 369.5),
+                    () => console.error("Error loading birdo image.")
+                );
+            }
 
             this.drawFadeAndLogo(ctx);
         },
