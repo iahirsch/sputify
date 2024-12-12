@@ -42,6 +42,7 @@ export default {
                 energy: 0.6,
                 valence: 0.5,
                 tempo: 20,
+                color: 'rgb(100, 100, 100)',
                 login: true
             }
         };

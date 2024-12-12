@@ -2,6 +2,7 @@
     <div class="content">
         <h1 ref="title" class="title"><span class="name">{{ userName }}'s</span> Music Journey</h1>
         <span class="material-symbols-rounded arrow-icon">keyboard_double_arrow_down</span>
+        <span class="material-symbols-rounded arrow-icon" @click="scrollDown()">keyboard_double_arrow_down</span>
     </div>
 </template>
 
@@ -13,9 +14,16 @@ import { onMounted, ref } from 'vue';
 import gsap from 'gsap-trial';
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 
-gsap.registerPlugin(ScrollTrigger); // Only register ScrollTrigger (not ScrollSmoother)
+gsap.registerPlugin(ScrollTrigger);
 
 const title = ref(null);
+
+function scrollDown() {
+    window.scrollTo({
+        top: window.innerHeight - 100,
+        behavior: 'smooth'
+    });
+}
 
 onMounted(() => {
     gsap.fromTo(title.value, {
@@ -87,6 +95,7 @@ onMounted(() => {
     .title {
         font-size: 10vw !important;
     }
+
     .arrow-icon {
         font-size: 2.5rem;
     }

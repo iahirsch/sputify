@@ -52,7 +52,7 @@ h2 {
 }
 
 .material-symbols-rounded {
-  font-family: 'Material Symbols Rounded';
+  font-family: 'Material Symbols Rounded', sans-serif !important;
   font-size: 3rem;
   user-select: none;
 }
