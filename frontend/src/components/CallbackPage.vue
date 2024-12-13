@@ -1,6 +1,5 @@
 <template>
-    <JourneyPage v-if="accessToken && isReady" :player-ready="playerReady" :years="years" :userName="userName"
-        :userImg="userImg">
+    <JourneyPage v-if="accessToken && isReady" :player-ready="playerReady" :years="years" :userName="userName" :userImg="userImg">
     </JourneyPage>
     <LoadingPage v-else></LoadingPage>
 </template>
@@ -61,7 +60,7 @@ onMounted(async () => {
     localStorage.setItem('access_token', route.query.access_token);
 
     // if (!localStorage.getItem('tokenExpirationTime') || currentTime > localStorage.getItem('tokenExpirationTime')) {
-    //     let access_token_response = await fetch('https://spuetify.netlify.app/callback' + "?code=" + code + "&state=" + state,
+    //     let access_token_response = await fetch('https://astonishing-llama-76e306.netlify.app/callback' + "?code=" + code + "&state=" + state,
     //         { credentials: 'include' }
     //     )
     //     let access_token = await access_token_response.json()
@@ -141,7 +140,7 @@ onMounted(async () => {
             userName.value = response.display_name;
             if (response.images.length > 0) {
                 userImg.value = response.images[0].url;
-            } else {
+            }else{
                 userImg.value = "../assets/user.png";
             }
         } catch (error) {

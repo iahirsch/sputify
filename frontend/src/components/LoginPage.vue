@@ -49,7 +49,7 @@ export default {
     methods: {
         async fetchMessage() {
             try {
-                const response = await fetch('https://spuetify.netlify.app/');
+                const response = await fetch('https://astonishing-llama-76e306.netlify.app/');
                 const text = await response.text();
                 this.message = text;
             } catch (error) {
@@ -58,7 +58,7 @@ export default {
         },
         async authorize() {
             try {
-                const response = await fetch('https://spuetify.netlify.app/authorize', { credentials: 'include' });
+                const response = await fetch('https://astonishing-llama-76e306.netlify.app/authorize', { credentials: 'include' });
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);
