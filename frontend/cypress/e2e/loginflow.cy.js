@@ -1,24 +1,26 @@
-// describe('End-to-End Test for Spotify Login Flow', () => {
 
-//   const baseUrl = 'http://localhost:5173';
-//   const spotifyAuthToken = 'mocked-spotify-token';
+//Cypress cant redirect two times in a test so no redirect to journey page
 
-//   beforeEach(() => {
-//     cy.intercept('POST', 'https://accounts.spotify.com/api/token', {
-//       statusCode: 200,
-//       body: { access_token: spotifyAuthToken },
-//     }).as('mockSpotifyLogin');
-//   });
+describe('Spotify Login Flow Test', () => {
+  const baseUrl = 'http://localhost:5173'; 
 
-//   it('should visit the homepage, simulate login with Spotify, and navigate to the journey page', () => {
-//     cy.visit(baseUrl);
-//     cy.get('.button').should('be.visible').click();
-
-//     cy.wait('@mockSpotifyLogin').then((interception) => {
-//       console.log(interception);
-//     });
+  beforeEach(() => {
     
-//     cy.url().should('include', '/journey');
-//     cy.contains('Your Music Journey').should('be.visible');
-//   });
-// });
+    cy.visit(baseUrl);
+  });
+
+  it('should click the login button and log in to Spotify with credentials', () => {
+   
+    cy.get('.button').should('be.visible').click();
+    cy.origin('https://accounts.spotify.com', () => {
+
+      cy.get('#login-username', { timeout: 1000 }).type(Cypress.env('USERNAME'));
+      cy.get('#login-password', { timeout: 1000 }).type(Cypress.env('PASSWORD'));
+      
+      cy.get('#login-button').click();
+    });
+
+
+  });
+});
+
