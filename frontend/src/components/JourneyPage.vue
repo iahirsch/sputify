@@ -668,7 +668,7 @@ onMounted(() => {
   badges.value = getBadges();
 
   window.addEventListener('resize', () => {
-    if (focusView) {
+    if (focusView && window.innerWidth > 1000) {
       toggleFocusView();
     }
   });
