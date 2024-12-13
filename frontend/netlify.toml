@@ -1,9 +1,9 @@
 [build]
-  publish = "dist"
-  command = "npm run build"
+  publish = "frontend/dist"
+  command = "npm run build --prefix frontend"
 
 [functions]
-  directory = "netlify/functions"
+  directory = "frontend/netlify/functions"
 
 [[redirects]]
   from = "/*"
