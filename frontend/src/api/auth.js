@@ -6,7 +6,7 @@ export function logOut() {
     ) {
         localStorage.removeItem('showPopup');
         // Clear cookies on the server side
-        fetch('http://localhost:3000/logout', { credentials: 'include' })
+        fetch('https://spuetify.netlify.app/logout', { credentials: 'include' })
             .then(response => {
                 if (response.ok) {
                     const logoutUrl = 'https://accounts.spotify.com/en/logout';

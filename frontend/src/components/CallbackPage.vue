@@ -61,7 +61,7 @@ onMounted(async () => {
     localStorage.setItem('access_token', route.query.access_token);
 
     // if (!localStorage.getItem('tokenExpirationTime') || currentTime > localStorage.getItem('tokenExpirationTime')) {
-    //     let access_token_response = await fetch('http://localhost:3000/callback' + "?code=" + code + "&state=" + state,
+    //     let access_token_response = await fetch('https://spuetify.netlify.app/callback' + "?code=" + code + "&state=" + state,
     //         { credentials: 'include' }
     //     )
     //     let access_token = await access_token_response.json()
