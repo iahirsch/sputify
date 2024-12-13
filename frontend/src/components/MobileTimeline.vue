@@ -33,8 +33,20 @@ const toggleSidebar = () => {
         sidebarVisible.value = !sidebarVisible.value;
         if (sidebarVisible.value) {
             document.body.style.overflow = 'hidden';
+            document.getElementById('smooth-wrapper').style.pointerEvents = 'none';
+            setTimeout(() => {
+                document.addEventListener('touchstart', (event) => {
+                    const target = event.target;
+                    if (!target.closest('.mobile-timeline')) {
+                        toggleSidebar();
+                    }
+                }, { once: true });
+            }, 500);
         } else {
             document.body.style.overflow = 'auto';
+            setTimeout(() => {
+                document.getElementById('smooth-wrapper').style.pointerEvents = 'auto';
+            }, 500);
         }
     }
 };
@@ -60,7 +72,7 @@ const props = defineProps({
     userImg: {
         type: String,
         required: true,
-    },
+    }
 });
 
 const { years } = toRefs(props);
