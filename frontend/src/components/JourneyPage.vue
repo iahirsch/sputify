@@ -127,7 +127,7 @@ function toggleFocusView() {
       mobileTimeline.style.opacity = 0;
       focusPlayer.style.opacity = 1;
       focusviewButton.textContent = 'collapse_content';
-      focusviewButton.style.transform = 'translate(0, -1rem)';
+      focusviewButton.style.transform = 'translate(0, -0.9rem)';
       setTimeout(() => {
         focusView = true;
         document.addEventListener('touchstart', (event) => {
@@ -489,7 +489,7 @@ onMounted(async () => {
     scrollTrigger: {
       trigger: '.year-title',
       start: 'top 70%',
-      end: 'top 20%',
+      end: 'top 30%',
       scrub: true,
       markers: false,
     },
@@ -501,7 +501,7 @@ onMounted(async () => {
     scrollTrigger: {
       trigger: '.year-title',
       start: 'top 70%',
-      end: 'top 20%',
+      end: 'top 30%',
       scrub: true,
       markers: false,
     },
