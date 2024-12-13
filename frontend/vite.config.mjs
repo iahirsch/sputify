@@ -20,7 +20,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: 'index.html'
+      input: 'frontend/index.html'
     }
   }
 })
