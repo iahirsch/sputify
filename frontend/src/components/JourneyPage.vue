@@ -11,7 +11,7 @@
   </div>
   <span class="material-symbols-rounded focus-view menu-button" @click="toggleFocusView()">expand_content</span>
   <div class="focus-player">
-    <div class="song" @click="playTrack(currentTrack)">
+    <div v-if="currentTrack.id != ''" class="song" @click="playTrack(currentTrack)">
       <span class="material-symbols-rounded play-icon">
         {{ playing ? 'pause' : 'play_arrow' }}
       </span>
@@ -183,16 +183,18 @@ async function getAudioAnalysis(name, artist) {
 }
 
 async function playTrack(track) {
-  const deviceId = localStorage.getItem('device_id');
-  const isSameTrack = track.id === currentTrack.value.id;
+  if (track.id != '') {
+    const deviceId = localStorage.getItem('device_id');
+    const isSameTrack = track.id === currentTrack.value.id;
 
-  if (isSameTrack) {
-    playback(deviceId, null, props.playerReady, playing.value);
-    playing.value = !playing.value;
-  } else {
-    playback(deviceId, [track.uri], props.playerReady, false);
-    updateCurrentTrack(track);
-    playing.value = true;
+    if (isSameTrack) {
+      playback(deviceId, null, props.playerReady, playing.value);
+      playing.value = !playing.value;
+    } else {
+      playback(deviceId, [track.uri], props.playerReady, false);
+      updateCurrentTrack(track);
+      playing.value = true;
+    }
   }
 }
 
@@ -569,8 +571,8 @@ onMounted(async () => {
     opacity: 1,
     scrollTrigger: {
       trigger: '.year-title',
-      start: 'top 70%',
-      end: 'top 20%',
+      start: 'top 90%',
+      end: 'top 70%',
       scrub: true,
       markers: false,
     },
