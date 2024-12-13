@@ -4,7 +4,7 @@
     "gsap": "^3.12.5",
     "lenis": "^1.1.17",
     "vue": "^3.4.29",
-    "vue-router": "^4.4.5",
+    "vue-router": "^4.4.5"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
