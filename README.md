@@ -1,4 +1,4 @@
-# Spütify
+<img src="https://github.com/iahirsch/sputify/blob/main/frontend/src/assets/sp%C3%BCtify_logo.png" alt="spütify_logo" width="600"/>
 
 ## Kurzbeschrieb
 
