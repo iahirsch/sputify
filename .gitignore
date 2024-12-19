@@ -30,3 +30,4 @@ coverage
 backend/.env
 
 *.tsbuildinfo
+frontend/cypress.env.json
