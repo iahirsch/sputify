@@ -213,6 +213,10 @@ export default {
     onMounted(() => {
       nextTick(() => {
         createBubbles();
+        setTimeout(() => {
+          d3.select(svgRef.value).selectAll('.bubble').remove();
+          createBubbles();
+        }, 1000);
         window.addEventListener('resize', () => {
           d3.select(svgRef.value).selectAll('.bubble').remove();
           createBubbles();

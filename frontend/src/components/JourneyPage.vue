@@ -149,7 +149,7 @@ function toggleFocusView() {
       }
       document.documentElement.style.overflow = 'auto';
       smoothWrapper.style.opacity = 1;
-      mobileTimeline.style.opacity = 'unset';
+      mobileTimeline.style.opacity = 1;
       focusPlayer.style.opacity = 0;
       focusviewButton.textContent = 'expand_content';
       focusviewButton.style.transform = 'translate(0, 0)';
@@ -567,7 +567,10 @@ onMounted(async () => {
   });
 
   const focusviewButton = document.querySelector('span.focus-view.menu-button');
-  gsap.to(focusviewButton, {
+
+  const focusTimeline = gsap.timeline();
+
+  focusTimeline.to(focusviewButton, {
     opacity: 1,
     scrollTrigger: {
       trigger: '.year-title',
@@ -576,6 +579,19 @@ onMounted(async () => {
       scrub: true,
       markers: false,
     },
+    immediateRender: false
+  });
+
+  focusTimeline.to(focusviewButton, {
+    opacity: 0,
+    scrollTrigger: {
+      trigger: '.share',
+      start: 'top bottom',
+      end: 'top 70%',
+      scrub: true,
+      markers: false,
+    },
+    immediateRender: false
   });
 
   const logoutButton = document.querySelector('span.logout-mobile.menu-button');

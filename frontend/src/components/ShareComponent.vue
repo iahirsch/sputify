@@ -98,6 +98,7 @@ export default {
 
         loadImage(src, onSuccess, onError) {
             const img = new Image();
+            img.crossOrigin = "Anonymous";
             img.src = src;
             img.onload = () => onSuccess(img);
             img.onerror = onError;
@@ -195,7 +196,7 @@ export default {
         },
 
         drawMusicJourney(ctx) {
-            this.drawGradientText(ctx, `${this.userName}'s \nmusic journey`, 50, 80, 250, [
+            this.drawGradientText(ctx, `${this.userName}'s \nMusic Journey`, 50, 80, 250, [
                 [0, "#1DB954"],
                 [1, "#4DD4AC"]
             ], "36px FranieBlack, sans-serif");
@@ -252,7 +253,7 @@ export default {
         },
 
         drawCurrentFavorites(ctx) {
-            this.drawGradientText(ctx, `${this.userName}'s \ncurrent favorites`, 50, 80, ctx.canvas.width / 2, [
+            this.drawGradientText(ctx, `${this.userName}'s \nCurrent Favorites`, 50, 80, ctx.canvas.width / 2, [
                 [0, "#1DB954"],
                 [1, "#4DD4AC"]
             ], "36px FranieBlack, sans-serif");
@@ -300,7 +301,7 @@ export default {
         },
 
         drawTopArtists(ctx) {
-            this.drawGradientText(ctx, `${this.userName}'s \ntop artists\nover the years`, 50, 80, 250, [
+            this.drawGradientText(ctx, `${this.userName}'s \nTop Artists\nover the Years`, 50, 80, 250, [
                 [0, "#1DB954"],
                 [1, "#4DD4AC"]
             ], "bold 36px FranieBlack, sans-serif");
@@ -348,7 +349,7 @@ export default {
         },
 
         drawTopSongs(ctx) {
-            this.drawGradientText(ctx, `${this.userName}'s \ntop songs\nover the years`, 50, 80, 250, [
+            this.drawGradientText(ctx, `${this.userName}'s \nTop Songs\nover the Years`, 50, 80, 250, [
                 [0, "#1DB954"],
                 [1, "#4DD4AC"]
             ], "bold 36px FranieBlack, sans-serif");
@@ -396,7 +397,7 @@ export default {
         },
 
         drawBadges(ctx) {
-            this.drawGradientText(ctx, `${this.userName}'s \nbadges`, 50, 80, 250, [
+            this.drawGradientText(ctx, `${this.userName}'s \nBadges`, 50, 80, 250, [
                 [0, "#1DB954"],
                 [1, "#4DD4AC"]
             ], "36px FranieBlack, sans-serif");
@@ -621,6 +622,7 @@ canvas {
     border: none;
     cursor: pointer;
     z-index: 4;
+    outline: none;
 
     .material-symbols-rounded {
         font-size: 3rem !important;
