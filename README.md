@@ -1,4 +1,4 @@
-# Sputify
+# Spütify
 
 ## Kurzbeschrieb
 
