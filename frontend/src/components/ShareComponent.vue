@@ -466,7 +466,7 @@ export default {
             const canvas = this.$refs[`portraitCanvas${this.selectedCanvas + 1}`][0];
             const link = document.createElement("a");
             link.href = canvas.toDataURL("image/png");
-            link.download = `portrait-layout-${this.selectedCanvas + 1}.png`;
+            link.download = `music-journey-${this.selectedCanvas + 1}.png`;
             link.click();
         },
 
@@ -481,8 +481,8 @@ export default {
                 if (navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
-                        title: 'Check out this image!',
-                        text: `Here's the image I generated: Image ${this.selectedCanvas + 1}`,
+                        title: `${this.userName}'s Music Journey`,
+                        text: 'Check out my music journey from Spütify!',
                     });
                 } else {
                     alert("Sharing this file is not supported on your device.");
