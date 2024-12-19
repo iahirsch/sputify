@@ -19,8 +19,7 @@ export async function getUserInfo() {
             console.error('Error fetching user profile:', response.statusText);
             return null;
         }
-        const profile = await response.json();
-        return profile;
+        return await response.json();
     } catch (error) {
         console.error('Error fetching user profile:', error);
         return null;

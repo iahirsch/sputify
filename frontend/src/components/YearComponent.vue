@@ -10,10 +10,10 @@
                         <span class="material-symbols-rounded play-icon">
                             {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
                         </span>
-                        <img class="cover" :src="track.album.images[0].url" alt="album cover" />
+                        <img class="cover" :src="track.album.images[0]?.url" alt="album cover" />
                         <p class="song-name">
                             {{ track.name }}<br>
-                            <span class="song-artist">{{ track.artists[0].name }}</span>
+                            <span class="song-artist">{{ track.artists[0]?.name }}</span>
                         </p>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                                 class="material-symbols-rounded accordeon-icon"
                                 :class="{ 'rotate-icon': selectedArtist === artist }">chevron_right
                             </span>
-                            <img class="artistCover cover" :src="artist.images[0].url" alt="artist image" />
+                            <img class="artistCover cover" :src="artist.images[0]?.url" alt="artist image" />
                             <p class="artist-name">
                                 {{ artist.name }}<br>
                             </p>
@@ -44,7 +44,7 @@
                                 <span class="material-symbols-rounded play-icon">
                                     {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
                                 </span>
-                                <img class="cover" :src="track.album.images[0].url" alt="album cover" />
+                                <img class="cover" :src="track.album.images[0]?.url" alt="album cover" />
                                 <p class="song-name">
                                     {{ track.name }}<br />
                                 </p>
@@ -65,7 +65,7 @@
                         {{ genre.name }}
                         <div class="genre-artists">
                             <img v-for="(artist, index) in genre.artists" :key="index" class="genre-artist"
-                                :style="{ '--index': index }" :src="artist.images[0].url" :title="artist.name">
+                                :style="{ '--index': index }" :src="artist.images[0]?.url" :title="artist.name">
                         </div>
                     </div>
                 </div>
@@ -86,10 +86,10 @@
                         <span class="material-symbols-rounded play-icon">
                             {{ track.id === currentTrack.id && playing ? 'pause' : 'play_arrow' }}
                         </span>
-                        <img class="cover" :src="track.album.images[0].url" alt="album cover" />
+                        <img class="cover" :src="track.album.images[0]?.url" alt="album cover" />
                         <p class="song-name">
                             {{ track.name }}<br>
-                            <span class="song-artist">{{ track.artists[0].name }}</span>
+                            <span class="song-artist">{{ track.artists[0]?.name }}</span>
                         </p>
                     </div>
                 </div>
@@ -138,7 +138,7 @@ onMounted(async () => {
             scrollTriggerInstance = ScrollTrigger.create({
                 trigger: yearRef.value,
                 pin: genreRef.value,
-                start: "top 30%",
+                start: "center 97%",
                 end: 'bottom 80%',
                 markers: false
             });
@@ -166,8 +166,6 @@ onMounted(async () => {
 });
 
 </script>
-
-
 
 <style scoped>
 .year {

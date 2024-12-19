@@ -30,46 +30,6 @@ app.use('/logout', logoutRouter);
 
 const port = process.env.PORT || 3000;
 
-/*
-app.get('/api/spotify/callback', async function (req, res) {
-    console.log('callback from spotify...');
-
-    var code = req.query.code || null;
-    var state = req.query.state || null;
-    var storedState = req.cookies ? req.cookies['spotify_auth_state'] : null;
-
-    if (state === null || state !== storedState) {
-        console.log('state mismatch');
-        console.log('state: ' + state);
-        console.log('storedState: ' + storedState);
-        res.status(400).json({ error: 'state_mismatch' });
-    } else {
-        console.log('state match');
-        //res.clearCookie(stateKey);
-
-        const payload = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Authorization: 'Basic ' + (new Buffer.from(clientId + ':' + clientSecret).toString('base64'))
-            },
-            body: new URLSearchParams({
-                grant_type: 'authorization_code',
-                code,
-                redirect_uri: redirectUri,
-            }),
-        }
-
-        let access_token_response = await fetch('https://accounts.spotify.com/api/token', payload);
-        let data = await access_token_response.json();
-
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(data));
-
-    }
-});
-*/
-
 // Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

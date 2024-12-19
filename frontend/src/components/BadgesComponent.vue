@@ -57,7 +57,6 @@ onMounted(() => {
                     showBadge.value[index] = true;
                     const audio = new Audio(sound);
                     audio.play().catch(() => {
-                        console.log("Sound could not be played");
                     });
                 }, index * 1000 + 1000);
             });
@@ -94,7 +93,6 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
     padding: 0.6rem;
     color: white;
     font-size: 2.5rem;
