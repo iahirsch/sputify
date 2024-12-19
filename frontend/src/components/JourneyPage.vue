@@ -881,10 +881,6 @@ p {
   font-size: 2.5rem !important;
 }
 
-.pin-spacer {
-  pointer-events: none;
-}
-
 .logoJourney {
   height: 3rem;
   margin: 1rem;
