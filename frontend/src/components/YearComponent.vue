@@ -138,9 +138,9 @@ onMounted(async () => {
             scrollTriggerInstance = ScrollTrigger.create({
                 trigger: yearRef.value,
                 pin: genreRef.value,
-                start: "center bottom",
-                end: 'bottom 80%',
-                markers: true
+                start: "center 97%",
+                end: 'bottom 95%',
+                markers: false
             });
         }
     };
