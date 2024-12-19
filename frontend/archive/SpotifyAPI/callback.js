@@ -1,7 +1,4 @@
-import { updateBubbleParameters } from './bubble.js';
-
 const urlParams = new URLSearchParams(window.location.search);
-console.log(urlParams)
 let code = urlParams.get('code');
 const clientId = "003e413536ef443289571ec1bd987207";
 
@@ -25,7 +22,7 @@ const handleAuthorization = async () => {
         // Clear the authorization code from the URL after exchanging it
         window.history.replaceState({}, document.title, "/SpotifyAPI/callback.html");
     } else if (!accessToken && refreshToken) {
-        // If no access token but we have a refresh token, get a new access token
+        // If no access token, but we have a refresh token, get a new access token
         await getRefreshToken();
     } else if (accessToken) {
         // If tokens are already available, proceed with your app's logic
@@ -62,8 +59,6 @@ const getToken = async (code) => {
         if (response.ok) {
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('refresh_token', data.refresh_token);
-            console.log("Access Token:", data.access_token);
-            console.log("Refresh Token:", data.refresh_token);
         } else {
             console.error("(getToken) Error fetching tokens:", data);
         }
@@ -96,7 +91,6 @@ const getRefreshToken = async () => {
 
         if (response.ok) {
             localStorage.setItem('access_token', data.access_token);
-            //console.log("New Access Token:", data.access_token);
 
             if (data.refresh_token) {
                 localStorage.setItem('refresh_token', data.refresh_token);
@@ -117,7 +111,6 @@ const checkAndRefreshToken = async () => {
         await getRefreshToken();
     }
 };
-
 
 const getUserInfo = async () => {
     checkAndRefreshToken();
@@ -141,7 +134,6 @@ const getUserInfo = async () => {
     }
     const body = await fetch(url, payload);
     response = await body.json();
-    console.log(response);
 
     const userInfoContainer = document.getElementById('userInfoContainer');
 
@@ -174,14 +166,14 @@ const getWrappedPlaylists = async () => {
     const token = localStorage.getItem('access_token');
 
     let wrappedPlaylists = [
-        { id: '37i9dQZF1Fa1IIVtEpGUcU', year: 2023 },
-        { id: '37i9dQZF1F0sijgNaJdgit', year: 2022 },
-        { id: '37i9dQZF1EUMDoJuT8yJsl', year: 2021 },
-        { id: await searchPlaylist(2020), year: 2020 },
-        { id: await searchPlaylist(2019), year: 2019 },
-        { id: await searchPlaylist(2018), year: 2018 },
-        { id: await searchPlaylist(2017), year: 2017 },
-        { id: await searchPlaylist(2016), year: 2016 }
+        {id: '37i9dQZF1Fa1IIVtEpGUcU', year: 2023},
+        {id: '37i9dQZF1F0sijgNaJdgit', year: 2022},
+        {id: '37i9dQZF1EUMDoJuT8yJsl', year: 2021},
+        {id: await searchPlaylist(2020), year: 2020},
+        {id: await searchPlaylist(2019), year: 2019},
+        {id: await searchPlaylist(2018), year: 2018},
+        {id: await searchPlaylist(2017), year: 2017},
+        {id: await searchPlaylist(2016), year: 2016}
     ];
 
     const getPlaylist = async (id) => {
@@ -201,14 +193,13 @@ const getWrappedPlaylists = async () => {
         }
     };
 
-    wrappedPlaylists = await Promise.all(wrappedPlaylists.map(async ({ id, year }) => {
+    wrappedPlaylists = await Promise.all(wrappedPlaylists.map(async ({id, year}) => {
         const playlist = await getPlaylist(id);
         if (playlist) {
             id = playlist.id;
         }
-        return { id, year, playlist };
+        return {id, year, playlist};
     }));
-    console.log(wrappedPlaylists);
 
     makePlaylistButtons(wrappedPlaylists);
 };
@@ -232,7 +223,6 @@ const searchPlaylist = async (year) => {
         const isSpotifyOwned = playlist.owner.id === 'spotify';
 
         if (isWrapped && isSpotifyOwned) {
-            console.log(`Wrapped playlist ID for ${year}: ${playlist.id}`);
             return playlist.id;
         } else {
             console.warn(`Not the Wrapped ${year} playlist: ${playlist.name}`);
@@ -278,114 +268,6 @@ const getTopTracks = async (timeRange) => {
     playInBrowser(device_id, songUris);
 };
 
-/* not needed
-const getTopArtists = async () => {
-    const token = localStorage.getItem('access_token');
-    const url = "https://api.spotify.com/v1/me/top/artists";
-    const payload = {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    }
-    const body = await fetch(url, payload);
-    const response = await body.json();
-    console.log(response);
-}
-*/
-/* not needed
-const getCurrentlyPlaying = async () => {
-    const token = localStorage.getItem('access_token');
-    const url = "https://api.spotify.com/v1/me/player/currently-playing";
-    const payload = {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    }
-    const body = await fetch(url, payload);
-    const response = await body.json();
-    console.log(response);
-}
-*/
-/* not needed
-const playPauseMusic = async () => {
-    const token = localStorage.getItem('access_token');
-    const url = "https://api.spotify.com/v1/me/player";
-
-    try {
-        // Get current playback state
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error fetching playback state: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const isPlaying = data.is_playing;
-
-        // Determine the action based on playback state
-        const action = isPlaying ? 'pause' : 'play';
-
-        // Make the request to play or pause
-        const actionResponse = await fetch(`${url}/${action}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!actionResponse.ok) {
-            throw new Error(`Error trying to ${action} playback: ${actionResponse.statusText}`);
-        }
-
-        console.log(`Playback ${action}ed successfully.`);
-        console.warn('Note: This will only work with Spotify premium users.');
-    } catch (error) {
-        console.error('Error in playPauseMusic:', error);
-    }
-};
-*/
-/* not needed
-const addSongToQueueAndSkip = async () => {
-    const token = localStorage.getItem('access_token');
-    const songUri = "spotify:track:351KkakA2YtGEXqSEIIasy";
-
-    try {
-        // Add song to queue
-        let response = await fetch(`https://api.spotify.com/v1/me/player/queue?uri=${songUri}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error adding song to queue: ${response.statusText}`);
-        }
-
-        // Skip to next song
-        response = await fetch("https://api.spotify.com/v1/me/player/next", {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error skipping to next song: ${response.statusText}`);
-        }
-
-        console.log('Song added to queue and skipped to next.');
-        console.warn('Note: This will only work with Spotify premium users.');
-    } catch (error) {
-        console.error('Error in addSongToQueueAndSkip:', error);
-    }
-};
-*/
-
 handleAuthorization();
 
 document.querySelector('#topTracksShortTerm').addEventListener('click', () => getTopTracks('short_term'));
@@ -404,34 +286,33 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     const token = localStorage.getItem('access_token');
     const player = new Spotify.Player({
         name: 'Spütify',
-        getOAuthToken: cb => { cb(token); },
+        getOAuthToken: cb => {
+            cb(token);
+        },
         volume: 0.5
     });
 
     // Ready
-    player.addListener('ready', ({ device_id }) => {
+    player.addListener('ready', ({device_id}) => {
         playerReady = true;
         localStorage.setItem('device_id', device_id);
-        console.log('Ready with Device ID', device_id);
-        //playInBrowser(device_id, [songUri]);
-        //transferPlayback(device_id);
     });
 
     // Not Ready
-    player.addListener('not_ready', ({ device_id }) => {
+    player.addListener('not_ready', ({device_id}) => {
         playerReady = false;
         console.log('Device ID has gone offline', device_id);
     });
 
-    player.addListener('initialization_error', ({ message }) => {
+    player.addListener('initialization_error', ({message}) => {
         console.error(message);
     });
 
-    player.addListener('authentication_error', ({ message }) => {
+    player.addListener('authentication_error', ({message}) => {
         console.error(message);
     });
 
-    player.addListener('account_error', ({ message }) => {
+    player.addListener('account_error', ({message}) => {
         console.error(message);
     });
 
@@ -478,7 +359,6 @@ function playInBrowser(device_id, songUris) {
         isVisualizing = false;
         currentBeatIndex = 0;
         currentSectionIndex = 0;
-        console.log(isVisualizing);
         updateVisualizer(songUris[0].split(':')[2]);
     } else {
         console.warn('Player not ready. Cannot play music.');
@@ -486,8 +366,6 @@ function playInBrowser(device_id, songUris) {
 }
 
 function updateVisualizer(songUri) {
-    console.log("reset", currentBeatIndex, currentSectionIndex);
-    //console.log('Updating visualizer for song:', songUri);
     const token = localStorage.getItem('access_token');
     const url = `https://api.spotify.com/v1/audio-features/${songUri}`;
     const payload = {
@@ -497,9 +375,7 @@ function updateVisualizer(songUri) {
     };
     fetch(url, payload)
         .then(response => response.json())
-        .then(data => {
-            console.log('Audio Features:', data);
-            //updateBubbleParameters(data.energy, data.valence, data.tempo);
+        .then(() => {
             fetchAudioAnalysis(songUri);
         })
         .catch(error => {
@@ -518,11 +394,9 @@ function fetchAudioAnalysis(songUri) {
     fetch(url, payload)
         .then(response => response.json())
         .then(data => {
-            console.log('Audio Analysis:', data);
             beats = data.beats;
             sections = data.sections;
             valence = data.track.valence;
-            console.log(beats, sections, valence);
             startVisualizer();
         })
         .catch(error => {
@@ -552,13 +426,11 @@ function updateVisualization(timestamp) {
     const currentTime = timestamp / 1000;
 
     if (currentBeatIndex < beats.length && currentTime >= beats[currentBeatIndex].start) {
-        console.log(currentBeatIndex, beats.length, "current Time:", currentTime);
-        const { duration, confidence } = beats[currentBeatIndex];
+        const {duration, confidence} = beats[currentBeatIndex];
         pulseCircle(duration, confidence);
         currentBeatIndex++;
     }
     if (currentSectionIndex < sections.length && currentTime >= sections[currentSectionIndex].start) {
-        console.log("section");
         const sectionMood = sections[currentSectionIndex].valence || valence;
         updateBackgroundColor(sectionMood);
         currentSectionIndex++;

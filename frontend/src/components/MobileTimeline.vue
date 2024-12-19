@@ -57,7 +57,7 @@ export { toggleSidebar };
 import { ref, toRefs, onMounted, onUnmounted } from 'vue';
 import MobileDatapoint from './MobileDatapoint.vue';
 
-import { logOut } from '../api/auth.js';
+import { logOut } from '@/api/auth';
 
 const props = defineProps({
     years: {
@@ -198,10 +198,9 @@ h2 {
 }
 
 .user-name {
-    margin: 0;
-    padding-left: 2rem;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 2rem rgba(0, 0, 0, 0.5);
+  padding-left: 2rem;
+  margin: 0 0 1rem;
+  text-shadow: 0 0 2rem rgba(0, 0, 0, 0.5);
     max-width: calc(80vw - 4rem);
     text-wrap: wrap;
 }

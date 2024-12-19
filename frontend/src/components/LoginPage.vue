@@ -1,5 +1,4 @@
 <template>
-
     <head>
         <title>Spütify Login</title>
         <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
@@ -51,8 +50,7 @@ export default {
         async fetchMessage() {
             try {
                 const response = await fetch('http://localhost:3000/');
-                const text = await response.text();
-                this.message = text;
+              this.message = await response.text();
             } catch (error) {
                 this.message = 'Error fetching message from server';
             }
@@ -62,8 +60,6 @@ export default {
                 const response = await fetch('http://localhost:3000/authorize', { credentials: 'include' });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data);
-                    console.log(response);
                     window.location.href = data.url;
                 } else {
                     console.error('Error authorizing with Spotify:', response.statusText);

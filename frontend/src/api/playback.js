@@ -22,7 +22,6 @@ export async function playback(device_id, songUris, playerReady, pause) {
                 })
             });
         }
-
     } else {
         console.warn('Player not ready. Cannot play music.');
     }

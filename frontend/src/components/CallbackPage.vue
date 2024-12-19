@@ -11,12 +11,12 @@ import {ref, onMounted} from 'vue';
 import {useRoute} from 'vue-router';
 import LoadingPage from './LoadingPage.vue';
 
-import {getUserInfo} from '../api/user.js';
-import {getWrappedPlaylists} from '../api/getWrappedPlaylists.js';
+import {getUserInfo} from '@/api/user';
+import {getWrappedPlaylists} from '@/api/getWrappedPlaylists';
 import {getRecentlyPlayed} from '@/api/getRecentlyPlayed.js';
-import {getTopTracks} from '../api/getTopTracks.js';
-import {getTopArtists} from '../api/getTopArtists.js';
-import {getArtist} from '../api/getArtist.js';
+import {getTopTracks} from '@/api/getTopTracks';
+import {getTopArtists} from '@/api/getTopArtists';
+import {getArtist} from '@/api/getArtist';
 import Lenis from "lenis";
 import {ScrollTrigger} from "gsap-trial/ScrollTrigger";
 import gsap from "gsap-trial";
@@ -72,30 +72,8 @@ gsap.ticker.add((time) => {
 
 
 onMounted(async () => {
-  // const state = route.query.state;
-  // const code = route.query.code;
-  //let currentTime = Math.floor(new Date().getTime() / 1000);
-  //console.log(isNaN(localStorage.getItem('tokenExpirationTime')), currentTime, localStorage.getItem('tokenExpirationTime'));
-
   accessToken.value = route.query.access_token;
   localStorage.setItem('access_token', route.query.access_token);
-
-  // if (!localStorage.getItem('tokenExpirationTime') || currentTime > localStorage.getItem('tokenExpirationTime')) {
-  //     let access_token_response = await fetch('http://localhost:3000/callback' + "?code=" + code + "&state=" + state,
-  //         { credentials: 'include' }
-  //     )
-  //     let access_token = await access_token_response.json()
-  //     console.log(access_token)
-  //     localStorage.setItem('tokenExpirationTime', currentTime + access_token.expires_in);
-  //     localStorage.setItem('access_token', access_token.access_token);
-  //     localStorage.setItem('refresh_token', access_token.refresh_token);
-  //     accessToken.value = access_token.access_token;
-  //     console.log(accessToken.value);
-  // }
-  // else {
-  //     accessToken.value = localStorage.getItem('access_token');
-  //     console.log("Token still valid: Access Token: ", localStorage.getItem('access_token'), "\n Refresh Token: ", localStorage.getItem('refresh_token'));
-  // }
 
   const script = document.createElement('script');
   script.src = "https://sdk.scdn.co/spotify-player.js";

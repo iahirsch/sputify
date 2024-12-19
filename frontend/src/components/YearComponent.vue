@@ -139,7 +139,7 @@ onMounted(async () => {
                 trigger: yearRef.value,
                 pin: genreRef.value,
                 start: "center 97%",
-                end: 'bottom 95%',
+                end: 'bottom 80%',
                 markers: false
             });
         }
@@ -166,8 +166,6 @@ onMounted(async () => {
 });
 
 </script>
-
-
 
 <style scoped>
 .year {

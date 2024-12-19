@@ -57,9 +57,9 @@ import {onMounted, onBeforeUnmount, onUnmounted, ref, nextTick} from 'vue';
 import gsap from 'gsap-trial';
 import {ScrollTrigger} from 'gsap-trial/ScrollTrigger';
 import Lenis from 'lenis';
-import {playback} from '../api/playback.js';
-import {getArtist} from '../api/getArtist.js';
-import {logOut} from '../api/auth.js';
+import {playback} from '@/api/playback';
+import {getArtist} from '@/api/getArtist';
+import {logOut} from '@/api/auth';
 
 import BubbleComponent from './BubbleComponent.vue';
 import StickyTimeline from './StickyTimeline.vue';
@@ -230,135 +230,6 @@ function handleShowPopup() {
 }
 
 function getBadges() {
-  /* const testYears = [
-    {
-      title: '0000',
-      recentTracks: [
-        { name: 'Song 0', artists: ['Artist A'] },
-        { name: 'Song 2', artists: ['Artist A'] },
-        { name: 'Song 3', artists: ['Artist A'] },
-        { name: 'Song 4', artists: ['Artist B'] },
-        { name: 'Song 5', artists: ['Artist C'] },
-      ],
-    },
-    {
-      title: '2023',
-      topArtists: [
-        {
-          name: 'Unpopular Artist',
-          popularity: 30,
-        }
-      ],
-      topTracks: [
-        { name: 'Song 0', artists: ['Artist A'] },
-        { name: 'Song 2', artists: ['Artist A'] },
-        { name: 'Song 3', artists: ['Artist B'] },
-        { name: 'Song 4', artists: ['Artist B'] },
-        { name: 'Song 5', artists: ['Artist C'] },
-      ],
-      topGenres: [
-        { name: 'Pop' },
-        { name: 'Rock' },
-        { name: 'Hip-Hop' },
-        { name: 'Jazz' },
-        { name: 'Classical' }
-      ]
-    },
-    {
-      title: '2022',
-      topArtists: [
-        {
-          name: 'Consistent Artist',
-          popularity: 100,
-        },
-      ],
-      topTracks: [
-        { name: 'Song 1', artists: ['Artist A'] },
-        { name: 'Song 2', artists: ['Artist A'] },
-        { name: 'Song 3', artists: ['Artist A'] },
-        { name: 'Song 4', artists: ['Artist B'] },
-        { name: 'Song 5', artists: ['Artist C'] },
-      ],
-      topGenres: [
-        { name: 'Electronic' },
-        { name: 'Reggae' },
-        { name: 'Blues' },
-        { name: 'Country' },
-        { name: 'Soul' }
-      ]
-    },
-    {
-      title: '2021',
-      topArtists: [
-        {
-          name: 'Consistent Artist',
-          popularity: 100,
-        },
-      ],
-      topTracks: [
-        { name: 'Song 1', artists: ['Artist A'] },
-        { name: 'Song 2', artists: ['Artist B'] },
-        { name: 'Song 3', artists: ['Artist B'] },
-        { name: 'Song 4', artists: ['Artist B'] },
-        { name: 'Song 5', artists: ['Artist B'] },
-      ],
-      topGenres: [
-        { name: 'R&B' },
-        { name: 'Latin' },
-        { name: 'Punk' },
-        { name: 'Grunge' },
-        { name: 'Ska' }
-      ]
-    },
-    {
-      title: '2020',
-      topArtists: [
-        {
-          name: 'Consistent Artist',
-          popularity: 100,
-        },
-      ],
-      topTracks: [
-        { name: 'Song 1', artists: ['Artist A'] },
-        { name: 'Song 2', artists: ['Artist B'] },
-        { name: 'Song 3', artists: ['Artist B'] },
-        { name: 'Song 4', artists: ['Artist B'] },
-        { name: 'Song 5', artists: ['Artist B'] },
-      ],
-      topGenres: [
-        { name: 'Metal' },
-        { name: 'Folk' },
-        { name: 'Indie' },
-        { name: 'Reggaeton' },
-        { name: 'Funk' }
-      ]
-    },
-    {
-      title: '2019',
-      topArtists: [
-        {
-          name: 'Consistent Artist',
-          popularity: 100,
-        },
-      ],
-      topTracks: [
-        { name: 'Song 1', artists: ['Artist A'] },
-        { name: 'Song 2', artists: ['Artist B'] },
-        { name: 'Song 3', artists: ['Artist B'] },
-        { name: 'Song 4', artists: ['Artist B'] },
-        { name: 'Song 5', artists: ['Artist B'] },
-      ],
-      topGenres: [
-        { name: 'Disco' },
-        { name: 'Techno' },
-        { name: 'House' },
-        { name: 'Trance' },
-        { name: 'Dubstep' }
-      ]
-    }
-  ]; */
-
-  const testYears = [];
 
   //const years = testYears;
   const years = props.years;
@@ -777,7 +648,6 @@ h2 {
 
 .menu-button {
   color: rgba(255, 255, 255, 0.6);
-  margin-top: 2vh;
   margin: 1rem;
   font-size: 2rem;
   z-index: 10;
@@ -991,11 +861,6 @@ p {
     color: rgba(255, 255, 255, 0.5);
   }
 
-  /* .full-screen::after {
-    content: "Focus View";
-    top: -30%;
-    left: -400%;
-  } */
   #smooth-wrapper {
     opacity: 1;
     transition: opacity 0.5s;

@@ -25,12 +25,5 @@ export function logOut() {
                 }
             })
             .catch(error => console.error('Error logging out:', error));
-
-        // Clear cookies
-        // document.cookie.split(";").forEach((c) => {
-        //     document.cookie = c
-        //         .replace(/^ +/, "")
-        //         .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-        // });
     }
 }

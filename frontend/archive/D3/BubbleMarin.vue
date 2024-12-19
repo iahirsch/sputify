@@ -175,9 +175,6 @@ export default {
 </script>
 
 <style scoped>
-.bubble-container {
-    /* Styles for the Bubble component */
-}
 
 .rotating-svg {
     animation: rotate 40s linear infinite;

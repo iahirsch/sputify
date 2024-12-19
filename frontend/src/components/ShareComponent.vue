@@ -416,7 +416,6 @@ export default {
             });
 
             if (this.badges.length === 1 && this.badges[0].title === "No Badges?") {
-                console.log("Drawing birdo image");
                 this.loadImage(
                     birdoSrc,
                     (img) => ctx.drawImage(img, 160, 490, 259.5, 369.5),

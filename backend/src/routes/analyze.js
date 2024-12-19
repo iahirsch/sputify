@@ -24,8 +24,6 @@ color: A color that represents the mood of the song in rgb(r, g, b) format. If y
 
 Make sure the values are correct and the data is complete. Ensure the JSON is formatted correctly and provide realistic sample values.`;
 
-        console.log(prompt);
-
         result = await model.generateContent({
             contents: [{ role: "user", parts: [{ text: prompt }] }],
             generationConfig: {
@@ -35,7 +33,6 @@ Make sure the values are correct and the data is complete. Ensure the JSON is fo
             },
         });
         analysisResults = JSON.parse(result.response.text());
-        console.log(analysisResults);
         res.json({ analysisResults });
     } catch (error) {
         res.status(500).json({ error: error.message });
