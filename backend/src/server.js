@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const corsOptions = {
-    origin: 'https://sputify-backend.onrender.com',
+    origin: 'https://spuetify.netlify.app/',
     credentials: true,
 };
 
