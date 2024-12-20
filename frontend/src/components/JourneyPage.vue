@@ -1,13 +1,13 @@
 <template>
-  <PopupComponent v-if="showPopup"/>
+  <PopupComponent v-if="showPopup" />
   <div class="bubble" data-speed="0.5">
-    <BubbleComponent :analysis="currentTrack.analysis" :playing="playing"/>
+    <BubbleComponent :analysis="currentTrack.analysis" :playing="playing" />
   </div>
   <div class="timeline">
-    <StickyTimeline :years="years" :active="false"/>
+    <StickyTimeline :years="years" :active="false" />
   </div>
   <div class="mobile-timeline">
-    <MobileTimeline :years="years" :user-name="userName" :user-img="userImg"/>
+    <MobileTimeline :years="years" :user-name="userName" :user-img="userImg" />
   </div>
   <span class="material-symbols-rounded focus-view menu-button" @click="toggleFocusView()">expand_content</span>
   <div class="focus-player">
@@ -15,7 +15,7 @@
       <span class="material-symbols-rounded play-icon">
         {{ playing ? 'pause' : 'play_arrow' }}
       </span>
-      <img class="cover" :src="currentTrack.image" alt="album cover"/>
+      <img class="cover" :src="currentTrack.image" alt="album cover" />
       <p class="song-name">
         {{ currentTrack.name }}<br>
         <span class="song-artist">{{ currentTrack.artist }}</span>
@@ -27,20 +27,20 @@
     <span class="material-symbols-rounded logout-mobile menu-button" @click="logOut()">logout</span>
     <div id="smooth-content">
       <div>
-        <img class="logoJourney" src="../assets/spütify_logo.png" @click="scrollTo"/>
+        <img class="logoJourney" src="../assets/spütify_logo.png" @click="scrollTo" />
       </div>
       <div class="box box-a gradient-black" data-speed="0.5">
-        <WelcomeComponent :user-name="userName"/>
+        <WelcomeComponent :user-name="userName" />
       </div>
       <div class="box box-b gradient-black">
         <YearComponent v-for="(year, index) in years" :key="index" :yearIndex="index" :year="year"
-                       :currentTrack="currentTrack" :playing="playing" :playTrack="playTrack"/>
+          :currentTrack="currentTrack" :playing="playing" :playTrack="playTrack" />
       </div>
       <div class="badge-page">
-        <BadgesComponent :badges="badges" :badgeIndex="years.length"/>
+        <BadgesComponent :badges="badges" :badgeIndex="years.length" />
       </div>
       <div class="share">
-        <ShareComponent :user-name="userName" :years="years" :badges="badges" :shareIndex="years.length + 1"/>
+        <ShareComponent :user-name="userName" :years="years" :badges="badges" :shareIndex="years.length + 1" />
       </div>
       <footer class="footergradient-black">
         <button @click="scrollTo" class="totop">
@@ -53,13 +53,13 @@
 </template>
 
 <script setup>
-import {onMounted, onBeforeUnmount, onUnmounted, ref, nextTick} from 'vue';
+import { onMounted, onBeforeUnmount, onUnmounted, ref, nextTick } from 'vue';
 import gsap from 'gsap-trial';
-import {ScrollTrigger} from 'gsap-trial/ScrollTrigger';
+import { ScrollTrigger } from 'gsap-trial/ScrollTrigger';
 import Lenis from 'lenis';
-import {playback} from '@/api/playback';
-import {getArtist} from '@/api/getArtist';
-import {logOut} from '@/api/auth';
+import { playback } from '@/api/playback';
+import { getArtist } from '@/api/getArtist';
+import { logOut } from '@/api/auth';
 
 import BubbleComponent from './BubbleComponent.vue';
 import StickyTimeline from './StickyTimeline.vue';
@@ -136,7 +136,7 @@ function toggleFocusView() {
           if (!target.closest('.focus-player') && !target.closest('.focus-view')) {
             toggleFocusView();
           }
-        }, {once: true});
+        }, { once: true });
       }, 500);
     } else {
       if (document.exitFullscreen) {
@@ -164,7 +164,7 @@ function toggleFocusView() {
 
 async function getAudioAnalysis(name, artist) {
   try {
-    const response = await fetch('http://localhost:3000/analyze', {
+    const response = await fetch('https://sputify-backend.onrender.com/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -490,7 +490,7 @@ onUnmounted(() => {
 });
 
 function scrollTo() {
-  window.scrollTo({top: 0, behavior: 'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 gsap.ticker.lagSmoothing(0);
@@ -508,8 +508,8 @@ window.onload = function () {
         toggleActions: "resume pause reverse pause"
       }
     });
-    panel_tl.from(panel, {opacity: 0, duration: 0.5});
-    panel_tl.to(panel, {opacity: 0, duration: 0.5});
+    panel_tl.from(panel, { opacity: 0, duration: 0.5 });
+    panel_tl.to(panel, { opacity: 0, duration: 0.5 });
   });
 
 };

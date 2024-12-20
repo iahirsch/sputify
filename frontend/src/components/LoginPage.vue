@@ -1,4 +1,5 @@
 <template>
+
     <head>
         <title>Spütify Login</title>
         <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
@@ -49,15 +50,15 @@ export default {
     methods: {
         async fetchMessage() {
             try {
-                const response = await fetch('http://localhost:3000/');
-              this.message = await response.text();
+                const response = await fetch('https://sputify-backend.onrender.com/');
+                this.message = await response.text();
             } catch (error) {
                 this.message = 'Error fetching message from server';
             }
         },
         async authorize() {
             try {
-                const response = await fetch('http://localhost:3000/authorize', { credentials: 'include' });
+                const response = await fetch('https://sputify-backend.onrender.com/authorize', { credentials: 'include' });
                 if (response.ok) {
                     const data = await response.json();
                     window.location.href = data.url;

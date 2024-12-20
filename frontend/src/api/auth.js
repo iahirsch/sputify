@@ -6,7 +6,7 @@ export function logOut() {
     ) {
         localStorage.removeItem('showPopup');
         // Clear cookies on the server side
-        fetch('http://localhost:3000/logout', { credentials: 'include' })
+        fetch('https://sputify-backend.onrender.com/logout', { credentials: 'include' })
             .then(response => {
                 if (response.ok) {
                     const logoutUrl = 'https://accounts.spotify.com/en/logout';
@@ -20,7 +20,7 @@ export function logOut() {
                     const spotifyLogoutWindow = window.open(logoutUrl, 'Spotify Logout', 'width=1,height=1');
                     setTimeout(() => {
                         spotifyLogoutWindow.close();
-                        window.location.href = 'http://localhost:5173';
+                        window.location.href = 'http://https://sputify-backend.onrender.com';
                     }, 500);
                 }
             })
