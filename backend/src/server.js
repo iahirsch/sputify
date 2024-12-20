@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const corsOptions = {
-    origin: 'http://https://sputify-backend.onrender.com',
+    origin: 'https://sputify-backend.onrender.com',
     credentials: true,
 };
 

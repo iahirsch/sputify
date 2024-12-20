@@ -20,7 +20,7 @@ export function logOut() {
                     const spotifyLogoutWindow = window.open(logoutUrl, 'Spotify Logout', 'width=1,height=1');
                     setTimeout(() => {
                         spotifyLogoutWindow.close();
-                        window.location.href = 'http://https://sputify-backend.onrender.com';
+                        window.location.href = 'https://sputify-backend.onrender.com';
                     }, 500);
                 }
             })
