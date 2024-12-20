@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const corsOptions = {
-    origin: 'https://spuetify.netlify.app/',
+    origin: 'https://spuetify.netlify.app',
     credentials: true,
 };
 
