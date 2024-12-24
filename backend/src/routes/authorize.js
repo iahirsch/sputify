@@ -30,7 +30,7 @@ router.get('/', function (req, res) {
                 response_type: 'code',
                 client_id: clientId,
                 scope: scope,
-                redirect_uri: `${backendUrl}/callback`,
+                redirect_uri: `http://localhost:3000/callback`,
                 state: state
             })
     })
