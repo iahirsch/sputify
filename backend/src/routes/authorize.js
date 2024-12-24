@@ -24,13 +24,14 @@ router.get('/', function (req, res) {
     // your application requests authorization
     const scope = 'streaming user-read-private user-read-email user-top-read user-read-playback-state user-read-currently-playing user-read-recently-played user-modify-playback-state playlist-read-private playlist-read-collaborative';
     res.setHeader('Content-Type', 'application/json');
+    console.log(`authorize.js: ${backendUrl}/callback`);
     res.end(JSON.stringify({
         url: 'https://accounts.spotify.com/authorize?' +
             querystring.stringify({
                 response_type: 'code',
                 client_id: clientId,
                 scope: scope,
-                redirect_uri: `http://localhost:3000/callback`,
+                redirect_uri: `${backendUrl}/callback`,
                 state: state
             })
     })
