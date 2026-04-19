@@ -13,7 +13,7 @@ export default {
   props: {
     analysis: {
       type: Object,
-      required: true
+      default: () => ({})
     },
     playing: {
       type: Boolean,
@@ -21,6 +21,19 @@ export default {
     }
   },
   setup(props) {
+    const defaultAnalysis = {
+      tempo: 100,
+      energy: 0.5,
+      valence: 0.5,
+      danceability: 0.5,
+      color: 'rgb(180, 180, 180)',
+      login: false,
+    };
+
+    function getAnalysis() {
+      return {...defaultAnalysis, ...(props.analysis || {})};
+    }
+
     let detail = 20;
     const radius = 100;
     const svgRef = ref(null);
@@ -37,12 +50,13 @@ export default {
     ];
 
     function generateData() {
+      const analysis = getAnalysis();
       let data;
-      if (toZero || !props.analysis.energy) {
+      if (toZero || !analysis.energy) {
         data = Array.from({length: detail}, () => ({value: 0}));
       } else {
         data = Array.from({length: detail}, () => ({
-          value: Math.random(0, props.analysis.energy)
+          value: Math.random(0, analysis.energy)
         }));
       }
       toZero = !toZero;
@@ -97,6 +111,7 @@ export default {
 
     function createBubbles() {
       const svg = createSvg();
+      const analysis = getAnalysis();
       svg.append("defs");
 
       bubbleConfigs.forEach((config, index) => {
@@ -105,7 +120,7 @@ export default {
 
         const bubbleGroup = svg.append("g")
             .attr("class", `bubble bubble-${index}`)
-            .attr("transform", props.analysis.login ? `translate(${window.innerWidth / 2}, ${window.innerHeight * 0.9}) scale(${config.scale})` : `translate(${window.innerWidth / 2}, ${window.innerHeight / 2}) scale(${config.scale})`)
+          .attr("transform", analysis.login ? `translate(${window.innerWidth / 2}, ${window.innerHeight * 0.9}) scale(${config.scale})` : `translate(${window.innerWidth / 2}, ${window.innerHeight / 2}) scale(${config.scale})`)
             .style("z-index", config.zIndex);
 
         const angleScale = d3.scaleLinear().domain([0, data.value.length]).range([0, 2 * Math.PI]);
@@ -140,15 +155,20 @@ export default {
     }
 
     function getColor() {
-      const {valence, energy, danceability} = props.analysis;
-      if ((valence === 0 && energy === 0 && danceability === 0) || props.analysis.login) {
+      const analysis = getAnalysis();
+      const {valence, energy, danceability} = analysis;
+      if ((valence === 0 && energy === 0 && danceability === 0) || analysis.login) {
         return `rgba(100, 100, 100, 1)`; // Gray
       }
-      const rgb = props.analysis.color.match(/\d+/g);
+      const rgb = (analysis.color || '').match(/\d+/g);
+      if (!rgb || rgb.length < 3) {
+        return `rgba(180, 180, 180, 1)`;
+      }
       return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`;
     }
 
     function updateVisualizer() {
+      const analysis = getAnalysis();
       data.value = generateData();
 
       const svg = d3.select(svgRef.value);
@@ -168,18 +188,19 @@ export default {
 
         bubbleGroup.select('path')
             .transition()
-            .duration(getTempoTimeout() * (1 / props.analysis.energy)) // Adjust duration based on energy
+            .duration(getTempoTimeout() * (1 / Math.max(analysis.energy, 0.1))) // Adjust duration based on energy
             .ease(d3.easeLinear)
             .attr('d', pathData);
       });
     }
 
     function getTempoTimeout() {
-      if (props.analysis.tempo !== 0) {
-        if (props.analysis.energy < 0.5) {
-          return 30000 / props.analysis.tempo * 2;
+      const analysis = getAnalysis();
+      if (analysis.tempo !== 0) {
+        if (analysis.energy < 0.5) {
+          return 30000 / analysis.tempo * 2;
         } else {
-          return 30000 / props.analysis.tempo;
+          return 30000 / analysis.tempo;
         }
       } else {
         return 30000;

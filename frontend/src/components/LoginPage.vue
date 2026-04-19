@@ -1,4 +1,5 @@
 <template>
+
     <head>
         <title>Spütify Login</title>
         <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
@@ -49,24 +50,14 @@ export default {
     methods: {
         async fetchMessage() {
             try {
-                const response = await fetch('http://localhost:3000/');
-              this.message = await response.text();
+                const response = await fetch('http://127.0.0.1:3000/');
+                this.message = await response.text();
             } catch (error) {
                 this.message = 'Error fetching message from server';
             }
         },
         async authorize() {
-            try {
-                const response = await fetch('http://localhost:3000/authorize', { credentials: 'include' });
-                if (response.ok) {
-                    const data = await response.json();
-                    window.location.href = data.url;
-                } else {
-                    console.error('Error authorizing with Spotify:', response.statusText);
-                }
-            } catch (error) {
-                console.error('Error authorizing with Spotify:', error);
-            }
+            window.location.href = 'http://127.0.0.1:3000/authorize';
         }
     }
 };

@@ -85,6 +85,15 @@ let panel_tl;
 
 const badges = ref([]);
 
+const DEFAULT_ANALYSIS = {
+  tempo: 100,
+  energy: 0.5,
+  valence: 0.5,
+  danceability: 0.5,
+  color: 'rgb(180, 180, 180)',
+  login: false,
+};
+
 const currentTrack = ref({
   id: '',
   name: '',
@@ -93,11 +102,7 @@ const currentTrack = ref({
   image: '',
   uri: '',
   analysis: {
-    tempo: 0,
-    energy: 0,
-    valence: 0,
-    danceability: 0,
-    color: 'rgb(255, 255, 255)',
+    ...DEFAULT_ANALYSIS,
   }
 });
 const playing = ref(false);
@@ -164,7 +169,8 @@ function toggleFocusView() {
 
 async function getAudioAnalysis(name, artist) {
   try {
-    const response = await fetch('http://localhost:3000/analyze', {
+    console.log('[journey] requesting analysis for track:', name, '| artist:', artist);
+    const response = await fetch('http://127.0.0.1:3000/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -176,10 +182,15 @@ async function getAudioAnalysis(name, artist) {
         },
       })
     });
+    if (!response.ok) {
+      console.error('Analyze request failed:', response.status, response.statusText);
+      return {...DEFAULT_ANALYSIS};
+    }
     const json = await response.json();
-    return json.analysisResults;
+    return json?.analysisResults ? {...DEFAULT_ANALYSIS, ...json.analysisResults, login: false} : {...DEFAULT_ANALYSIS};
   } catch (error) {
     console.error('Error fetching audio analysis:', error);
+    return {...DEFAULT_ANALYSIS};
   }
 }
 
@@ -207,7 +218,7 @@ function updateCurrentTrack(track) {
     genres: currentTrack.value.genres,
     image: track.album.images[0].url,
     uri: track.uri,
-    analysis: currentTrack.value.analysis
+    analysis: currentTrack.value.analysis || {...DEFAULT_ANALYSIS}
   };
 
   getArtist(track.artists[0].id).then((artist) => {
@@ -215,7 +226,7 @@ function updateCurrentTrack(track) {
   });
 
   getAudioAnalysis(track.name, track.artists[0].name).then((analysis) => {
-    currentTrack.value.analysis = analysis;
+    currentTrack.value.analysis = analysis ? {...DEFAULT_ANALYSIS, ...analysis, login: false} : {...DEFAULT_ANALYSIS};
   });
 }
 

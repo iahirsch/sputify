@@ -45,7 +45,7 @@ const getToken = async (code) => {
             client_id: clientId,
             grant_type: 'authorization_code',
             code,
-            redirect_uri: 'http://localhost:3000/SpotifyAPI/callback.html',
+            redirect_uri: 'http://127.0.0.1:3000/SpotifyAPI/callback.html',
             code_verifier: codeVerifier,
         }),
     }
@@ -166,14 +166,14 @@ const getWrappedPlaylists = async () => {
     const token = localStorage.getItem('access_token');
 
     let wrappedPlaylists = [
-        {id: '37i9dQZF1Fa1IIVtEpGUcU', year: 2023},
-        {id: '37i9dQZF1F0sijgNaJdgit', year: 2022},
-        {id: '37i9dQZF1EUMDoJuT8yJsl', year: 2021},
-        {id: await searchPlaylist(2020), year: 2020},
-        {id: await searchPlaylist(2019), year: 2019},
-        {id: await searchPlaylist(2018), year: 2018},
-        {id: await searchPlaylist(2017), year: 2017},
-        {id: await searchPlaylist(2016), year: 2016}
+        { id: '37i9dQZF1Fa1IIVtEpGUcU', year: 2023 },
+        { id: '37i9dQZF1F0sijgNaJdgit', year: 2022 },
+        { id: '37i9dQZF1EUMDoJuT8yJsl', year: 2021 },
+        { id: await searchPlaylist(2020), year: 2020 },
+        { id: await searchPlaylist(2019), year: 2019 },
+        { id: await searchPlaylist(2018), year: 2018 },
+        { id: await searchPlaylist(2017), year: 2017 },
+        { id: await searchPlaylist(2016), year: 2016 }
     ];
 
     const getPlaylist = async (id) => {
@@ -193,12 +193,12 @@ const getWrappedPlaylists = async () => {
         }
     };
 
-    wrappedPlaylists = await Promise.all(wrappedPlaylists.map(async ({id, year}) => {
+    wrappedPlaylists = await Promise.all(wrappedPlaylists.map(async ({ id, year }) => {
         const playlist = await getPlaylist(id);
         if (playlist) {
             id = playlist.id;
         }
-        return {id, year, playlist};
+        return { id, year, playlist };
     }));
 
     makePlaylistButtons(wrappedPlaylists);
@@ -293,26 +293,26 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
     // Ready
-    player.addListener('ready', ({device_id}) => {
+    player.addListener('ready', ({ device_id }) => {
         playerReady = true;
         localStorage.setItem('device_id', device_id);
     });
 
     // Not Ready
-    player.addListener('not_ready', ({device_id}) => {
+    player.addListener('not_ready', ({ device_id }) => {
         playerReady = false;
         console.log('Device ID has gone offline', device_id);
     });
 
-    player.addListener('initialization_error', ({message}) => {
+    player.addListener('initialization_error', ({ message }) => {
         console.error(message);
     });
 
-    player.addListener('authentication_error', ({message}) => {
+    player.addListener('authentication_error', ({ message }) => {
         console.error(message);
     });
 
-    player.addListener('account_error', ({message}) => {
+    player.addListener('account_error', ({ message }) => {
         console.error(message);
     });
 
@@ -426,7 +426,7 @@ function updateVisualization(timestamp) {
     const currentTime = timestamp / 1000;
 
     if (currentBeatIndex < beats.length && currentTime >= beats[currentBeatIndex].start) {
-        const {duration, confidence} = beats[currentBeatIndex];
+        const { duration, confidence } = beats[currentBeatIndex];
         pulseCircle(duration, confidence);
         currentBeatIndex++;
     }

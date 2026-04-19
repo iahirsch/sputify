@@ -6,7 +6,7 @@ export function logOut() {
     ) {
         localStorage.removeItem('showPopup');
         // Clear cookies on the server side
-        fetch('http://localhost:3000/logout', { credentials: 'include' })
+        fetch('http://127.0.0.1:3000/logout', { credentials: 'include' })
             .then(response => {
                 if (response.ok) {
                     const logoutUrl = 'https://accounts.spotify.com/en/logout';
@@ -16,11 +16,11 @@ export function logOut() {
                     sessionStorage.removeItem('userName');
                     sessionStorage.removeItem('years');
 
-                    // Redirect to Spotify logout and then to localhost
+                    // Redirect to Spotify logout and then to 127.0.0.1
                     const spotifyLogoutWindow = window.open(logoutUrl, 'Spotify Logout', 'width=1,height=1');
                     setTimeout(() => {
                         spotifyLogoutWindow.close();
-                        window.location.href = 'http://localhost:5173';
+                        window.location.href = 'http://127.0.0.1:5173';
                     }, 500);
                 }
             })

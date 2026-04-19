@@ -1,5 +1,11 @@
 export async function getWrappedPlaylists(device_id) {
     const accessToken = localStorage.getItem('access_token');
+    const hasValidDevice = !!device_id && device_id !== 'null' && device_id !== 'undefined';
+
+    if (!accessToken || !hasValidDevice) {
+        console.warn('Skipping wrapped playlist playback fetch: missing token or device ID.');
+        return [];
+    }
 
     let wrappedPlaylists = [];
 
@@ -31,13 +37,16 @@ export async function getWrappedPlaylists(device_id) {
             })
         });
         await new Promise(resolve => setTimeout(resolve, 500));
-        await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${device_id}`, {
+        const pauseResponse = await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${device_id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
             },
         });
+        if (!pauseResponse.ok) {
+            console.warn('Failed to pause wrapped playlist preview:', pauseResponse.status, pauseResponse.statusText);
+        }
         await new Promise(resolve => setTimeout(resolve, 500));
         if (playResponse.ok) {
             const queueResponse = await fetch(`https://api.spotify.com/v1/me/player/queue`, {
@@ -55,9 +64,11 @@ export async function getWrappedPlaylists(device_id) {
                 return tracks;
             } else {
                 console.error('Failed to get queue:', queueResponse.statusText);
+                return [];
             }
         } else {
             console.error('Failed to start playback:', playResponse.statusText);
+            return [];
         }
     }
 }

@@ -1,7 +1,9 @@
 require("dotenv").config();
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
-module.exports = { genAI }; // Export genAI
+const genAI = new GoogleGenAI({ apiKey });
+
+module.exports = { genAI, apiKey }; // Export genAI

@@ -1,6 +1,6 @@
 describe('Responsive Test for Spotify Login Page', () => {
 
-  const baseUrl = 'http://localhost:5173';
+  const baseUrl = 'http://127.0.0.1:5173';
 
   beforeEach(() => {
     cy.visit(baseUrl);
